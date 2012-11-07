@@ -1,0 +1,50 @@
+Fields/Column customisation:
+ - Option to show/hide fields in the table
+ - Option to show additional fields in the HTML Preview
+ - Allow customising the fields slurped from the server (e.g. used by plugins)
+
+Table:
+ - Support copying text (e.g. to paste into Excel)
+ - Sort Priority & Severity naturally (not alphabetically)
+ - Configurable colour coding (e.g. priority, severity, milestone etc...)
+
+Search combo:
+ - Render typed alias/shorthand words in blue
+    - (Override paint to call drawString with a generated AttributedString?)
+ - Allow '-' before an alias to negate the alias terms(?)
+ - ESC to revert previous text
+    - Make extra sure the combo doesn't lose the search text. E.g. after pressing DOWN
+      it should select the first item. But then after pressing UP or ESC the focus
+      should return to the editor with the original text retained.
+ - Consider GlazedLists? (Can it integrates with all the customisations?)
+
+Download panel:
+ - Show size of file & percentage downloaded
+
+Tools:
+ - Find in Tickets: Merge bottom 2 panels, with various view-modes
+ - Add Inconsistent keyword detector
+ - Add Score field/column; with a configuration dialog to build up scoring formulas
+
+Data sources:
+ - Outlook import into user fields (e.g. categories, flag 'notes')
+ - Allow user columns which derive from other columns via 'capturing regular expressions'
+    - e.g. to extract a "[Topic]" word from the start of a Summary field
+
+BUGS:
+ - The "Find Tickets in Text" tool window doesn't update unless the description panel
+    changes. I.e. particularly when no table-row is selected, even changing the search
+    and updating the table does not update the "Find Tickets in Text" results
+ - When saving a search containing an alias, should expand the alias in the saved result.
+
+Code Tidying:
+ - Create new 'TicketLoader' to more-cleanly manage the 4 loading-tasks, and their cancelling.
+ - PropertyChangeListener -> TicketLoaderListener? so the loader listens
+   on its multiple tasks, and the frame only listens on one object.
+
+UI Polish:
+ - Store column ordering & sizing properly. Column sizes currently 'drift' as the
+   window is resized or reopened.
+ - Store position of all splitters
+ - RENAME CONTROLS (and update accelerators): &Search -> &Filter then can use &Star/&Save? (or &Bookmark?)
+ - Auto-save preferences while working

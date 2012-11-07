@@ -1,0 +1,46 @@
+<html><body><h3>Tips:</h3> 
+<table border="0" cellpadding="2" cellspacing="0">
+<tr>
+<td>Separate search terms using a space.</td>
+</tr><tr>
+<td>Right-click a table column heading to quickly add terms.</td> 
+</tr>
+</table>
+
+<h3>Examples:</h3> 
+<table border="0" cellpadding="2" cellspacing="0">
+<tr>
+<td><tt>peter -paul</tt></td> <td>Tickets containing Peter but not Paul (anywhere)</td>
+</tr><tr>
+<td><tt>cc:luke</tt></td> <td>Search column 'cc' for luke</td>
+</tr><tr>
+<td><tt>pri:low</tt></td> <td>Search column 'priority'; matches 'low' and 'lowest' </td>
+</tr><tr>
+<td><tt>owner:</tt></td> <td>Tickets without an owner</td>
+</tr><tr>
+<td><tt>fred -cc:fred</tt> </td><td>Tickets containing Fred, but where Fred is not CC'd</td>
+</tr>
+</table>
+<h3>Regular expressions:</h3> 
+<table border="0" cellpadding="2" cellspacing="0">
+<tr>
+<td><tt>.</tt></td> <td>Match any character</td>
+</tr><tr>
+<td><tt>c*</tt> , <tt>c+</tt></td><td>Match character c zero or more times , one or more times</td>
+</tr><tr>
+<td><tt>^</tt> , <tt>$</tt></td><td>Start of line , End of line</td>
+</tr><tr>
+<td><tt>\b</tt> , <tt>\B</tt></td><td>Word boundary , Not a word boundary</td>
+</tr><tr>
+<td><tt>\w\s+\S</tt></td><td>A word character, then whitespace(s), then a non-whitespace character</td>
+</tr>
+</table>
+<h3>Bigger Example:</h3> 
+<table border="0" cellpadding="2" cellspacing="0">
+<tr>
+<td><tt>st:-cl ^high key:\bwiki\b key:help|docum</tt></td>
+</tr><tr>
+<td>Active, high(est) priority, containing keywords (&quot;wiki&quot; AND (help OR documentation))</td> 
+</tr>
+</table>
+</body></html>
