@@ -1,0 +1,63 @@
+<project name="TracInstant" default="jar" basedir=".">
+    <description>
+        Build TracInstant using ant
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="lib" location="lib"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+  
+  <property name="main-class"  value="net.bettyluke.tracinstant.TracInstantApp"/>
+  
+  <path id="lib.classpath">
+      <fileset dir="${lib}" includes="**/*.jar"/>
+  </path>
+  
+  <path id="target.classpath">
+    <path refid="lib.classpath"/>
+    <pathelement location="${dist}/${ant.project.name}.jar"/>
+  </path>
+    
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build}" classpathref="lib.classpath"/>
+    <copy todir="${build}">
+        <fileset dir="${src}" excludes="**/*.java"/>
+    </copy>
+  </target>
+
+  <target name="jar" depends="compile" description="generate the .jar" >
+
+    <mkdir dir="${dist}"/>
+    
+    <jar jarfile="${dist}/TracInstant.jar" basedir="${build}">
+
+      <!-- HACK! Libs hard-coded. I'm too tired to figure out auto-expansion now. -->
+      <zipfileset includes="**/*.class" src="lib/opencsv-2.3.jar">
+    	<manifest>
+    		<attribute name="Main-Class" value="${main-class}" />
+    	</manifest>
+    </jar>
+  </target>
+
+  <target name="run" depends="jar">
+    <java fork="true" classname="${main-class}" classpathref="target.classpath"/>
+  </target>
+
+  <target name="clean"
+        description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+  
+</project>
