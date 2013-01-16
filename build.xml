@@ -42,10 +42,10 @@
     <jar jarfile="${dist}/TracInstant.jar" basedir="${build}">
 
       <!-- HACK! Libs hard-coded. I'm too tired to figure out auto-expansion now. -->
-      <zipfileset includes="**/*.class" src="lib/opencsv-2.3.jar">
-    	<manifest>
-    		<attribute name="Main-Class" value="${main-class}" />
-    	</manifest>
+      <zipfileset includes="**/*.class" src="lib/opencsv-2.3.jar"/>
+      <manifest>
+        <attribute name="Main-Class" value="${main-class}" />
+      </manifest>
     </jar>
   </target>
 
