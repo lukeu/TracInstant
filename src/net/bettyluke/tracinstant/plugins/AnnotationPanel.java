@@ -22,9 +22,8 @@ public class AnnotationPanel extends JPanel {
     }
     
     private int selectedTicketId = -1;
-    private TicketUpdater m_Updater;
-    
-    private JTextComponent m_Text;
+    private TicketUpdater updater;
+    private JTextComponent editor;
     
     /** The interface through which the application interacts with us. */
     private class Plugin extends ToolPlugin {
@@ -32,9 +31,9 @@ public class AnnotationPanel extends JPanel {
         private static final String ANNOTATION_FIELD = "Annotation";
 
         @Override
-        public JComponent initialise(TicketUpdater updater) {
-            updater.identifyUserField(ANNOTATION_FIELD, true);
-            m_Updater = updater;
+        public JComponent initialise(TicketUpdater tu) {
+            tu.identifyUserField(ANNOTATION_FIELD, true);
+            updater = tu;
             return AnnotationPanel.this;
         }
 
@@ -59,8 +58,8 @@ public class AnnotationPanel extends JPanel {
     
     public AnnotationPanel() {
         super(new BorderLayout());
-        m_Text = createEditor();
-        add(new JScrollPane(m_Text));
+        editor = createEditor();
+        add(new JScrollPane(editor));
         Dimension dim = new Dimension(200, 50);
         setPreferredSize(dim);
         setMinimumSize(dim);
@@ -80,12 +79,12 @@ public class AnnotationPanel extends JPanel {
     }
 
     protected void storeAnnotationInTicket() {
-        if (m_Text.isEnabled() && selectedTicketId >= 0) {
-            String text = m_Text.getText();
+        if (editor.isEnabled() && selectedTicketId >= 0) {
+            String text = editor.getText();
             if (text.isEmpty()) {
                 text = null;
             }
-            m_Updater.setTicketField(selectedTicketId, "Annotation", text);
+            updater.setTicketField(selectedTicketId, "Annotation", text);
         }
     }
 
@@ -108,14 +107,14 @@ public class AnnotationPanel extends JPanel {
     }
 
     private void showText(String text) {
-        m_Text.setEnabled(true);
-        m_Text.setEditable(true);
-        m_Text.setText(text);
+        editor.setEnabled(true);
+        editor.setEditable(true);
+        editor.setText(text);
     }
     
     private void hideText() {
-        m_Text.setText("");
-        m_Text.setEnabled(false);
-        m_Text.setEditable(false);
+        editor.setText("");
+        editor.setEnabled(false);
+        editor.setEditable(false);
     }
 }

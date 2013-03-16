@@ -63,9 +63,9 @@ public class FindInTextPanel extends JPanel {
 
         @Override
         public void ticketViewUpdated(Ticket[] inView, Ticket[] selected) {
-            m_Filter.clear();
+            filter.clear();
             for (Ticket ticket : inView) {
-                m_Filter.add(ticket.getNumber());
+                filter.add(ticket.getNumber());
             }
             updateOutputFields();
         }
@@ -83,14 +83,14 @@ public class FindInTextPanel extends JPanel {
      * in the processing of a single EDT event.
      */
     private static final class DocChangeListener implements DocumentListener {
-        private final Runnable m_WrappedRunner;
-        private boolean m_Pending = false;
+        private final Runnable wrappedRunner;
+        private boolean pending = false;
 
         public DocChangeListener(final Runnable runnable) {
-            m_WrappedRunner = new Runnable() {
+            wrappedRunner = new Runnable() {
                 public void run() {
                     runnable.run();
-                    m_Pending = false;
+                    pending = false;
                 }
             };
         }
@@ -104,18 +104,18 @@ public class FindInTextPanel extends JPanel {
             maybeRun();
         }
         private void maybeRun() {
-            if (!m_Pending) {
-                m_Pending = true;
-                SwingUtilities.invokeLater(m_WrappedRunner);
+            if (!pending) {
+                pending = true;
+                SwingUtilities.invokeLater(wrappedRunner);
             }
         }
     }
 
-    private JTextComponent m_Text = createTextArea();
-    private Set<Integer> m_TicketsInText = Collections.emptySet();
-    private JTextComponent m_FoundTicketNumbers = createTextArea();
-    private JTextComponent m_FilteredTicketNumbers = createTextArea();
-    private final Set<Integer> m_Filter = new TreeSet<Integer>();
+    private JTextComponent sourceTextEditor = createTextArea();
+    private Set<Integer> ticketsInText = Collections.emptySet();
+    private JTextComponent foundTicketNumbersArea = createTextArea();
+    private JTextComponent filteredTicketNumbersArea = createTextArea();
+    private final Set<Integer> filter = new TreeSet<Integer>();
 
     private static JTextComponent createTextArea() {
         JTextComponent ta = new JTextArea();
@@ -125,8 +125,8 @@ public class FindInTextPanel extends JPanel {
 
     public FindInTextPanel() {
         super(new BorderLayout());
-        JScrollPane scroll1 = new JScrollPane(m_FoundTicketNumbers);
-        JScrollPane scroll2 = new JScrollPane(m_FilteredTicketNumbers);
+        JScrollPane scroll1 = new JScrollPane(foundTicketNumbersArea);
+        JScrollPane scroll2 = new JScrollPane(filteredTicketNumbersArea);
         scroll1.setPreferredSize(new Dimension(50, 50));
         scroll2.setPreferredSize(new Dimension(50, 50));
         Box grid = Box.createVerticalBox();
@@ -136,27 +136,27 @@ public class FindInTextPanel extends JPanel {
         grid.add(scroll2);
         
         add(new JLabel("Paste text to scan for ticket numbers:"), BorderLayout.NORTH);
-        add(createSplit(new JScrollPane(m_Text), grid));
+        add(createSplit(new JScrollPane(sourceTextEditor), grid));
         
-        m_Text.getDocument().addDocumentListener(new DocChangeListener(new Runnable() {
+        sourceTextEditor.getDocument().addDocumentListener(new DocChangeListener(new Runnable() {
             public void run() {
-                m_TicketsInText = scanText(m_Text.getText());
+                ticketsInText = scanText(sourceTextEditor.getText());
                 updateOutputFields();
             }
         }));
     }
     
     private void updateOutputFields() {
-        String newFoundText = formatFoundTicketText(m_TicketsInText);
-        if (!newFoundText.equals(m_FoundTicketNumbers.getText())) {
-            m_FoundTicketNumbers.setText(newFoundText);
+        String newFoundText = formatFoundTicketText(ticketsInText);
+        if (!newFoundText.equals(foundTicketNumbersArea.getText())) {
+            foundTicketNumbersArea.setText(newFoundText);
         }
         
-        Set<Integer> intersection = new TreeSet<Integer>(m_TicketsInText);
-        intersection.retainAll(m_Filter);
+        Set<Integer> intersection = new TreeSet<Integer>(ticketsInText);
+        intersection.retainAll(filter);
         String newFilteredText = formatOutlookQuery(intersection);
-        if (!newFilteredText.equals(m_FilteredTicketNumbers.getText())) {
-            m_FilteredTicketNumbers.setText(newFilteredText);
+        if (!newFilteredText.equals(filteredTicketNumbersArea.getText())) {
+            filteredTicketNumbersArea.setText(newFilteredText);
         }
     }
 
