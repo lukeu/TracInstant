@@ -16,6 +16,7 @@ import javax.swing.text.JTextComponent;
 import net.bettyluke.tracinstant.data.Ticket;
 
 public class AnnotationPanel extends JPanel {
+
     public static ToolPlugin createPlugin() {
         return new AnnotationPanel().new Plugin();
     }
@@ -25,8 +26,8 @@ public class AnnotationPanel extends JPanel {
     
     private JTextComponent m_Text;
     
-    /** Implement the interface by which the Main Frame interacts with us. */
-    public class Plugin extends ToolPlugin {
+    /** The interface through which the application interacts with us. */
+    private class Plugin extends ToolPlugin {
 
         private static final String ANNOTATION_FIELD = "Annotation";
 
