@@ -53,8 +53,8 @@ public class FindInTextPanel extends JPanel {
         return new FindInTextPanel().new Plugin();
     }
     
-    /** Implement the interface by which the Main Frame interacts with us. */
-    public class Plugin extends ToolPlugin {
+    /** The interface through which the application interacts with us. */
+    private class Plugin extends ToolPlugin {
 
         @Override
         public JComponent initialise(TicketUpdater updater) {
