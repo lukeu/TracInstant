@@ -344,7 +344,7 @@ public class TracInstantFrame extends JFrame {
             }
         };
         JButton button = GuiUtilities.createHyperlinkButton(text, tooltip, action);
-        makeMaxASmidgeWider(button);
+        GuiUtilities.makeMaxASmidgeWider(button, GAP);
         return button;
     }
 
@@ -436,7 +436,7 @@ public class TracInstantFrame extends JFrame {
                 }
             }
         });
-        makeMaxASmidgeWider(combo);
+        GuiUtilities.makeMaxASmidgeWider(combo, GAP);
         return combo;
     }
 
@@ -706,17 +706,9 @@ public class TracInstantFrame extends JFrame {
     public void installToolPanel(ToolPlugin plugin) {
         m_Plugins.put(plugin, plugin.initialise(m_TableModelUpdater));
         m_PluginCombo.addItem(plugin);
-        makeMaxASmidgeWider(m_PluginCombo);
+        GuiUtilities.makeMaxASmidgeWider(m_PluginCombo, GAP);
     }
     
-    private void makeMaxASmidgeWider(JComponent comp) {
-        comp.setPreferredSize(null);
-        Dimension dims = comp.getPreferredSize();
-        dims.width += 5;
-        comp.setPreferredSize(dims);
-        comp.setMaximumSize(new Dimension(dims.width, Integer.MAX_VALUE));
-    }
-
     public TicketTableModel getTicketModel() {
         return m_Table.getModel();
     }
