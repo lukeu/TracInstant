@@ -17,22 +17,20 @@
         
 package net.bettyluke.tracinstant.ui;
 
-import java.awt.Desktop;
-import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 import javax.swing.event.HyperlinkEvent.EventType;
+import javax.swing.event.HyperlinkListener;
 
 import net.bettyluke.tracinstant.data.Ticket;
 import net.bettyluke.tracinstant.data.TicketTableModel;
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
+import net.bettyluke.util.DesktopUtils;
 
 public class HtmlDescriptionPane extends JEditorPane {
     
@@ -57,7 +55,7 @@ public class HtmlDescriptionPane extends JEditorPane {
             } else if (type == HyperlinkEvent.EventType.EXITED) {
                 pane.setToolTipText(null);
             } else if (type == HyperlinkEvent.EventType.ACTIVATED) {
-                browseTo(evt.getURL());
+                DesktopUtils.browseTo(evt.getURL());
             }
         }
 
@@ -98,7 +96,7 @@ public class HtmlDescriptionPane extends JEditorPane {
         if (count == 1) {
             
             String query = baseUrl + "/ticket/" + tickets[0].getNumber();
-            browseTo(new URL(query));
+            DesktopUtils.browseTo(new URL(query));
             return;
         }
         
@@ -112,26 +110,8 @@ public class HtmlDescriptionPane extends JEditorPane {
                 sb.append(joint).append(tickets[i].getNumber());
                 joint = ",";
             }
-            browseTo(new URL(sb.toString()));
+            DesktopUtils.browseTo(new URL(sb.toString()));
             return;
         }
     }
-
-    private static void browseTo(URL url) {
-        if (url == null) {
-            return;
-        }
-        try {
-            // Note, this can end up throwing UnsupportedOperationException
-            // even if we use the various "is supported" checks provided
-            // by Desktop.
-            Desktop.getDesktop().browse(url.toURI());
-        } catch (UnsupportedOperationException ex) {
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } catch (URISyntaxException ex) {
-            ex.printStackTrace();
-        }
-    }    
 }
