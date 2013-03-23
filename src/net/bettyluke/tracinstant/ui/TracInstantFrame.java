@@ -38,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -86,6 +87,7 @@ import net.bettyluke.tracinstant.plugins.ToolPlugin;
 import net.bettyluke.tracinstant.prefs.SiteSettings;
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
 import net.bettyluke.tracinstant.ui.TableRowFilterComputer.ResultCallback;
+import net.bettyluke.util.DesktopUtils;
 import net.bettyluke.util.FileUtils;
 
 
@@ -97,6 +99,8 @@ public class TracInstantFrame extends JFrame {
     
     private static final InputStream TIP =
         TracInstantFrame.class.getResourceAsStream("res/SearchTip.html");
+
+    private static final int GAP = 6;
 
     private final class TicketLoadListener implements PropertyChangeListener {
         private final TicketLoadTask task;
@@ -294,13 +298,13 @@ public class TracInstantFrame extends JFrame {
         m_ConnectTo = new JButton(slurpAction);
         
         m_Matches = new JLabel();
-        m_Matches.setPreferredSize(new Dimension(120, m_Matches.getPreferredSize().height));
+        m_Matches.setPreferredSize(new Dimension(110, m_Matches.getPreferredSize().height));
         
         m_PluginCombo = createPluginCombo();
-        JLabel pluginLabel = createLabel("Tools: ", 'T', m_PluginCombo);
+        JLabel pluginLabel = createLabel("Tools:", 'T', m_PluginCombo);
         
-        Box toolPanel = createToolPanel(filterLabel, m_FilterCombo, m_Matches,  
-            pluginLabel, m_PluginCombo);
+        Box toolPanel = createToolPanel(filterLabel, m_FilterCombo, m_Matches,
+                createNewTicketButton(), pluginLabel, m_PluginCombo);
 
         m_DownloadsNumber = new JLabel("", null, SwingConstants.LEFT);
         m_DownloadsNumber.setHorizontalTextPosition(SwingConstants.LEFT);
@@ -324,8 +328,28 @@ public class TracInstantFrame extends JFrame {
         wsp.startListening();
     }
 
+    private JButton createNewTicketButton() {
+        String text = "New&nbsp;ticket";
+        String tooltip = "Create a new Trac ticket using an external web browser";
+        ActionListener action = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String baseUrl = TracInstantProperties.getURL();
+                if (baseUrl != null) {
+                    try {
+                        DesktopUtils.browseTo(new URL(baseUrl + "/newticket"));
+                    } catch (MalformedURLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        };
+        JButton button = GuiUtilities.createHyperlinkButton(text, tooltip, action);
+        makeMaxASmidgeWider(button);
+        return button;
+    }
+
     private JSplitPane createToolSplit() {
-        JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, null, null);
+        JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true, null, null);
         split.setDividerLocation(1.0);
         split.setResizeWeight(1.0);
         return split;
@@ -497,33 +521,32 @@ public class TracInstantFrame extends JFrame {
 
     private Box createToolPanel(JComponent... comps) {
         Box box = Box.createHorizontalBox();
-        box.add(Box.createHorizontalStrut(6));
         for (JComponent comp : comps) {
-            box.add(Box.createHorizontalStrut(6));
+            box.add(Box.createHorizontalStrut(GAP));
             box.add(comp);
         }
-        box.add(Box.createHorizontalStrut(6));
+        box.add(Box.createHorizontalStrut(GAP));
         return box;
     }
 
     private Box createStatusPanel(JLabel downloadNumber, Component... comps) {
         Box box = Box.createHorizontalBox();
-        box.add(Box.createHorizontalStrut(6));
+        box.add(Box.createHorizontalStrut(GAP));
         box.add(new JLabel("Attachments: "));
         box.add(downloadNumber);
         
         // Extra space here
-        box.add(Box.createHorizontalStrut(6));
+        box.add(Box.createHorizontalStrut(GAP));
         
         for (Component comp : comps) {
-            box.add(Box.createHorizontalStrut(6));
+            box.add(Box.createHorizontalStrut(GAP));
             box.add(comp);
         }
         return box;
     }
 
     private static JSplitPane createSplit(JComponent top, JComponent bottom) {
-        JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, top, bottom);
+        JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, top, bottom);
         
         // This is crap. Want the split bar to stay __where it is put__ even when
         // resized to a postage stamp size and back. Oh well, best we can do easily.
@@ -686,8 +709,6 @@ public class TracInstantFrame extends JFrame {
         makeMaxASmidgeWider(m_PluginCombo);
     }
     
-    
-
     private void makeMaxASmidgeWider(JComponent comp) {
         comp.setPreferredSize(null);
         Dimension dims = comp.getPreferredSize();
