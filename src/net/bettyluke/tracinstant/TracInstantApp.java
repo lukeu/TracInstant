@@ -31,6 +31,7 @@ import net.bettyluke.tracinstant.data.Ticket;
 import net.bettyluke.tracinstant.data.TicketLoadTask;
 import net.bettyluke.tracinstant.plugins.AnnotationPanel;
 import net.bettyluke.tracinstant.plugins.FindInTextPanel;
+import net.bettyluke.tracinstant.plugins.HistogramPane;
 import net.bettyluke.tracinstant.prefs.SiteSettings;
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
 import net.bettyluke.tracinstant.ui.TracInstantFrame;
@@ -56,6 +57,7 @@ public final class TracInstantApp {
         final TracInstantFrame frame = new TracInstantFrame(site);
         frame.installToolPanel(AnnotationPanel.createPlugin());
         frame.installToolPanel(FindInTextPanel.createPlugin());
+        frame.installToolPanel(HistogramPane.createPlugin());
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
