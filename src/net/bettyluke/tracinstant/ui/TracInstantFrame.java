@@ -447,10 +447,13 @@ public class TracInstantFrame extends JFrame {
                 getContentPane().remove(m_MainArea);
                 getContentPane().add(m_ToolWindowSplit);
                 m_ToolWindowSplit.setLeftComponent(m_MainArea);
+            } else {
+                m_ActivePlugin.hidden();
             }
             m_ToolWindowSplit.setRightComponent(m_Plugins.get(plugin));
             m_ActivePlugin = plugin;
             m_ActivePlugin.shown();
+            updatePlugin();
         } else {
             if (m_ActivePlugin != null) {
                 m_ToolWindowSplit.setRightComponent(null);
@@ -708,7 +711,7 @@ public class TracInstantFrame extends JFrame {
         m_PluginCombo.addItem(plugin);
         GuiUtilities.makeMaxASmidgeWider(m_PluginCombo, GAP);
     }
-    
+
     public TicketTableModel getTicketModel() {
         return m_Table.getModel();
     }
