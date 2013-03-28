@@ -24,6 +24,9 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import net.bettyluke.util.swing.VerticallyScrollingPanel;
+
+
 import net.bettyluke.tracinstant.data.Ticket;
 import net.bettyluke.util.swing.ArrayListModel;
 
@@ -89,10 +92,12 @@ public class HistogramPane {
 
     private final JComboBox fieldSelector;
     private final JPanel mainPanel;
-    private final JComponent histogram;
+    private final JPanel histogram;
     private Ticket[] ticketsInView = new Ticket[0];
     private Ticket[] selectedTickets = new Ticket[0];
     private RenderInfo renderInfo = null;
+    private JList labels;
+    private JList histi;
 
     private static final class LabelRenderer extends DefaultListCellRenderer {
         @Override
@@ -186,8 +191,17 @@ public class HistogramPane {
 
     public HistogramPane() {
         fieldSelector = createFieldSelection();
-        histogram = new JPanel(new BorderLayout());
+        labels = new JList();
+        labels.setCellRenderer(new LabelRenderer());
+
+        histi = new JList();
+        histi.setCellRenderer(new BarRenderer());
+
+        histogram = VerticallyScrollingPanel.create(histi);
+        histogram.add(labels, BorderLayout.WEST);
+
         JScrollPane scroll = new JScrollPane(histogram);
+        scroll.getViewport().setBackground(Color.WHITE);
         mainPanel = createMainPanel(fieldSelector, scroll);
     }
 
@@ -206,7 +220,6 @@ public class HistogramPane {
         panel.add(north, BorderLayout.NORTH);
         panel.add(new JScrollPane(centre));
         panel.setPreferredSize(PANEL_PREFERRED_SIZE);
-        panel.setMinimumSize(PANEL_PREFERRED_SIZE);
         return panel;
     }
 
@@ -256,15 +269,10 @@ public class HistogramPane {
         renderInfo = new RenderInfo(bars);
 
         ArrayListModel<Bar> model = ArrayListModel.of(bars);
-        JList labels = new JList(model);
-        JList histi = new JList(model);
 
-        labels.setCellRenderer(new LabelRenderer());
-        histi.setCellRenderer(new BarRenderer());
+        labels.setModel(model);
+        histi.setModel(model);
 
-        histogram.removeAll();
-        histogram.add(labels, BorderLayout.WEST);
-        histogram.add(histi, BorderLayout.CENTER);
         histogram.invalidate();
         histogram.revalidate();
         histogram.repaint();
