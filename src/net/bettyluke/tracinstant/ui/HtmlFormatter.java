@@ -86,11 +86,10 @@ public class HtmlFormatter {
     }
 
     private static String highlightMatches(String body, SearchTerm[] searchTerms) {
-        
-        if (searchTerms.length == 0) {
+        Pattern superPattern = createSuperPattern(searchTerms);
+        if (superPattern == null) {
             return body;
         }
-        Pattern superPattern = createSuperPattern(searchTerms);
         
         StringBuilder bb = new StringBuilder();
         int rangeStart = 0, rangeEnd = 0, replacements = 0;
@@ -146,7 +145,6 @@ public class HtmlFormatter {
     }
 
     private static Pattern createSuperPattern(SearchTerm[] searchTerms) {
-        assert searchTerms.length > 0;
         StringBuilder sb = new StringBuilder();
         String pipe = "";
         sb.append('(');
@@ -160,6 +158,9 @@ public class HtmlFormatter {
             }
         }
         sb.append(')');
+        if (sb.length() == 2) {
+            return null;
+        }
         return Pattern.compile(sb.toString(), Pattern.CASE_INSENSITIVE);
     }
 
