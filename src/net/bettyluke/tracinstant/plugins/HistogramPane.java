@@ -34,7 +34,7 @@ public class HistogramPane {
 
     private static final Dimension PANEL_PREFERRED_SIZE = new Dimension(300, 50);
     private static final String[] DEFAULT_FIELDS = {
-        "Reporter", "Owner", "Type", "Priority", "Component", "Version", "Severity"
+        "Milestone", "Reporter", "Owner", "Type", "Priority", "Component", "Version", "Severity"
     };
 
     public static ToolPlugin createPlugin() {
