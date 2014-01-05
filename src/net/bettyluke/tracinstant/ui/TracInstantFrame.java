@@ -118,7 +118,7 @@ public class TracInstantFrame extends JFrame {
             
             Update update = (Update) evt.getNewValue();
             if (update.ticketProvider != null) {
-                m_Table.getModel().mergeTickets(update.ticketProvider.getTickets());
+                mergeTickets(update.ticketProvider.getTickets());
                 return;
             }
             if (update.summaryMessage != null) {
@@ -149,6 +149,23 @@ public class TracInstantFrame extends JFrame {
             }
             updateRowFilter();
             updateViews();
+        }
+
+        private void mergeTickets(List<Ticket> tickets) {
+            m_Table.getModel().mergeTickets(tickets);
+
+            /*
+             * Performance! When the major sort criteria have lots of repeating strings (like sort
+             * by Priority then Severity then Resolution), performance can crumble. This 'tweak'
+             * foregoes full locale-sensitive sorting to gain performance. (RowSorter defaults to
+             * "Collator" as the comparator for String columns). This speeds up the sorting of the
+             * given scenario 6-fold, measuring a 10,000 ticket sort 600ms -> 100ms. Good find this!
+             * After all that work and multi-threading to get the text searching down to sub 50 ms
+             * (typical) it was a real shame that this Swing table-sort had become the bottleneck!
+             */
+            for (int col = 1; col < m_Table.getColumnCount(); col++) {
+                m_Table.getRowSorter().setComparator(col, String.CASE_INSENSITIVE_ORDER);
+            }
         }
     }
 
