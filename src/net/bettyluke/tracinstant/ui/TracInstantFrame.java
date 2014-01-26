@@ -41,6 +41,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -246,9 +247,7 @@ public class TracInstantFrame extends JFrame {
     private final JLabel m_DownloadsNumber;
     private final Action m_DownloadAction = new DownloadAction();
     
-    private final JButton m_ConnectTo;
     private final Box m_StatusPanel;
-    
     
     private SearchTerm[] m_SearchTerms = new SearchTerm[0];
     
@@ -275,6 +274,7 @@ public class TracInstantFrame extends JFrame {
     private ToolPlugin m_ActivePlugin = null;
 
     private final SlurpAction slurpAction;
+    private final Action performanceAction = new ShowPerformanceMonitorAction(this);
 
     private final JSplitPane m_MainArea;
 
@@ -312,8 +312,6 @@ public class TracInstantFrame extends JFrame {
         ToolTipManager.sharedInstance().registerComponent(m_DescriptionPane);
         ToolTipManager.sharedInstance().setDismissDelay(60000);
         
-        m_ConnectTo = new JButton(slurpAction);
-        
         m_Matches = new JLabel();
         m_Matches.setPreferredSize(new Dimension(110, m_Matches.getPreferredSize().height));
         
@@ -330,7 +328,8 @@ public class TracInstantFrame extends JFrame {
         m_StatusPanel = createStatusPanel(
             m_DownloadsNumber, new JButton(m_DownloadAction),
             Box.createHorizontalGlue(),
-            m_SlurpStatus.getComponent(), m_ConnectTo);
+            m_SlurpStatus.getComponent(),
+            new JButton(slurpAction));
         
         m_MainArea = createMainSplitArea(m_Table, m_DescriptionPane, m_StatusPanel);
         m_ToolWindowSplit = createToolSplit();
@@ -515,6 +514,7 @@ public class TracInstantFrame extends JFrame {
                 }
             }
         });
+
         return table;
     }
 
@@ -550,7 +550,8 @@ public class TracInstantFrame extends JFrame {
     }
 
     private Box createStatusPanel(JLabel downloadNumber, Component... comps) {
-        Box box = Box.createHorizontalBox();
+
+        final Box box = Box.createHorizontalBox();
         box.add(Box.createHorizontalStrut(GAP));
         box.add(new JLabel("Attachments: "));
         box.add(downloadNumber);
@@ -562,7 +563,28 @@ public class TracInstantFrame extends JFrame {
             box.add(Box.createHorizontalStrut(GAP));
             box.add(comp);
         }
+
+        box.add(createSneakyPerformanceMonitorButton(box, comps));
+
         return box;
+    }
+
+    private JComponent createSneakyPerformanceMonitorButton(final Box box, Component... comps) {
+        final JButton pi = GuiUtilities.createHyperlinkButton("", null, performanceAction);
+        pi.setText("  \u03C0  ");
+        pi.setVisible(false);
+        MouseAdapter listener = new MouseAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                pi.setVisible(e.isControlDown() && e.isShiftDown());
+            }
+        };
+        pi.addMouseMotionListener(listener);
+        box.addMouseMotionListener(listener);
+        for (Component comp : comps) {
+            comp.addMouseMotionListener(listener);
+        }
+        return pi;
     }
 
     private static JSplitPane createSplit(JComponent top, JComponent bottom) {
