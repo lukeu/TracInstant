@@ -56,7 +56,7 @@ public class TracTabResult implements TicketProvider {
         try {
             Ticket ticket = new Ticket(Integer.parseInt(values[0]));
             for (int i = 1; i < len; i++) {
-                ticket.appendField(m_Headings[i], values[i]);
+                ticket.setOrMergeField(m_Headings[i], values[i]);
             }
             m_Tickets.put(ticket.getNumber(), ticket);
         } catch (NumberFormatException ex) {

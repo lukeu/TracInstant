@@ -131,7 +131,7 @@ public class TicketTableModel extends AbstractTableModel {
         if (existing == null) {
             ticketMap.put(id, new Ticket(t));
         } else {
-            existing.mergeFields(t);
+            existing.setFieldsFromTicket(t);
         }
     }
     
