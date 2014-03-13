@@ -35,11 +35,11 @@ public class Ticket {
     
     public Ticket(Ticket original) {
         m_Number = original.m_Number;
-        mergeFields(original);
+        setFieldsFromTicket(original);
     }
     
-    /** Merge the given ticket's data into this one. */
-    public void mergeFields(Ticket ticket) {
+    /** Set (or overwrite) our fields using those in the supplied ticket. */
+    public final void setFieldsFromTicket(Ticket ticket) {
         if (m_Number != ticket.m_Number) {
             System.err.println("Ticket numbers don't match");
         }
@@ -70,9 +70,15 @@ public class Ticket {
         m_Fields.remove(fieldName);
     }
 
-    public void appendField(String fieldName, String value) {
+    public final void setOrMergeField(String fieldName, String value) {
         String existing = m_Fields.get(fieldName);
-        m_Fields.put(fieldName, (existing == null) ? value : existing + "¬\n" + value);
+        if (existing != null && !existing.equals(value)) {
+
+            System.out.println("WARNING: field " + fieldName + " in ticket " + m_Number +
+                    " is already set. Data will be merged.");
+            value = existing + "\n" + value;
+        }
+        m_Fields.put(fieldName, value);
     }
 
     public Collection<String> getFieldNames() {
