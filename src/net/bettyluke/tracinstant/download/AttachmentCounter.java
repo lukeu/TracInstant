@@ -254,7 +254,8 @@ public class AttachmentCounter {
             InputStream in = null;
             BufferedReader reader = null;
             try {
-                in = AuthenticatedHttpRequester.getInputStream(SiteSettings.getInstance(), url);
+                in = AuthenticatedHttpRequester.openStreamBlindlyTrustingAnySslCertificates(
+                        SiteSettings.getInstance(), url);
                 reader = new BufferedReader(new InputStreamReader(in));
                 String line;
                 while ((line = reader.readLine()) != null) {

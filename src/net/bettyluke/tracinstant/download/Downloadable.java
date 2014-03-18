@@ -101,7 +101,8 @@ public abstract class Downloadable {
         public InputStream createInputStream() throws IOException {
             try {
                 URL url = new URL(TracInstantProperties.getURL() + m_URL + "?format=raw");
-                return AuthenticatedHttpRequester.getInputStream(SiteSettings.getInstance(), url);
+                return AuthenticatedHttpRequester.openStreamBlindlyTrustingAnySslCertificates(
+                        SiteSettings.getInstance(), url);
             } catch (MalformedURLException ex) {
                 throw new IOException(ex.getMessage(), ex);
             }

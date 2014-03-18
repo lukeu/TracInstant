@@ -153,7 +153,11 @@ public class TracUrlSelectionPanel extends JPanel {
     private String getURLText() {
         Object item = url.getSelectedItem();
         String text = (item == null) ? "" : ((String) item).trim();
-        if (!text.toLowerCase().startsWith("http:")) {
+
+        // Add the default 'html' protocol if the user didn't specify one
+        // TODO: could be more robust here, e.g. by using class URL
+        int colon = text.indexOf(':');
+        if (colon < 0 || colon > 8) {
             return "http://" + text;
         }
         return text;

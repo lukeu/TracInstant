@@ -5,12 +5,25 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import net.bettyluke.util.HttpsUtils;
+
 import net.bettyluke.tracinstant.prefs.SiteSettings;
 
 public final class AuthenticatedHttpRequester {
     private AuthenticatedHttpRequester() {}
 
-    public static InputStream getInputStream(SiteSettings settings, URL url) throws IOException {
+    public static InputStream openStreamBlindlyTrustingAnySslCertificates(
+            SiteSettings settings, URL url) throws IOException {
+        return openStreamBlindlyTrustingAnySslCertificates(getUrlConnection(settings, url));
+    }
+
+    public static InputStream openStreamBlindlyTrustingAnySslCertificates(URLConnection urlCon)
+            throws IOException {
+        HttpsUtils.blindlyTrustAnySslCertificates(urlCon);
+        return urlCon.getInputStream();
+    }
+
+    public static URLConnection getUrlConnection(SiteSettings settings, URL url) throws IOException {
         URLConnection uc = url.openConnection();
 
         if (!settings.getUsername().isEmpty()) {
@@ -19,7 +32,6 @@ public final class AuthenticatedHttpRequester {
                     userpass.getBytes());
             uc.setRequestProperty ("Authorization", basicAuth);
         }
-
-        return uc.getInputStream();
+        return uc;
     }
 }

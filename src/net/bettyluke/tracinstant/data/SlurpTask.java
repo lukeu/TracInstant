@@ -259,7 +259,8 @@ public class SlurpTask extends TicketLoadTask {
     }
 
     private InputStream authenticateAndGetStream(URL url) throws IOException {
-        return AuthenticatedHttpRequester.getInputStream(siteSettings, url);
+        return AuthenticatedHttpRequester
+                .openStreamBlindlyTrustingAnySslCertificates(siteSettings, url);
     }
 
     private int slurpXmlFormat(URL url) throws IOException, SAXException {
@@ -282,7 +283,8 @@ public class SlurpTask extends TicketLoadTask {
         }
     }
 
-    private TicketProvider slurpTabDelimited(URL url) throws MalformedURLException, IOException, InterruptedException {
+    private TicketProvider slurpTabDelimited(URL url)
+            throws MalformedURLException, IOException, InterruptedException {
         InputStream in = null;
         try {
             in = authenticateAndGetStream(url);
