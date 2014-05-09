@@ -20,10 +20,20 @@ package net.bettyluke.tracinstant.prefs;
 
 public class SiteSettings {
 
+    private String username = "";
+    private String password = "";
     private String url = "";
     private String attachmentsDir = "";
     private boolean fetchOnlyActiveTickets = false;
     private boolean cacheData = true;
+
+    public void setUsername(String username) {
+	this.username = username;
+    }
+
+    public void setPassword(String password) {
+	this.password = password;
+    }
 
     public void setURL(String urlText) {
         url = urlText;
@@ -39,6 +49,14 @@ public class SiteSettings {
     
     public void setCacheData(boolean b) {
         cacheData = b;
+    }
+
+    public String getUsername() {
+	return username;
+    }
+
+    public String getPassword() {
+	return password;
     }
 
     public String getURL() {
@@ -59,6 +77,8 @@ public class SiteSettings {
 
     public static SiteSettings fromPreferences() {
         SiteSettings ss = new SiteSettings();
+        ss.username = TracInstantProperties.getUsername();
+        ss.password = TracInstantProperties.getPassword();
         ss.url = TracInstantProperties.getURL();
         ss.attachmentsDir = TracInstantProperties.getAttachmentsDir();
         ss.cacheData = TracInstantProperties.getUseCache();
@@ -67,6 +87,8 @@ public class SiteSettings {
     }
 
     public void updatePreferences() {
+	TracInstantProperties.addUsername(getUsername());
+	TracInstantProperties.addPassword(getPassword());
         TracInstantProperties.addURL_MRU(getURL());
         TracInstantProperties.addAttachmentsDir_MRU(getAttachmentsDir());
         TracInstantProperties.setUseCache(isCacheData());

@@ -29,7 +29,10 @@ import net.bettyluke.util.AppProperties;
 
 public final class TracInstantProperties {
     
-    private TracInstantProperties() {}
+    private static final String TRAC_PWD = "TracPwd";
+	private static final String TRAC_USERNAME = "TracUser";
+
+	private TracInstantProperties() {}
     
     private static final AtomicReference<AppProperties> s_SharedInstance =
         new AtomicReference<AppProperties>();
@@ -42,6 +45,22 @@ public final class TracInstantProperties {
     
     public static AppProperties get() {
         return s_SharedInstance.get();
+    }
+
+    public static String getUsername() {
+	return get().getString(TRAC_USERNAME, "");
+    }
+
+    public static void addUsername(String username) {
+	get().putString(TRAC_USERNAME, username);
+    }
+
+    public static String getPassword() {
+	return get().getString(TRAC_PWD, "");
+    }
+
+    public static void addPassword(String password) {
+	get().putString(TRAC_PWD, password);
     }
 
     public static String getURL() {

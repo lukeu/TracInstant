@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -41,7 +42,6 @@ import java.util.concurrent.TimeoutException;
 import net.bettyluke.tracinstant.prefs.SiteSettings;
 import net.bettyluke.util.FileUtils;
 import net.bettyluke.util.XML10FilterReader;
-
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -239,10 +239,20 @@ public class SlurpTask extends TicketLoadTask {
             makeModifiedFilter();
     }
 
+    private InputStream authenticateAndGetStream(URL url) throws IOException {
+        URLConnection uc = url.openConnection();
+
+        String userpass = siteSettings.getUsername() + ":" + siteSettings.getPassword();
+        String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(
+                userpass.getBytes());
+        uc.setRequestProperty ("Authorization", basicAuth);
+        return uc.getInputStream();
+    }
+
     private int slurpXmlFormat(URL url) throws IOException, SAXException {
         InputStream in = null;
         try {
-            in = url.openStream();
+            in = authenticateAndGetStream(url);
             
             // Parse, filtering-out duff chars. Note one proposal of converting the
             // header to the more lenient XML 1.1 <?xml version="1.1"?> still failed
@@ -262,7 +272,7 @@ public class SlurpTask extends TicketLoadTask {
     private TicketProvider slurpTabDelimited(URL url) throws MalformedURLException, IOException, InterruptedException {
         InputStream in = null;
         try {
-            in = url.openStream();
+		in = authenticateAndGetStream(url);
             return TracTabTicketParser.parse(
                 new InputStreamReader(new BufferedInputStream(in), "UTF-8"));
         } finally {

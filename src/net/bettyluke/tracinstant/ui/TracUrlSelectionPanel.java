@@ -19,6 +19,8 @@ package net.bettyluke.tracinstant.ui;
 
 import java.awt.Dimension;
 import java.awt.Window;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.util.List;
 
 import javax.swing.Box;
@@ -29,6 +31,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -38,6 +42,8 @@ import net.bettyluke.tracinstant.prefs.TracInstantProperties;
 public class TracUrlSelectionPanel extends JPanel {
 
     private final JComboBox url = createCombo();
+    private final JTextField username = new JTextField();
+    private final JPasswordField password = new JPasswordField();
     private final JComboBox attachmentsDir = createCombo();
     private final JCheckBox fetchActiveTickets = new JCheckBox(
         "Fetch only active tickets");
@@ -67,6 +73,8 @@ public class TracUrlSelectionPanel extends JPanel {
         TracInstantProperties.get().putInt("MasterQuery", opt);
         
         SiteSettings result = new SiteSettings();
+        result.setUsername(username.getText().trim());
+        result.setPassword(new String(password.getPassword()));
         result.setURL(getURLText());
         result.setAttachmentsDir(getAttachmentsDirText());
         result.setCacheData(instantRestart.isSelected());
@@ -74,6 +82,17 @@ public class TracUrlSelectionPanel extends JPanel {
         return result;
     }
     
+    private void prepareForDisplay() {
+        if (url.getSelectedItem() == null || "".equals(url.getSelectedItem())) {
+            url.requestFocusInWindow();
+        } else if (username.getText().trim().isEmpty()) {
+            username.requestFocusInWindow();
+        } else {
+            password.requestFocusInWindow();
+            password.selectAll();
+        }
+    }
+
     public TracUrlSelectionPanel(SiteSettings settings) {
         
         fetchActiveTickets.setSelected(settings.isFetchOnlyActiveTickets());
@@ -81,6 +100,8 @@ public class TracUrlSelectionPanel extends JPanel {
         
         // Probably redundant in correct usage, but here just in case public 'set' 
         // methods aren't called...
+        username.setText(TracInstantProperties.getUsername());
+        password.setText(TracInstantProperties.getPassword());
         url.setSelectedItem(TracInstantProperties.getURL());
         attachmentsDir.setSelectedItem(TracInstantProperties.getAttachmentsDir());
 
@@ -90,6 +111,10 @@ public class TracUrlSelectionPanel extends JPanel {
         add(Box.createVerticalStrut(8));
         addRow("Trac url:", url);
         add(Box.createVerticalStrut(8));
+        addRow("Username:", username);
+        add(Box.createVerticalStrut(8));
+        addRow("Password:", password);
+        add(Box.createVerticalStrut(8));
         addRow("Additional attachments folder: (optional)", attachmentsDir);
         add(Box.createVerticalStrut(16));
         add(fetchActiveTickets);
@@ -97,9 +122,17 @@ public class TracUrlSelectionPanel extends JPanel {
         add(instantRestart);
         add(Box.createVerticalStrut(16));
 
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                url.requestFocusInWindow();
+        addHierarchyListener(new HierarchyListener() {
+            public void hierarchyChanged(HierarchyEvent e) {
+                if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0 && isShowing()) {
+
+                    // Hack: supersede JOptionPane's similar button focus placement.
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            prepareForDisplay();
+                        }
+                    });
+                }
             }
         });
     }
