@@ -85,7 +85,6 @@ import net.bettyluke.tracinstant.download.DownloadModel;
 import net.bettyluke.tracinstant.plugins.DummyPlugin;
 import net.bettyluke.tracinstant.plugins.TicketUpdater;
 import net.bettyluke.tracinstant.plugins.ToolPlugin;
-import net.bettyluke.tracinstant.prefs.SiteSettings;
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
 import net.bettyluke.tracinstant.ui.TableRowFilterComputer.ResultCallback;
 import net.bettyluke.util.DesktopUtils;
@@ -227,11 +226,7 @@ public class TracInstantFrame extends JFrame {
     private WindowAdapter m_OnActivationRefresher = new WindowAdapter() {
         @Override
         public void windowActivated(WindowEvent e) {
-            String problem = slurpAction.slurpIncremental(
-                SiteSettings.getInstance(), m_Table.getModel().getTickets());
-            if (problem != null) {
-                m_SlurpStatus.showWarning(problem, null);
-            }
+            slurpAction.slurpIncrimentalAndPromptOnFailure();
         }
     };
 

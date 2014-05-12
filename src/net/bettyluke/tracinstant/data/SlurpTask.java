@@ -24,7 +24,6 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -235,18 +234,12 @@ public class SlurpTask extends TicketLoadTask {
     private String makeQueryURL(String queryFormat) {
         return siteSettings.getURL() + '/' + queryFormat.replaceAll(
             STATUS_EXCLUSION_PLACEHOLDER,
-            siteSettings.isFetchOnlyActiveTickets() ? "&status=!closed" : "") + 
+            siteSettings.isFetchOnlyActiveTickets() ? "&status=!closed" : "") +
             makeModifiedFilter();
     }
 
     private InputStream authenticateAndGetStream(URL url) throws IOException {
-        URLConnection uc = url.openConnection();
-
-        String userpass = siteSettings.getUsername() + ":" + siteSettings.getPassword();
-        String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(
-                userpass.getBytes());
-        uc.setRequestProperty ("Authorization", basicAuth);
-        return uc.getInputStream();
+        return new AuthenticatedHttpRequester(siteSettings).getInputStream(url);
     }
 
     private int slurpXmlFormat(URL url) throws IOException, SAXException {
