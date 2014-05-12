@@ -228,7 +228,7 @@ public class TracInstantFrame extends JFrame {
         @Override
         public void windowActivated(WindowEvent e) {
             String problem = slurpAction.slurpIncremental(
-                SiteSettings.fromPreferences(), m_Table.getModel().getTickets());
+                SiteSettings.getInstance(), m_Table.getModel().getTickets());
             if (problem != null) {
                 m_SlurpStatus.showWarning(problem, null);
             }

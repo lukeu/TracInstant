@@ -58,7 +58,7 @@ public class SlurpAction extends AbstractAction {
     }
 
     public boolean promptForTracSettings() {
-        SiteSettings settings = SiteSettings.fromPreferences();
+        SiteSettings settings = SiteSettings.getInstance();
         TracUrlSelectionPanel panel = new TracUrlSelectionPanel(settings);
         panel.setURLHistory(TracInstantProperties.getURL_MRU());
         panel.setAttachmentsDirHistory(TracInstantProperties.getAttachmentsDir_MRU());
@@ -82,7 +82,7 @@ public class SlurpAction extends AbstractAction {
 
     public void performAction() {
         site.reset();
-        slurpAll(SiteSettings.fromPreferences());
+        slurpAll(SiteSettings.getInstance());
         site.loadUserData();
     }
 

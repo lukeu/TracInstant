@@ -27,12 +27,20 @@ public class SiteSettings {
     private boolean fetchOnlyActiveTickets = false;
     private boolean cacheData = true;
 
+    private static final SiteSettings INSTANCE = fromPreferences();
+
+    public static SiteSettings getInstance() {
+        return INSTANCE;
+    }
+
+    private SiteSettings() {}
+
     public void setUsername(String username) {
-	this.username = username;
+        this.username = username;
     }
 
     public void setPassword(String password) {
-	this.password = password;
+        this.password = password;
     }
 
     public void setURL(String urlText) {
@@ -52,11 +60,11 @@ public class SiteSettings {
     }
 
     public String getUsername() {
-	return username;
+        return username;
     }
 
     public String getPassword() {
-	return password;
+        return password;
     }
 
     public String getURL() {
@@ -75,10 +83,10 @@ public class SiteSettings {
         return cacheData;
     }
 
-    public static SiteSettings fromPreferences() {
+    private static SiteSettings fromPreferences() {
         SiteSettings ss = new SiteSettings();
         ss.username = TracInstantProperties.getUsername();
-        ss.password = TracInstantProperties.getPassword();
+        ss.password = "";
         ss.url = TracInstantProperties.getURL();
         ss.attachmentsDir = TracInstantProperties.getAttachmentsDir();
         ss.cacheData = TracInstantProperties.getUseCache();
@@ -88,7 +96,6 @@ public class SiteSettings {
 
     public void updatePreferences() {
 	TracInstantProperties.addUsername(getUsername());
-	TracInstantProperties.addPassword(getPassword());
         TracInstantProperties.addURL_MRU(getURL());
         TracInstantProperties.addAttachmentsDir_MRU(getAttachmentsDir());
         TracInstantProperties.setUseCache(isCacheData());

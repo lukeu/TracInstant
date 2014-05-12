@@ -107,7 +107,7 @@ public final class TracInstantApp {
             }
             return;
         }
-        frame.getSlurpAction().slurpIncremental(SiteSettings.fromPreferences(), tickets);
+        frame.getSlurpAction().slurpIncremental(SiteSettings.getInstance(), tickets);
         site.loadUserData();
     }
 
