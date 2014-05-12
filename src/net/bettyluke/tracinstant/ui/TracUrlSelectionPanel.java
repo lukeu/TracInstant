@@ -72,7 +72,7 @@ public class TracUrlSelectionPanel extends JPanel {
         // Record the selected button for text time.
         TracInstantProperties.get().putInt("MasterQuery", opt);
         
-        SiteSettings result = new SiteSettings();
+        SiteSettings result = SiteSettings.getInstance();
         result.setUsername(username.getText().trim());
         result.setPassword(new String(password.getPassword()));
         result.setURL(getURLText());
@@ -98,12 +98,10 @@ public class TracUrlSelectionPanel extends JPanel {
         fetchActiveTickets.setSelected(settings.isFetchOnlyActiveTickets());
         instantRestart.setSelected(settings.isCacheData());
         
-        // Probably redundant in correct usage, but here just in case public 'set' 
-        // methods aren't called...
-        username.setText(TracInstantProperties.getUsername());
-        password.setText(TracInstantProperties.getPassword());
-        url.setSelectedItem(TracInstantProperties.getURL());
-        attachmentsDir.setSelectedItem(TracInstantProperties.getAttachmentsDir());
+        username.setText(settings.getUsername());
+        password.setText(settings.getPassword());
+        url.setSelectedItem(settings.getURL());
+        attachmentsDir.setSelectedItem(settings.getAttachmentsDir());
 
         
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
