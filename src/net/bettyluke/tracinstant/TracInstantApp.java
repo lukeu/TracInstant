@@ -32,7 +32,6 @@ import net.bettyluke.tracinstant.data.TicketLoadTask;
 import net.bettyluke.tracinstant.plugins.AnnotationPanel;
 import net.bettyluke.tracinstant.plugins.FindInTextPanel;
 import net.bettyluke.tracinstant.plugins.HistogramPane;
-import net.bettyluke.tracinstant.prefs.SiteSettings;
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
 import net.bettyluke.tracinstant.ui.TracInstantFrame;
 
@@ -94,20 +93,17 @@ public final class TracInstantApp {
     }
 
     private void loadServerTickets(TracInstantFrame frame, final SiteData site) {
-        
         // HACK
         frame.getSlurpAction().setEnabled(true);
         
         Ticket[] tickets = site.getTableModel().getTickets();
         if (tickets.length == 0) {
-            if (frame.getSlurpAction().promptForTracSettings()) {
-                frame.getSlurpAction().performAction();
-            } else {
+            if (!frame.getSlurpAction().slurpAllAndPromptOnFailure()) {
                 frame.dispose();
             }
             return;
         }
-        frame.getSlurpAction().slurpIncremental(SiteSettings.getInstance(), tickets);
+        frame.getSlurpAction().slurpIncrimentalAndPromptOnFailure();
         site.loadUserData();
     }
 

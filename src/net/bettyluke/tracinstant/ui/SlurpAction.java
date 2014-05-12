@@ -18,10 +18,13 @@
 package net.bettyluke.tracinstant.ui;
 
 import java.awt.event.ActionEvent;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.concurrent.Future;
 
 import javax.swing.AbstractAction;
 
+import net.bettyluke.tracinstant.data.AuthenticatedHttpRequester;
 import net.bettyluke.tracinstant.data.SiteData;
 import net.bettyluke.tracinstant.data.SlurpTask;
 import net.bettyluke.tracinstant.data.Ticket;
@@ -57,7 +60,41 @@ public class SlurpAction extends AbstractAction {
         this.site = site;
     }
 
-    public boolean promptForTracSettings() {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (promptForTracSettings()) {
+            slurpAndPromptOnFailure(false);
+        }
+    }
+
+    public boolean slurpAllAndPromptOnFailure() {
+        return slurpAndPromptOnFailure(false);
+    }
+
+    public boolean slurpIncrimentalAndPromptOnFailure() {
+        return slurpAndPromptOnFailure(true);
+    }
+
+    private boolean slurpAndPromptOnFailure(boolean incremental) {
+        try {
+            SiteSettings siteSettings = SiteSettings.getInstance();
+            checkCanAuthenticate(siteSettings);
+            if (incremental) {
+                slurpIncremental(siteSettings, site.getTableModel().getTickets());
+            } else {
+                performSlurpAllAction();
+            }
+        } catch (FailedToAuthenticateException ex) {
+            if (promptForTracSettings()) {
+                slurpAndPromptOnFailure(incremental);
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean promptForTracSettings() {
         SiteSettings settings = SiteSettings.getInstance();
         TracUrlSelectionPanel panel = new TracUrlSelectionPanel(settings);
         panel.setURLHistory(TracInstantProperties.getURL_MRU());
@@ -72,27 +109,32 @@ public class SlurpAction extends AbstractAction {
         // Dialog cancelled
         return false;
     }
-    
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (promptForTracSettings()) {
-            performAction();
-        }
-    }
 
-    public void performAction() {
+    private void performSlurpAllAction() {
         site.reset();
         slurpAll(SiteSettings.getInstance());
         site.loadUserData();
     }
 
-    public void slurpAll(SiteSettings settings) {
+    private void checkCanAuthenticate(SiteSettings siteSettings) throws FailedToAuthenticateException {
+        AuthenticatedHttpRequester requester = new AuthenticatedHttpRequester(siteSettings);
+        try {
+            URL url = new URL(siteSettings.getURL());
+            if (!requester.canAuthenticate(url)) {
+                throw new FailedToAuthenticateException();
+            }
+        } catch (MalformedURLException e) {
+            throw new FailedToAuthenticateException();
+        }
+    }
+
+    private void slurpAll(SiteSettings settings) {
         cancel();
         slurp(settings, null);
     }
     
     /** @return an error message, or null for "All OK" */
-    public String slurpIncremental(SiteSettings settings, Ticket[] tickets) {
+    private String slurpIncremental(SiteSettings settings, Ticket[] tickets) {
         if (task != null) {
             
             // TODO: Should we instead queue up a single incremental update(?)
