@@ -265,7 +265,7 @@ public class SlurpTask extends TicketLoadTask {
     private TicketProvider slurpTabDelimited(URL url) throws MalformedURLException, IOException, InterruptedException {
         InputStream in = null;
         try {
-		in = authenticateAndGetStream(url);
+            in = authenticateAndGetStream(url);
             return TracTabTicketParser.parse(
                 new InputStreamReader(new BufferedInputStream(in), "UTF-8"));
         } finally {

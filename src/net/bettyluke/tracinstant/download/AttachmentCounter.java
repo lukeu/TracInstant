@@ -36,9 +36,11 @@ import java.util.regex.Pattern;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
+import net.bettyluke.tracinstant.data.AuthenticatedHttpRequester;
 import net.bettyluke.tracinstant.data.Ticket;
 import net.bettyluke.tracinstant.download.Downloadable.FileDownloadable;
 import net.bettyluke.tracinstant.download.Downloadable.TracDownloadable;
+import net.bettyluke.tracinstant.prefs.SiteSettings;
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
 import net.bettyluke.util.FileUtils;
 
@@ -252,7 +254,7 @@ public class AttachmentCounter {
             InputStream in = null;
             BufferedReader reader = null;
             try {
-                in = url.openStream();
+                in = new AuthenticatedHttpRequester(SiteSettings.getInstance()).getInputStream(url);
                 reader = new BufferedReader(new InputStreamReader(in));
                 String line;
                 while ((line = reader.readLine()) != null) {

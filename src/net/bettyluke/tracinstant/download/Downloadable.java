@@ -26,6 +26,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 
+import net.bettyluke.tracinstant.data.AuthenticatedHttpRequester;
+import net.bettyluke.tracinstant.prefs.SiteSettings;
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
 
 public abstract class Downloadable {
@@ -98,8 +100,8 @@ public abstract class Downloadable {
         @Override
         public InputStream createInputStream() throws IOException {
             try {
-                return new URL(TracInstantProperties.getURL() +
-                    m_URL + "?format=raw").openStream();
+                URL url = new URL(TracInstantProperties.getURL() + m_URL + "?format=raw");
+                return new AuthenticatedHttpRequester(SiteSettings.getInstance()).getInputStream(url);
             } catch (MalformedURLException ex) {
                 throw new IOException(ex.getMessage(), ex);
             }
