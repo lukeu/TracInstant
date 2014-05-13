@@ -97,14 +97,20 @@ public final class TracInstantApp {
         frame.getSlurpAction().setEnabled(true);
         
         Ticket[] tickets = site.getTableModel().getTickets();
-        if (tickets.length == 0) {
-            if (!frame.getSlurpAction().slurpAllAndPromptOnFailure()) {
-                frame.dispose();
-            }
-            return;
+        boolean completed = false;
+        if (tickets.length > 0) {
+            completed = frame.getSlurpAction().slurpIncrimentalAndPromptOnFailure();
+            site.loadUserData();
+        } else {
+            completed = frame.getSlurpAction().slurpAllAndPromptOnFailure();
         }
-        frame.getSlurpAction().slurpIncrimentalAndPromptOnFailure();
-        site.loadUserData();
+        shutDownIfCancelled(frame, !completed);
+    }
+
+    private void shutDownIfCancelled(TracInstantFrame frame, boolean cancelled) {
+        if (cancelled) {
+            System.exit(0);
+        }
     }
 
     private void saveApplicationState() {

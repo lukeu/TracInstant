@@ -223,12 +223,21 @@ public class TracInstantFrame extends JFrame {
         }
     }
 
-    private WindowAdapter m_OnActivationRefresher = new WindowAdapter() {
+    private WindowAdapter m_OnActivationRefresher = new UpdateTicketsOnWindowActivated();
+
+    private class UpdateTicketsOnWindowActivated extends WindowAdapter {
+
+        private boolean cancelled = false;
+
         @Override
         public void windowActivated(WindowEvent e) {
-            slurpAction.slurpIncrimentalAndPromptOnFailure();
+            if (cancelled) {
+                cancelled = false;
+                return;
+            }
+            cancelled = !slurpAction.slurpIncrimentalAndPromptOnFailure();
         }
-    };
+    }
 
     private final TicketTable m_Table;
     private final HtmlDescriptionPane m_DescriptionPane;
