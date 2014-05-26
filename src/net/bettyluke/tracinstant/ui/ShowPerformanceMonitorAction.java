@@ -18,6 +18,7 @@
 package net.bettyluke.tracinstant.ui;
 
 import java.awt.Dialog.ModalityType;
+import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -46,7 +47,7 @@ public class ShowPerformanceMonitorAction extends AbstractAction {
         JDialog dialog = new JDialog(dialogParent, "Performance monitor", ModalityType.MODELESS);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.add(panel);
-        dialog.pack();
+        dialog.setSize(new Dimension(640, 480));
         dialog.setLocationRelativeTo(dialogParent);
         dialog.setVisible(true);
     }

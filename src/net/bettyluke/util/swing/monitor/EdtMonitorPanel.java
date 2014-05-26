@@ -61,8 +61,8 @@ public class EdtMonitorPanel extends JPanel {
 
     private static JSplitPane createSplit(JComponent first, JComponent second) {
         JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, first, second);
-        split.setPreferredSize(new Dimension(600, 460));
-        split.setResizeWeight(1.0);
+        split.setDividerLocation(120);
+        split.setResizeWeight(0.2);
         return split;
     }
 
