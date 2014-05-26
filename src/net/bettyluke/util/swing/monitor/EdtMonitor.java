@@ -83,15 +83,20 @@ public final class EdtMonitor {
         private void recordElapsed(long elapsed) {
             currentStats.recordElapsedNanos(elapsed);
             PeriodStatistics previous = collectionModel.getPreviousBin();
-            if (previous != null) {
-                if (previous.incompleteNanos != 0L) {
-                    previous.completeFinalEvent(elapsed);
-                }
+            if (previous != null && previous.incompleteNanos != 0L) {
+                previous.completeFinalEvent(elapsed);
             }
         }
 
+        /**
+         * Overridden to make public
+         * <p>
+         * {@inheritDoc}
+         *
+         * @throws EmptyStackException if no previous push was made on this <code>EventQueue</code>
+         */
         @Override
-        public void pop() throws EmptyStackException {
+        public void pop() {
             super.pop();
         }
     }
@@ -143,7 +148,8 @@ public final class EdtMonitor {
                 if (!isProcessingEvent()) {
                     return;
                 }
-                if (System.nanoTime() > eventStartNanoTime + PeriodStatistics.MEDIUM_THRESHOLD_NANOS) {
+                if (System.nanoTime() >
+                        eventStartNanoTime + PeriodStatistics.MEDIUM_THRESHOLD_NANOS) {
                     PeriodStatistics bin = currentStats;
                     if (bin.stack == null) {
                         bin.stack = eventDispatchThread.getStackTrace();

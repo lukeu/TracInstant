@@ -28,8 +28,8 @@ import javax.swing.table.TableCellRenderer;
 
 class PercentageTimeTableRenderer extends JLabel implements TableCellRenderer {
 
-    private static int DULL = 150;
-    private static int BRIGHT = 220;
+    private static final int DULL = 150;
+    private static final int BRIGHT = 220;
     private static final Color SHORT_COLOR = new Color(0, DULL, 0);
     private static final Color MEDIUM_COLOR  = new Color(DULL, DULL, 0);
     private static final Color LONG_COLOR = new Color(DULL, 0, 0);
@@ -78,7 +78,9 @@ class PercentageTimeTableRenderer extends JLabel implements TableCellRenderer {
 
     private int fill(Graphics g, int y, long nanos) {
         int y2 = y - (int) (nanos * y / bin.reportingIntervalNanos);
-        if (y2 < 1) y2 = 1;
+        if (y2 < 1) {
+            y2 = 1;
+        }
         g.fillRect(0, y2, getWidth(), y-y2);
         return y2;
     }

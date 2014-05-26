@@ -35,7 +35,6 @@ public class EdtMonitorPanel extends JPanel {
     private final EdtMonitorModel model;
     private final PerformancePlot plot;
     private final JTextArea text;
-    private final JSplitPane split;
 
     public EdtMonitorPanel(EdtMonitorModel model) {
         super(new BorderLayout());
@@ -44,7 +43,7 @@ public class EdtMonitorPanel extends JPanel {
         plot = adjustSizes(new PerformancePlot(model));
         text = createText();
         JScrollPane scroll = adjustSizes(new JScrollPane(text));
-        split = createSplit(plot, scroll);
+        JSplitPane split = createSplit(plot, scroll);
 
         // TODO: add speed/pause controls
 

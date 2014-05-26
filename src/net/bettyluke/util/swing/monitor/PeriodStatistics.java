@@ -18,6 +18,7 @@
 package net.bettyluke.util.swing.monitor;
 
 import java.util.EnumMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
@@ -75,7 +76,7 @@ class PeriodStatistics {
         return map;
     }
 
-    private static EnumMap<Category, CategoryStats> copy(EnumMap<Category, CategoryStats> other) {
+    private static EnumMap<Category, CategoryStats> copy(Map<Category, CategoryStats> other) {
         EnumMap<Category, CategoryStats> map = new EnumMap<Category, CategoryStats>(Category.class);
         for (Entry<Category, CategoryStats> entry : other.entrySet()) {
             map.put(entry.getKey(), new CategoryStats(entry.getValue()));
@@ -161,7 +162,7 @@ class PeriodStatistics {
 
     @Override
     public String toString() {
-        String result = String.format(
+        StringBuilder result = new StringBuilder(String.format(
                 "Busy for %d / %d ms (%.1f%%), Longest: %d ms\n" +
                 "  %5d short:  %5d ms\n" +
                 "  %5d medium: %5d ms\n" +
@@ -175,12 +176,13 @@ class PeriodStatistics {
                 statsMap.get(Category.MEDIUM).count,
                 TimeUnit.NANOSECONDS.toMillis(statsMap.get(Category.MEDIUM).nanos),
                 statsMap.get(Category.LONG).count,
-                TimeUnit.NANOSECONDS.toMillis(statsMap.get(Category.LONG).nanos));
+                TimeUnit.NANOSECONDS.toMillis(statsMap.get(Category.LONG).nanos)));
         if (stack != null) {
-            result += "\nAn example call-stack during the busy period:\n";
-            for (int i=0; i < stack.length; i++)
-                result += ("\tat " + stack[i] + "\n");
+            result.append("\nAn example call-stack during the busy period:\n");
+            for (int i=0; i < stack.length; i++) {
+                result.append("\tat " + stack[i] + "\n");
+            }
         }
-        return result;
+        return result.toString();
     }
 }
