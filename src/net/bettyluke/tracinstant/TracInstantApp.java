@@ -20,6 +20,8 @@ package net.bettyluke.tracinstant;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -32,6 +34,7 @@ import net.bettyluke.tracinstant.data.TicketLoadTask;
 import net.bettyluke.tracinstant.plugins.AnnotationPanel;
 import net.bettyluke.tracinstant.plugins.FindInTextPanel;
 import net.bettyluke.tracinstant.plugins.HistogramPane;
+import net.bettyluke.tracinstant.prefs.SiteSettings;
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
 import net.bettyluke.tracinstant.ui.TracInstantFrame;
 
@@ -96,6 +99,8 @@ public final class TracInstantApp {
         // HACK
         frame.getSlurpAction().setEnabled(true);
         
+        Authenticator.setDefault(SITE_AUTHENTICATOR);
+
         Ticket[] tickets = site.getTableModel().getTickets();
         boolean completed = false;
         if (tickets.length > 0) {
@@ -106,6 +111,14 @@ public final class TracInstantApp {
         }
         shutDownIfCancelled(frame, !completed);
     }
+
+    private static final Authenticator SITE_AUTHENTICATOR = new Authenticator() {
+        @Override
+        protected PasswordAuthentication getPasswordAuthentication() {
+            SiteSettings ss = SiteSettings.getInstance();
+            return new PasswordAuthentication(ss.getUsername(), ss.getPassword().toCharArray());
+        }
+    };
 
     private void shutDownIfCancelled(TracInstantFrame frame, boolean cancelled) {
         if (cancelled) {
