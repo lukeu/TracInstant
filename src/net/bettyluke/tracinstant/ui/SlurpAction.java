@@ -18,13 +18,12 @@
 package net.bettyluke.tracinstant.ui;
 
 import java.awt.event.ActionEvent;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import javax.swing.AbstractAction;
 
-import net.bettyluke.tracinstant.data.AuthenticatedHttpRequester;
 import net.bettyluke.tracinstant.data.SiteData;
 import net.bettyluke.tracinstant.data.SlurpTask;
 import net.bettyluke.tracinstant.data.Ticket;
@@ -48,9 +47,27 @@ public class SlurpAction extends AbstractAction {
     /** The slurp task, held so it can be cancelled. */
     private SlurpTask task = null;
     
-    private final Runnable taskClearer = new Runnable() {
+    private final Runnable onTaskEnded = new Runnable() {
         public void run() {
+            SlurpTask t = task;
             task = null;
+            try {
+                t.get();
+            } catch (CancellationException e) {
+                // Ignore
+            } catch (InterruptedException e) {
+                // Ignore
+            } catch (ExecutionException e) {
+                promptToRetry(t);
+            }
+        }
+
+        private void promptToRetry(SlurpTask t) {
+            if (t.isIncremental()) {
+                promptAndSlurpIncremental();
+            } else {
+                promptAndSlurpAll();
+            }
         }
     };
 
@@ -62,39 +79,55 @@ public class SlurpAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        promptAndSlurpAll();
+    }
+
+    /** @return Whether slurping was initiated. */
+    public boolean promptAndSlurpAll() {
         if (promptForTracSettings()) {
-            slurpAndPromptOnFailure(false);
+            site.reset();
+            slurpAll();
+            site.loadUserData();
+            return true;
         }
+        return false;
     }
 
-    public boolean slurpAllAndPromptOnFailure() {
-        return slurpAndPromptOnFailure(false);
-    }
-
-    public boolean slurpIncrimentalAndPromptOnFailure() {
-        return slurpAndPromptOnFailure(true);
-    }
-
-    private boolean slurpAndPromptOnFailure(boolean incremental) {
-        try {
-            SiteSettings siteSettings = SiteSettings.getInstance();
-            checkCanAuthenticate(siteSettings);
-            if (incremental) {
-                slurpIncremental(siteSettings, site.getTableModel().getTickets());
-            } else {
-                performSlurpAllAction();
-            }
-        } catch (FailedToAuthenticateException ex) {
-            if (promptForTracSettings()) {
-                slurpAndPromptOnFailure(incremental);
-            } else {
-                return false;
-            }
+    /** @return Whether slurping was initiated. */
+    public boolean promptAndSlurpIncremental() {
+        if (promptForTracSettings()) {
+            slurpIncremental();
+            site.loadUserData();
+            return true;
         }
-        return true;
+        return false;
     }
 
-    private boolean promptForTracSettings() {
+    /** @return Whether slurping was initiated. */
+    public boolean promptIfNecessaryAndSlurpIncremental() {
+        if (!isNecessaryToPrompt() || promptForTracSettings()) {
+            slurpIncremental();
+            site.loadUserData();
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isNecessaryToPrompt() {
+        if (task != null) {
+            return false;
+        }
+        SiteSettings settings = SiteSettings.getInstance();
+        if (settings.getURL().isEmpty()) {
+            return true;
+        }
+        if (!settings.getUsername().isEmpty() && settings.getPassword().isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean promptForTracSettings() {
         SiteSettings settings = SiteSettings.getInstance();
         TracUrlSelectionPanel panel = new TracUrlSelectionPanel(settings);
         panel.setURLHistory(TracInstantProperties.getURL_MRU());
@@ -110,45 +143,28 @@ public class SlurpAction extends AbstractAction {
         return false;
     }
 
-    private void performSlurpAllAction() {
-        site.reset();
-        slurpAll(SiteSettings.getInstance());
-        site.loadUserData();
-    }
-
-    private void checkCanAuthenticate(SiteSettings siteSettings) throws FailedToAuthenticateException {
-        AuthenticatedHttpRequester requester = new AuthenticatedHttpRequester(siteSettings);
-        try {
-            URL url = new URL(siteSettings.getURL());
-            if (!requester.canAuthenticate(url)) {
-                throw new FailedToAuthenticateException();
-            }
-        } catch (MalformedURLException e) {
-            throw new FailedToAuthenticateException();
-        }
-    }
-
-    private void slurpAll(SiteSettings settings) {
+    private void slurpAll() {
         cancel();
-        slurp(settings, null);
+        slurp(null);
     }
     
-    /** @return an error message, or null for "All OK" */
-    private String slurpIncremental(SiteSettings settings, Ticket[] tickets) {
+    private void slurpIncremental() {
         if (task != null) {
             
             // TODO: Should we instead queue up a single incremental update(?)
             System.out.println("Incremental update aborted due to running tasks");
-            return null;
+            return;
         }
         if (site.getDateFormat() == null) {
-            return "Incremental update disabled: unknown server DateFormat";
+            System.err.println("Incremental update disabled: unknown server DateFormat");
+            slurpAll();
+            return;
         }
+        Ticket[] tickets = site.getTableModel().getTickets();
         String lastChanged = SlurpTask.getMostRecentlyModifiedTime(site, tickets);
         System.out.println("Last changed ticket:" + lastChanged);
         
-        slurp(settings, lastChanged);
-        return null;
+        slurp(lastChanged);
     }
 
     /**
@@ -161,7 +177,8 @@ public class SlurpAction extends AbstractAction {
         }
     }
 
-    private void slurp(SiteSettings settings, String lastChanged) {
+    private void slurp(String lastChanged) {
+        SiteSettings settings = SiteSettings.getInstance();
 
         // Fork the attachment folder scan...
         Future<?> attachmentScanFuture = 
@@ -169,6 +186,6 @@ public class SlurpAction extends AbstractAction {
                 settings.getAttachmentsDir());
         task = new SlurpTask(site, settings, lastChanged, attachmentScanFuture);
         frame.monitorTask(task);
-        task.executeWithNotification(taskClearer);
+        task.executeWithNotification(onTaskEnded);
     }
 }

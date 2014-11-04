@@ -226,16 +226,9 @@ public class TracInstantFrame extends JFrame {
     private WindowAdapter m_OnActivationRefresher = new UpdateTicketsOnWindowActivated();
 
     private class UpdateTicketsOnWindowActivated extends WindowAdapter {
-
-        private boolean cancelled = false;
-
         @Override
         public void windowActivated(WindowEvent e) {
-            if (cancelled) {
-                cancelled = false;
-                return;
-            }
-            cancelled = !slurpAction.slurpIncrimentalAndPromptOnFailure();
+            slurpAction.promptIfNecessaryAndSlurpIncremental();
         }
     }
 
