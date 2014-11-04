@@ -27,6 +27,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
+import net.bettyluke.tracinstant.ui.SlurpAction;
+
 import net.bettyluke.tracinstant.data.CachedTicketLoadTask;
 import net.bettyluke.tracinstant.data.SiteData;
 import net.bettyluke.tracinstant.data.Ticket;
@@ -97,19 +99,18 @@ public final class TracInstantApp {
 
     private void loadServerTickets(TracInstantFrame frame, final SiteData site) {
         // HACK
-        frame.getSlurpAction().setEnabled(true);
+        SlurpAction slurper = frame.getSlurpAction();
+        slurper.setEnabled(true);
         
         Authenticator.setDefault(SITE_AUTHENTICATOR);
-
         Ticket[] tickets = site.getTableModel().getTickets();
-        boolean completed = false;
-        if (tickets.length > 0) {
-            completed = frame.getSlurpAction().slurpIncrimentalAndPromptOnFailure();
-            site.loadUserData();
+        if (tickets.length == 0) {
+            if (!slurper.promptAndSlurpAll()) {
+                frame.dispose();
+            }
         } else {
-            completed = frame.getSlurpAction().slurpAllAndPromptOnFailure();
+            slurper.promptIfNecessaryAndSlurpIncremental();
         }
-        shutDownIfCancelled(frame, !completed);
     }
 
     private static final Authenticator SITE_AUTHENTICATOR = new Authenticator() {
@@ -119,12 +120,6 @@ public final class TracInstantApp {
             return new PasswordAuthentication(ss.getUsername(), ss.getPassword().toCharArray());
         }
     };
-
-    private void shutDownIfCancelled(TracInstantFrame frame, boolean cancelled) {
-        if (cancelled) {
-            System.exit(0);
-        }
-    }
 
     private void saveApplicationState() {
         try {

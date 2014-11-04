@@ -109,11 +109,11 @@ public class TracUrlSelectionPanel extends JPanel {
         add(Box.createVerticalStrut(8));
         addRow("Trac url:", url);
         add(Box.createVerticalStrut(8));
-        addRow("Username:", username);
+        addRow("Username (if required):", username);
         add(Box.createVerticalStrut(8));
         addRow("Password:", password);
         add(Box.createVerticalStrut(8));
-        addRow("Additional attachments folder: (optional)", attachmentsDir);
+        addRow("Additional attachments directory (optional):", attachmentsDir);
         add(Box.createVerticalStrut(16));
         add(fetchActiveTickets);
         add(Box.createVerticalStrut(8));

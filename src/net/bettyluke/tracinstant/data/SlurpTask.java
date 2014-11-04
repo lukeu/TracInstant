@@ -84,6 +84,8 @@ public class SlurpTask extends TicketLoadTask {
      */
     DateFormat urlDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
+    private Exception fault = null;
+
     public SlurpTask(SiteData site, SiteSettings siteSettings, String since, Future<?> attachmentScanFuture) {
         super(site.getTableModel());
         this.site = site;
@@ -92,8 +94,26 @@ public class SlurpTask extends TicketLoadTask {
         this.attachmentScanFuture = attachmentScanFuture;
     }
     
+    public boolean isIncremental() {
+        return sinceDateTime != null;
+    }
+
+    public Exception getFault() {
+        return fault;
+    }
+
     @Override
-    protected Void doInBackground() throws IOException, SAXException, InterruptedException {
+    protected Void doInBackground() throws Exception {
+        try {
+            doInternal();
+        } catch (Exception e) {
+            fault = e;
+            throw e;
+        }
+        return null;
+    }
+
+    protected Void doInternal() throws IOException, SAXException, InterruptedException {
         
         // Slurp timestamps prior to all other data.
         TicketProvider changetimeProvider = slurpChangetimes();
@@ -159,13 +179,13 @@ public class SlurpTask extends TicketLoadTask {
         return false;
     }
 
-    private TicketProvider slurpChangetimes() throws MalformedURLException, IOException, InterruptedException {
+    private TicketProvider slurpChangetimes() throws IOException, InterruptedException {
         URL url = new URL(makeQueryURL(MODIFIED_TIME_QUERY));
         publish(new Update("Checking ticket timestamps...", "Querying: " + url));
         return slurpTabDelimited(url);
     }
     
-    private int slurpFields(String query) throws MalformedURLException, IOException, InterruptedException {
+    private int slurpFields(String query) throws IOException, InterruptedException {
         URL url = new URL(makeQueryURL(query));
         publish(new Update("Downloading ticket fields...", "Querying: " + url));
         TicketProvider tabData = slurpTabDelimited(url);
@@ -239,7 +259,7 @@ public class SlurpTask extends TicketLoadTask {
     }
 
     private InputStream authenticateAndGetStream(URL url) throws IOException {
-        return new AuthenticatedHttpRequester(siteSettings).getInputStream(url);
+        return AuthenticatedHttpRequester.getInputStream(siteSettings, url);
     }
 
     private int slurpXmlFormat(URL url) throws IOException, SAXException {

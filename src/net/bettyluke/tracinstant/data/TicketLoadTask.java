@@ -109,13 +109,13 @@ public abstract class TicketLoadTask extends SwingWorker<Void, Update> {
     protected void done() {
         super.done();
 
+        /* A final null status message is used to indicate completion. */
+        process(Collections.<Update>singletonList(new Update()));
+
         if (doneCallback != null) {
             doneCallback.run();
             doneCallback = null;
         }
-
-        /* A final null status message is used to indicate completion. */
-        process(Collections.<Update>singletonList(new Update()));
     }
 
     public void executeWithNotification(Runnable runnable) {

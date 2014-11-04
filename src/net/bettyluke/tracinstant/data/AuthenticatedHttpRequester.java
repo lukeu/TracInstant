@@ -7,28 +7,14 @@ import java.net.URLConnection;
 
 import net.bettyluke.tracinstant.prefs.SiteSettings;
 
-public class AuthenticatedHttpRequester {
+public final class AuthenticatedHttpRequester {
+    private AuthenticatedHttpRequester() {}
 
-    private final SiteSettings siteSettings;
-
-    public AuthenticatedHttpRequester(SiteSettings siteSettings) {
-        this.siteSettings = siteSettings;
-    }
-
-    public boolean canAuthenticate(URL url) {
-        try {
-            getInputStream(url).close();
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
-    public InputStream getInputStream(URL url) throws IOException {
+    public static InputStream getInputStream(SiteSettings settings, URL url) throws IOException {
         URLConnection uc = url.openConnection();
 
-        if (!siteSettings.getUsername().isEmpty()) {
-            String userpass = siteSettings.getUsername() + ":" + siteSettings.getPassword();
+        if (!settings.getUsername().isEmpty()) {
+            String userpass = settings.getUsername() + ":" + settings.getPassword();
             String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(
                     userpass.getBytes());
             uc.setRequestProperty ("Authorization", basicAuth);
