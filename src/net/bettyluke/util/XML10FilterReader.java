@@ -4,8 +4,6 @@ import java.io.FilterReader;
 import java.io.IOException;
 import java.io.Reader;
 
-import com.sun.org.apache.xml.internal.utils.XMLChar;
-
 /**
  * {@link FilterReader} to skip invalid xml version 1.0 characters. Valid Unicode chars
  * for xml version 1.0 according to http://www.w3.org/TR/xml are #x9 | #xA | #xD |
@@ -56,7 +54,7 @@ public class XML10FilterReader extends FilterReader {
         int pos = off - 1;
 
         for (int readPos = off; readPos < off + read; readPos++) {
-            if (XMLChar.isValid(cbuf[readPos])) {
+            if (isValidXmlChar(cbuf[readPos])) {
                 pos++;
             } else {
                 continue;
@@ -74,4 +72,9 @@ public class XML10FilterReader extends FilterReader {
         return pos - off + 1;
     }
 
+    private boolean isValidXmlChar(int c) {
+        return c >= 0x0001 && c <= 0xD7FF ||
+                c >= 0xE000 && c <= 0xFFFD ||
+                c >= 0x10000 && c <= 0x10FFFF;
+    }
 }
