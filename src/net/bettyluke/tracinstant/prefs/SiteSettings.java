@@ -1,20 +1,20 @@
 /*
  * Copyright 2011 Luke Usherwood.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 2.1 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant.prefs;
 
 
@@ -24,6 +24,7 @@ public class SiteSettings {
     private String password = "";
     private String url = "";
     private String attachmentsDir = "";
+    private boolean rememberPassword = false;
     private boolean fetchOnlyActiveTickets = false;
     private boolean cacheData = true;
 
@@ -43,6 +44,10 @@ public class SiteSettings {
         this.password = password;
     }
 
+    public void setRememberPassword(boolean remember) {
+        this.rememberPassword = remember;
+    }
+
     public void setURL(String urlText) {
         url = urlText;
     }
@@ -54,7 +59,7 @@ public class SiteSettings {
     public void setFetchOnlyActiveTickets(boolean b) {
         fetchOnlyActiveTickets = b;
     }
-    
+
     public void setCacheData(boolean b) {
         cacheData = b;
     }
@@ -67,18 +72,22 @@ public class SiteSettings {
         return password;
     }
 
+    public boolean isRememberPassword() {
+        return this.rememberPassword;
+    }
+
     public String getURL() {
         return url;
     }
-    
+
     public String getAttachmentsDir() {
         return attachmentsDir;
     }
-    
+
     public boolean isFetchOnlyActiveTickets() {
         return fetchOnlyActiveTickets;
     }
-    
+
     public boolean isCacheData() {
         return cacheData;
     }
@@ -86,7 +95,8 @@ public class SiteSettings {
     private static SiteSettings fromPreferences() {
         SiteSettings ss = new SiteSettings();
         ss.username = TracInstantProperties.getUsername();
-        ss.password = "";
+        ss.password = TracInstantProperties.getPassword();
+        ss.rememberPassword = TracInstantProperties.getRememberPassword();
         ss.url = TracInstantProperties.getURL();
         ss.attachmentsDir = TracInstantProperties.getAttachmentsDir();
         ss.cacheData = TracInstantProperties.getUseCache();
@@ -95,10 +105,14 @@ public class SiteSettings {
     }
 
     public void updatePreferences() {
-	TracInstantProperties.addUsername(getUsername());
+	    TracInstantProperties.addUsername(getUsername());
         TracInstantProperties.addURL_MRU(getURL());
         TracInstantProperties.addAttachmentsDir_MRU(getAttachmentsDir());
         TracInstantProperties.setUseCache(isCacheData());
         TracInstantProperties.setActiveTicketsOnly(isFetchOnlyActiveTickets());
+        TracInstantProperties.addRememberPassword(isRememberPassword());
+        if (isRememberPassword()) {
+            TracInstantProperties.addPassword(getPassword());
+        }
     }
 }

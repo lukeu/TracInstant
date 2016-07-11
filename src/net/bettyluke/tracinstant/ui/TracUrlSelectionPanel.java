@@ -1,20 +1,20 @@
 /*
  * Copyright 2011 Luke Usherwood.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 2.1 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant.ui;
 
 import java.awt.Dimension;
@@ -49,14 +49,15 @@ public class TracUrlSelectionPanel extends JPanel {
         "Fetch only active tickets");
     private final JCheckBox instantRestart = new JCheckBox(
         "Instant restart (store downloaded data locally)");
-    
+    private final JCheckBox rememberPassword = new JCheckBox("Remember password: ");
+
     private static JComboBox createCombo() {
        JComboBox combo = new JComboBox();
        combo.setPreferredSize(new Dimension(400, combo.getPreferredSize().height));
        combo.setEditable(true);
        return combo;
     }
-    
+
     public SiteSettings showAsDialog(Window parentWindow) {
         int opt = JOptionPane.showConfirmDialog(
             parentWindow,
@@ -64,24 +65,25 @@ public class TracUrlSelectionPanel extends JPanel {
             "Trac server settings",
             JOptionPane.OK_CANCEL_OPTION,
             JOptionPane.QUESTION_MESSAGE);
-        
+
         if (opt != JOptionPane.OK_OPTION) {
             return null;
         }
 
         // Record the selected button for text time.
         TracInstantProperties.get().putInt("MasterQuery", opt);
-        
+
         SiteSettings result = SiteSettings.getInstance();
         result.setUsername(username.getText().trim());
         result.setPassword(new String(password.getPassword()));
+        result.setRememberPassword(rememberPassword.isSelected());
         result.setURL(getURLText());
         result.setAttachmentsDir(getAttachmentsDirText());
         result.setCacheData(instantRestart.isSelected());
         result.setFetchOnlyActiveTickets(fetchActiveTickets.isSelected());
         return result;
     }
-    
+
     private void prepareForDisplay() {
         if (url.getSelectedItem() == null || "".equals(url.getSelectedItem())) {
             url.requestFocusInWindow();
@@ -94,24 +96,26 @@ public class TracUrlSelectionPanel extends JPanel {
     }
 
     public TracUrlSelectionPanel(SiteSettings settings) {
-        
+
         fetchActiveTickets.setSelected(settings.isFetchOnlyActiveTickets());
         instantRestart.setSelected(settings.isCacheData());
-        
+
         username.setText(settings.getUsername());
         password.setText(settings.getPassword());
+        rememberPassword.setSelected(settings.isRememberPassword());
         url.setSelectedItem(settings.getURL());
         attachmentsDir.setSelectedItem(settings.getAttachmentsDir());
 
-        
+
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        
+
         add(Box.createVerticalStrut(8));
         addRow("Trac url:", url);
         add(Box.createVerticalStrut(8));
         addRow("Username (if required):", username);
         add(Box.createVerticalStrut(8));
         addRow("Password:", password);
+        add(rememberPassword);
         add(Box.createVerticalStrut(8));
         addRow("Additional attachments directory (optional):", attachmentsDir);
         add(Box.createVerticalStrut(16));
@@ -140,16 +144,16 @@ public class TracUrlSelectionPanel extends JPanel {
         label.setLabelFor(component);
         label.setHorizontalAlignment(SwingConstants.LEFT);
         label.setOpaque(true);
-        
+
         // Fix alignment inconsistencies
         label.setAlignmentX(0f);
         component.setAlignmentX(0f);
-        
+
         add(label);
         add(Box.createHorizontalStrut(2));
         add(component);
     }
-    
+
     private String getURLText() {
         Object item = url.getSelectedItem();
         String text = (item == null) ? "" : ((String) item).trim();
@@ -158,30 +162,30 @@ public class TracUrlSelectionPanel extends JPanel {
         }
         return text;
     }
-    
+
     public void setURLHistory(List<String> items) {
         url.removeAllItems();
         for (String item : items) {
             url.addItem(item);
         }
     }
-    
+
     private String getAttachmentsDirText() {
         Object text = attachmentsDir.getSelectedItem();
         return (text == null) ? "" : ((String) text).trim();
     }
-    
+
     public void setAttachmentsDirHistory(List<String> items) {
         attachmentsDir.removeAllItems();
         for (String item : items) {
             attachmentsDir.addItem(item);
         }
     }
-    
+
     public void setInstantResart(boolean b) {
         instantRestart.setSelected(b);
     }
-    
+
     public void setFetchOnlyActiveTickets(boolean b) {
         fetchActiveTickets.setSelected(b);
     }
