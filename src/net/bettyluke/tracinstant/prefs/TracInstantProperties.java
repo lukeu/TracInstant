@@ -1,16 +1,16 @@
 /*
  * Copyright 2011 Luke Usherwood.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 2.1 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -27,12 +27,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import net.bettyluke.util.AppProperties;
 
 public final class TracInstantProperties {
+    private TracInstantProperties() {}
 
     private static final String TRAC_PWD = "TracPwd";
     private static final String TRAC_USERNAME = "TracUser";
     private static final int MAX_MRU = 8;
-
-    private TracInstantProperties() {}
+    private static final String TRAC_REMEMBER_PASSWORD = "TracRmbrPwd";
 
     private static final AtomicReference<AppProperties> s_SharedInstance = new AtomicReference<>();
 
@@ -51,6 +51,14 @@ public final class TracInstantProperties {
 
     public static void addUsername(String username) {
         get().putString(TRAC_USERNAME, username);
+    }
+
+    public static void addRememberPassword(boolean remember) {
+        get().putBoolean(TRAC_REMEMBER_PASSWORD, remember);
+    }
+
+    public static boolean getRememberPassword() {
+        return get().getBoolean(TRAC_REMEMBER_PASSWORD, false);
     }
 
     public static String getPassword() {
@@ -154,7 +162,7 @@ public final class TracInstantProperties {
     }
 
     private static final class ParseFailed extends Exception {}
-    
+
     private static Map<String, String> parseKeyValuePairs(String str) throws ParseFailed {
         if (str == null || str.isEmpty()) {
             throw new ParseFailed();

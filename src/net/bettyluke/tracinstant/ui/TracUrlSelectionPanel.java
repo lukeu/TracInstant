@@ -1,16 +1,16 @@
 /*
  * Copyright 2011 Luke Usherwood.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 2.1 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -47,6 +47,7 @@ public class TracUrlSelectionPanel extends JPanel {
     private final JCheckBox fetchActiveTickets = new JCheckBox("Fetch only active tickets");
     private final JCheckBox instantRestart = new JCheckBox(
             "Instant restart (store downloaded data locally)");
+    private final JCheckBox rememberPassword = new JCheckBox("Remember password: ");
 
     private static JComboBox<String> createCombo() {
         JComboBox<String> combo = new JComboBox<>();
@@ -62,7 +63,7 @@ public class TracUrlSelectionPanel extends JPanel {
             "Trac server settings",
             JOptionPane.OK_CANCEL_OPTION,
             JOptionPane.QUESTION_MESSAGE);
-        
+
         if (opt != JOptionPane.OK_OPTION) {
             return null;
         }
@@ -73,6 +74,7 @@ public class TracUrlSelectionPanel extends JPanel {
         SiteSettings result = SiteSettings.getInstance();
         result.setUsername(username.getText().trim());
         result.setPassword(new String(password.getPassword()));
+        result.setRememberPassword(rememberPassword.isSelected());
         result.setURL(getURLText());
         result.setAttachmentsDir(getAttachmentsDirText());
         result.setCacheData(instantRestart.isSelected());
@@ -98,6 +100,7 @@ public class TracUrlSelectionPanel extends JPanel {
 
         username.setText(settings.getUsername());
         password.setText(settings.getPassword());
+        rememberPassword.setSelected(settings.isRememberPassword());
         url.setSelectedItem(settings.getURL());
         attachmentsDir.setSelectedItem(settings.getAttachmentsDir());
 
@@ -109,6 +112,7 @@ public class TracUrlSelectionPanel extends JPanel {
         addRow("Username (if required):", username);
         add(Box.createVerticalStrut(8));
         addRow("Password:", password);
+        add(rememberPassword);
         add(Box.createVerticalStrut(8));
         addRow("Additional attachments directory (optional):", attachmentsDir);
         add(Box.createVerticalStrut(16));
