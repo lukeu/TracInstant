@@ -18,11 +18,19 @@
 package net.bettyluke.tracinstant.prefs;
 
 import java.awt.Rectangle;
+import java.nio.charset.Charset;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 
 import net.bettyluke.util.AppProperties;
 
@@ -33,6 +41,17 @@ public final class TracInstantProperties {
     private static final String TRAC_USERNAME = "TracUser";
     private static final int MAX_MRU = 8;
     private static final String TRAC_REMEMBER_PASSWORD = "TracRmbrPwd";
+
+    private static final Cipher CIPHER; static {
+        Cipher c;
+        try {
+            c = Cipher.getInstance("AES"); // Required to be valid in the Java platform
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            e.printStackTrace();
+            c = null;
+        }
+        CIPHER = c;
+    }
 
     private static final AtomicReference<AppProperties> s_SharedInstance = new AtomicReference<>();
 
@@ -62,11 +81,47 @@ public final class TracInstantProperties {
     }
 
     public static String getPassword() {
-        return get().getString(TRAC_PWD, "");
+        String password = get().getString(TRAC_PWD, "");
+        password = transform(password, Cipher.DECRYPT_MODE);
+        return password;
     }
 
     public static void addPassword(String password) {
+        password = transform(password, Cipher.ENCRYPT_MODE);
         get().putString(TRAC_PWD, password);
+    }
+
+    private static String transform(String str, int mode) {
+        if (str.isEmpty()) {
+            return str;
+        }
+        Charset utf8 = Charset.forName("UTF-8");
+
+        // 16 chars needed.
+        try {
+            Key key = new SecretKeySpec(
+                    (TRAC_REMEMBER_PASSWORD+TRAC_REMEMBER_PASSWORD).substring(0, 16)
+                    .getBytes("UTF-8"), "AES");
+            CIPHER.init(mode, key);
+            if (mode == Cipher.ENCRYPT_MODE) {
+                CIPHER.init(Cipher.ENCRYPT_MODE, key);
+                byte[] encryptedVal = CIPHER.doFinal(str.getBytes(utf8));
+                byte[] encodedValue = Base64.getEncoder().encode(encryptedVal);
+                return new String(encodedValue, utf8);
+            } else {
+                CIPHER.init(Cipher.DECRYPT_MODE, key);
+                byte[] decodedValue = Base64.getDecoder().decode(str.getBytes(utf8));
+                byte[] decryptedVal = CIPHER.doFinal(decodedValue);
+                return new String(decryptedVal, utf8);
+            }
+
+        // NB: this broad exception handling also catches 'IllegalArgumentException'
+        // which is a RuntimeException that could occur from Base64 coding if the encryption
+        // key ever changes. Must not let that out to crash the caller code.
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
     }
 
     public static String getURL() {

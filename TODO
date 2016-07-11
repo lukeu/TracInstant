@@ -23,8 +23,9 @@ Search combo:
  - Consider GlazedLists? (Can it integrates with all the customisations?)
 
 Authentication
+ - Disable the 'save password' checkbox (or display a warning) if other users can access the file
+   (Looks like would need to implement POSIX and ACL separately. See `Files.getFileAttributeView`.)
  - Stop 'Connect' dialog showing when network connection interrupted. (Very annoying.)
- - Offer to save site password
 
 Download panel:
  - Search "additional attachments" folders recursively
