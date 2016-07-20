@@ -15,8 +15,11 @@ public final class AuthenticatedHttpRequester {
 
         if (!settings.getUsername().isEmpty()) {
             String userpass = settings.getUsername() + ":" + settings.getPassword();
-            String basicAuth = "Basic " + javax.xml.bind.DatatypeConverter.printBase64Binary(
-                    userpass.getBytes());
+            String basicAuth = "Basic " +
+                    javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes());
+
+// Note: change to the following when moving to Java 8, as the above will stop working in Java 9.
+//                    Base64.getEncoder().encodeToString(userpass.getBytes());
             uc.setRequestProperty ("Authorization", basicAuth);
         }
 
