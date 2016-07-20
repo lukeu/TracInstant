@@ -151,7 +151,7 @@ public class TracUrlSelectionPanel extends JPanel {
     private String getURLText() {
         Object item = url.getSelectedItem();
         String text = (item == null) ? "" : ((String) item).trim();
-        if (!text.toLowerCase().startsWith("http:")) {
+        if (!text.toLowerCase().startsWith("http")) {
             return "http://" + text;
         }
         return text;

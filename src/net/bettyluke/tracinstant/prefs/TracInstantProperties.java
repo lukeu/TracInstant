@@ -68,7 +68,7 @@ public final class TracInstantProperties {
     }
 
     public static List<String> getURL_MRU() {
-        return getStringList("TracURL_MRU", "[http://trac.edgewall.org]");
+        return getStringList("TracURL_MRU", "[https://trac.edgewall.org]");
     }
 
     /** Whether the option to cache data was selected. */
