@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant.data;
 
 import java.io.IOException;
@@ -28,7 +28,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
-
 
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
@@ -44,10 +43,9 @@ public class TracXmlTicketParser {
 
     private static final Pattern TICKET_URL_NUMBER_FINDER =
         Pattern.compile(".*\\/(([0-9])+)\\/?$");
-    
     /** Never constructed */
     private TracXmlTicketParser() {}
-    
+
     public static TracXmlResult parse(InputSource src) throws IOException, SAXException {
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -73,7 +71,7 @@ public class TracXmlTicketParser {
                 "Expected the XML root to be " +
                 "'rss', but found: " + rssTagName);
         }
-        
+
         for (Element child : DOMUtils.iterateChildElements(rss)) {
             if (child.getTagName() == "channel") {
                 return readChannel(child);
@@ -85,7 +83,7 @@ public class TracXmlTicketParser {
     private static TracXmlResult readChannel(Element channel) throws IOException {
         TracXmlResult data = new TracXmlResult();
         for (Element child : DOMUtils.iterateChildElements(channel)) {
-            
+
             if ("item".equals(child.getTagName())) {
                 Ticket ticket = readItem(child);
                 if (ticket != null) {
@@ -102,14 +100,14 @@ public class TracXmlTicketParser {
         }
         return data;
     }
-    
+
     private static Ticket readItem(Element item) throws IOException {
         int number = extractTicketNumber(item);
         Ticket ticket = new Ticket(number);
         for (Element child : DOMUtils.iterateChildElements(item)) {
             String tag = child.getTagName();
             if (TICKET_FIELDS.contains(tag)) {
-                
+
                 // For now, we just set the Ticket's field name to the XML tag
                 ticket.putField(tag, new String(child.getTextContent()));
             }
@@ -118,7 +116,7 @@ public class TracXmlTicketParser {
     }
 
     private static int extractTicketNumber(Element item) throws IOException {
-        
+
         // Could equally use the Title.
         Element linkElement = DOMUtils.findFirstChildElementNamed(item, "link");
         if (linkElement == null) {

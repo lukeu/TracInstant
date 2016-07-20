@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant.ui;
 
 import java.awt.Dimension;
@@ -45,18 +45,17 @@ public class TracUrlSelectionPanel extends JPanel {
     private final JTextField username = new JTextField();
     private final JPasswordField password = new JPasswordField();
     private final JComboBox attachmentsDir = createCombo();
-    private final JCheckBox fetchActiveTickets = new JCheckBox(
-        "Fetch only active tickets");
+    private final JCheckBox fetchActiveTickets = new JCheckBox("Fetch only active tickets");
     private final JCheckBox instantRestart = new JCheckBox(
-        "Instant restart (store downloaded data locally)");
-    
+            "Instant restart (store downloaded data locally)");
+
     private static JComboBox createCombo() {
-       JComboBox combo = new JComboBox();
-       combo.setPreferredSize(new Dimension(400, combo.getPreferredSize().height));
-       combo.setEditable(true);
-       return combo;
+        JComboBox combo = new JComboBox();
+        combo.setPreferredSize(new Dimension(400, combo.getPreferredSize().height));
+        combo.setEditable(true);
+        return combo;
     }
-    
+
     public SiteSettings showAsDialog(Window parentWindow) {
         int opt = JOptionPane.showConfirmDialog(
             parentWindow,
@@ -71,7 +70,7 @@ public class TracUrlSelectionPanel extends JPanel {
 
         // Record the selected button for text time.
         TracInstantProperties.get().putInt("MasterQuery", opt);
-        
+
         SiteSettings result = SiteSettings.getInstance();
         result.setUsername(username.getText().trim());
         result.setPassword(new String(password.getPassword()));
@@ -81,7 +80,7 @@ public class TracUrlSelectionPanel extends JPanel {
         result.setFetchOnlyActiveTickets(fetchActiveTickets.isSelected());
         return result;
     }
-    
+
     private void prepareForDisplay() {
         if (url.getSelectedItem() == null || "".equals(url.getSelectedItem())) {
             url.requestFocusInWindow();
@@ -94,18 +93,17 @@ public class TracUrlSelectionPanel extends JPanel {
     }
 
     public TracUrlSelectionPanel(SiteSettings settings) {
-        
+
         fetchActiveTickets.setSelected(settings.isFetchOnlyActiveTickets());
         instantRestart.setSelected(settings.isCacheData());
-        
+
         username.setText(settings.getUsername());
         password.setText(settings.getPassword());
         url.setSelectedItem(settings.getURL());
         attachmentsDir.setSelectedItem(settings.getAttachmentsDir());
 
-        
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        
+
         add(Box.createVerticalStrut(8));
         addRow("Trac url:", url);
         add(Box.createVerticalStrut(8));
@@ -140,16 +138,16 @@ public class TracUrlSelectionPanel extends JPanel {
         label.setLabelFor(component);
         label.setHorizontalAlignment(SwingConstants.LEFT);
         label.setOpaque(true);
-        
+
         // Fix alignment inconsistencies
         label.setAlignmentX(0f);
         component.setAlignmentX(0f);
-        
+
         add(label);
         add(Box.createHorizontalStrut(2));
         add(component);
     }
-    
+
     private String getURLText() {
         Object item = url.getSelectedItem();
         String text = (item == null) ? "" : ((String) item).trim();
@@ -158,30 +156,30 @@ public class TracUrlSelectionPanel extends JPanel {
         }
         return text;
     }
-    
+
     public void setURLHistory(List<String> items) {
         url.removeAllItems();
         for (String item : items) {
             url.addItem(item);
         }
     }
-    
+
     private String getAttachmentsDirText() {
         Object text = attachmentsDir.getSelectedItem();
         return (text == null) ? "" : ((String) text).trim();
     }
-    
+
     public void setAttachmentsDirHistory(List<String> items) {
         attachmentsDir.removeAllItems();
         for (String item : items) {
             attachmentsDir.addItem(item);
         }
     }
-    
+
     public void setInstantResart(boolean b) {
         instantRestart.setSelected(b);
     }
-    
+
     public void setFetchOnlyActiveTickets(boolean b) {
         fetchActiveTickets.setSelected(b);
     }

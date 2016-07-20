@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant.ui;
 
 import java.awt.Color;
@@ -43,21 +43,21 @@ import javax.swing.plaf.basic.BasicInternalFrameUI;
 import javax.swing.text.JTextComponent;
 
 public class CalloutOverlay {
-    
+
     private static final Color SHADOW_COLOR = new Color(0, 0, 0, 30);
-    
+
     public static class TrianglePanel extends JPanel {
-        
+
         final int[] xPoints;
         final int[] yPoints;
-        
+
         public TrianglePanel(int size) {
             setOpaque(false);
             xPoints = new int[] { size, size * 2, 0 };
             yPoints = new int[] { 0, size, size };
-            setPreferredSize(new Dimension(size*2, size));
+            setPreferredSize(new Dimension(size * 2, size));
         }
-        
+
         @Override
         public void paintComponent(Graphics g) {
             Color oldColor = g.getColor();
@@ -71,10 +71,10 @@ public class CalloutOverlay {
 
         public void locatePointAt(int x, int y) {
             int size = getPreferredSize().height;
-            setBounds(x - size, y, size*2, size);
+            setBounds(x - size, y, size * 2, size);
         }
     }
-    
+
     /**
      * A poor-man's drop-shadow. TODO: Add blur.
      */
@@ -85,6 +85,7 @@ public class CalloutOverlay {
                 public void componentMoved(ComponentEvent e) {
                     setNewBounds(e.getComponent().getBounds());
                 }
+
                 @Override
                 public void componentResized(ComponentEvent e) {
                     setNewBounds(e.getComponent().getBounds());
@@ -120,6 +121,7 @@ public class CalloutOverlay {
         public void mouseClicked(MouseEvent e) {
             redispatchToCallout(e);
         }
+
         public void mousePressed(MouseEvent e) {
             if (!redispatchToCallout(e)) {
                 if (dismissListener != null) {
@@ -129,18 +131,23 @@ public class CalloutOverlay {
                 e.consume();
             }
         }
+
         public void mouseReleased(MouseEvent e) {
             redispatchToCallout(e);
         }
+
         public void mouseEntered(MouseEvent e) {
             redispatchToCallout(e);
         }
+
         public void mouseExited(MouseEvent e) {
             redispatchToCallout(e);
         }
+
         public void mouseDragged(MouseEvent e) {
             redispatchToCallout(e);
         }
+
         public void mouseMoved(MouseEvent e) {
             redispatchToCallout(e);
         }
@@ -152,7 +159,7 @@ public class CalloutOverlay {
             }
             return false;
         }
-        
+
         private void redispatchMouseEvent(MouseEvent e) {
             Point glassPanePoint = e.getPoint();
             Point layeredPanePoint = SwingUtilities.convertPoint(glassPane,
@@ -173,7 +180,7 @@ public class CalloutOverlay {
                         e.getClickCount(), e.isPopupTrigger()));
                     
                 }
-                
+
                 // HACK! Since this code can't correctly generate mouse-entered and
                 // mouse-exit events for Components placed in the glass pane, we
                 // take over the job of changing to a Text cursor, very crudely.
@@ -182,7 +189,7 @@ public class CalloutOverlay {
             }
         }
     }
-    
+
     private final JLayeredPane layeredPane;
 
     private final TrianglePanel triangle;
@@ -190,9 +197,9 @@ public class CalloutOverlay {
     private final JPanel shad;
     private final Component glassPane;
     private final MyMouseListener mouseListener = new MyMouseListener();
-    
+
     private ActionListener dismissListener;
-    
+
     public CalloutOverlay(JFrame frame, JComponent content) {
         iFrame = new UntitledFrame(content);
         shad = new ShadowPanel(iFrame);
@@ -208,7 +215,7 @@ public class CalloutOverlay {
         iFrame.setLocation(
             x - iFrame.getWidth() + triangle.getWidth(),
             y + triangle.getHeight() - 1);
-        
+
         layeredPane.add(triangle, Integer.valueOf(JLayeredPane.POPUP_LAYER + 1));
         layeredPane.add(iFrame, Integer.valueOf(JLayeredPane.POPUP_LAYER));
         layeredPane.add(shad, Integer.valueOf(JLayeredPane.POPUP_LAYER - 1));
@@ -217,11 +224,11 @@ public class CalloutOverlay {
         glassPane.addMouseMotionListener(mouseListener);
         iFrame.show();
     }
-    
+
     public Component getContent() {
         return iFrame.getContentPane().getComponent(0);
     }
-    
+
     public void dismiss() {
         layeredPane.remove(triangle);
         layeredPane.remove(iFrame);
@@ -230,7 +237,7 @@ public class CalloutOverlay {
         glassPane.removeMouseMotionListener(mouseListener);
         glassPane.setVisible(false);
         iFrame.dispose();
-        
+
         // TODO: is there a way to ensure the cursor updates appropriately
         // to the component under the glass, before the mouse moves?
     }

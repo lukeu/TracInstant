@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant.data;
 
 import java.util.ArrayList;
@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 
 public class TracTabResult implements TicketProvider {
 
@@ -52,7 +51,7 @@ public class TracTabResult implements TicketProvider {
             values = Arrays.copyOf(values, m_Headings.length);
             Arrays.fill(values, values.length, m_Headings.length, "");
         }
-        
+
         try {
             Ticket ticket = new Ticket(Integer.parseInt(values[0]));
             for (int i = 1; i < len; i++) {

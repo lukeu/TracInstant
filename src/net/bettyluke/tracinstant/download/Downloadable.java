@@ -31,45 +31,48 @@ import net.bettyluke.tracinstant.prefs.SiteSettings;
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
 
 public abstract class Downloadable {
-    
+
     private final int m_TicketNumber;
-    
+
     public abstract String getDescription();
+
     public abstract InputStream createInputStream() throws IOException;
+
     public abstract String getFileName();
-    
+
     public abstract long size();
+
     protected Downloadable(int ticketNumber) {
         m_TicketNumber = ticketNumber;
     }
-    
+
     public final int getTicketNumber() {
         return m_TicketNumber;
     }
-    
+
     public static final class FileDownloadable extends Downloadable {
-        
+
         private final File m_File;
-        
+
         public FileDownloadable(int ticketNumber, File f) {
             super(ticketNumber);
             m_File = f;
         }
-    
+
         public File getFile() {
             return m_File;
         }
-        
+
         @Override
         public String getDescription() {
             return m_File.getAbsolutePath();
         }
-        
+
         @Override
         public InputStream createInputStream() throws IOException {
             return new FileInputStream(m_File);
         }
-    
+
         @Override
         public String getFileName() {
             return m_File.getName();
@@ -85,7 +88,7 @@ public abstract class Downloadable {
 
         private final String m_URL;
         private final long m_Length;
-        
+
         public TracDownloadable(int ticketNumber, String url, long length) {
             super(ticketNumber);
             m_URL = url;
@@ -119,7 +122,7 @@ public abstract class Downloadable {
                 return name;
             }
         }
-        
+
         @Override
         public long size() {
             return m_Length;

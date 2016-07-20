@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-                
+
 package net.bettyluke.tracinstant.ui;
 
 import java.awt.Dimension;
@@ -29,17 +29,17 @@ public class FrameStatePersister extends ComponentAdapter {
     private final String maximisedKey;
     private final String boundsKey;
     private final Frame frame;
-    
+
     public FrameStatePersister(String basePropertyKey, Frame frame) {
         this.maximisedKey = basePropertyKey + ".Maximised";
         this.boundsKey = basePropertyKey + ".Bounds";
         this.frame = frame;
     }
-    
+
     public void startListening() {
         frame.addComponentListener(this);
     }
-    
+
     public void stopListening() {
         frame.removeComponentListener(this);
     }
@@ -49,11 +49,10 @@ public class FrameStatePersister extends ComponentAdapter {
             Rectangle bounds = frame.getBounds();
             TracInstantProperties.get().putString(boundsKey, bounds.toString());
         }
-        boolean max =
-            (frame.getExtendedState() & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH;
+        boolean max = (frame.getExtendedState() & Frame.MAXIMIZED_BOTH) == Frame.MAXIMIZED_BOTH;
         TracInstantProperties.get().putBoolean(maximisedKey, max);
     }
-    
+
     public void restoreFrameState() {
         Rectangle bounds = TracInstantProperties.getRectangle(boundsKey, null);
         if (bounds == null) {
@@ -68,7 +67,7 @@ public class FrameStatePersister extends ComponentAdapter {
     }
 
     // ---------------------------------------------------------------------------------
-    
+
     @Override
     public void componentResized(ComponentEvent e) {
         assert frame == e.getComponent();

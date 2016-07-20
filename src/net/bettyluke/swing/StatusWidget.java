@@ -33,9 +33,11 @@ public class StatusWidget {
 
     public class HalfSizeIcon implements Icon {
         private Icon original;
+
         public HalfSizeIcon(Icon icon) {
             original = icon;
         }
+
         public void paintIcon(Component c, Graphics g, int x, int y) {
             Graphics2D gfx = (Graphics2D) g.create();
             gfx.scale(0.5, 0.5);
@@ -57,20 +59,20 @@ public class StatusWidget {
         }
     }
 
-    public static final Icon BUSY_IMAGE =
-        new ImageIcon(StatusWidget.class.getResource("res/animated-wait.gif"));
-    
+    public static final Icon BUSY_IMAGE = new ImageIcon(
+            StatusWidget.class.getResource("res/animated-wait.gif"));
+
     private JLabel label = new JLabel();
-    
+
     public StatusWidget() {
         label.setVisible(false);
         label.setHorizontalTextPosition(SwingConstants.LEFT);
     }
-    
+
     public JComponent getComponent() {
         return label;
     }
-    
+
     public void hide() {
         label.setToolTipText(null);
         label.setIcon(null);
@@ -90,7 +92,7 @@ public class StatusWidget {
         label.setIcon(new HalfSizeIcon(UIManager.getIcon("OptionPane.errorIcon")));
         label.setVisible(true);
     }
-    
+
     public void showWarning(String labelText, String toolTipText) {
         label.setText(labelText);
         label.setToolTipText(toolTipText);

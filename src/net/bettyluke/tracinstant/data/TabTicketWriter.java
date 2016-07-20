@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant.data;
 
 import java.io.BufferedWriter;
@@ -26,17 +26,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-
 import au.com.bytecode.opencsv.CSVWriter;
 
 public class TabTicketWriter {
-    
+
     private PrintWriter m_Writer;
     private boolean m_ContentOnLine = false;
 
     public static void write(Writer writer, Set<String> fieldsSet, List<Ticket> tickets) {
-        
-        List<String> fields = new ArrayList<String>(); 
+
+        List<String> fields = new ArrayList<String>();
         fields.add("id");
         fields.addAll(fieldsSet);
 
@@ -44,7 +43,7 @@ public class TabTicketWriter {
         csvWriter.writeNext(fields.toArray(new String[fields.size()]));
         for (Ticket subTicket : tickets) {
             String[] values = new String[fields.size()];
-            
+
             // TODO: Should the table model just expose the field via '#'?
             // (It's internally stored as an int *mainly* so that JTable renders
             // it right-aligned! But publically, it should be a searchable String field.)
@@ -61,7 +60,7 @@ public class TabTicketWriter {
             e.printStackTrace();
         }
     }
-    
+
     public TabTicketWriter(Writer writer) {
         m_Writer = new PrintWriter(new BufferedWriter(writer));
     }
@@ -92,7 +91,7 @@ public class TabTicketWriter {
             m_ContentOnLine = false;
         }
     }
-    
+
     public void close() {
         m_Writer.close();
     }

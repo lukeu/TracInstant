@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant.ui;
 
 import java.awt.BorderLayout;
@@ -90,11 +90,10 @@ import net.bettyluke.tracinstant.ui.TableRowFilterComputer.ResultCallback;
 import net.bettyluke.util.DesktopUtils;
 import net.bettyluke.util.FileUtils;
 
-
 public class TracInstantFrame extends JFrame {
 
     private static final String FRAME_STATE_PROPERTY = "MainFrame";
-    
+
     private static final Icon BUSY_IMAGE = StatusWidget.BUSY_IMAGE;
     
     private static final InputStream TIP =
@@ -115,7 +114,7 @@ public class TracInstantFrame extends JFrame {
                 return;
             }
             removeWindowListener(m_OnActivationRefresher);
-            
+
             Update update = (Update) evt.getNewValue();
             if (update.ticketProvider != null) {
                 mergeTickets(update.ticketProvider.getTickets());
@@ -127,7 +126,7 @@ public class TracInstantFrame extends JFrame {
             } else {
                 task.removePropertyChangeListener(this);
                 addWindowListener(m_OnActivationRefresher);
-                
+
                 // Retrieve any exceptions. (There is no "result" to collect, since
                 // all data is processed on-the-fly via the publishing mechanism.)
                 try {
@@ -144,7 +143,7 @@ public class TracInstantFrame extends JFrame {
                     m_SlurpStatus.showError("Download failed", e.getMessage());
                     e.printStackTrace();
                 }
-                
+
                 System.out.println("Slurp complete.");
             }
             updateRowFilter();
@@ -176,9 +175,10 @@ public class TracInstantFrame extends JFrame {
             super("Download...");
             this.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_D);
         }
+
         @Override
         public void actionPerformed(ActionEvent e) {
-            
+
             if (downloadDialog == null) {
                 if (m_Downloads.getBugsFolder() == null) {
                     m_Downloads.setBugsFolder(
@@ -197,13 +197,14 @@ public class TracInstantFrame extends JFrame {
                 updateViews();
             }
         });
+
         public TicketSelectionListener() {
             m_Timer.setRepeats(false);
         }
-    
+
         @Override
         public void valueChanged(ListSelectionEvent e) {
-            
+
             /*-
              * IGNORE an "adjusting" event while typing in the Search field:
              *   - this will always be zero rows, prior to re-sorting/re-filtering,
@@ -214,7 +215,7 @@ public class TracInstantFrame extends JFrame {
                 return;
             }
             m_RowFilterJustUpdated = false;
-            
+
             // Add a slight delay for multiple rows. It could be due to mouse-drag,
             // SHIFT+arrow or updated row-filter. In any case, this is a simple trick
             // to reduce the frequency of description updates in it is expensive.
@@ -235,19 +236,19 @@ public class TracInstantFrame extends JFrame {
     private final TicketTable m_Table;
     private final HtmlDescriptionPane m_DescriptionPane;
     private final JSplitPane m_ToolWindowSplit;
-    
+
     private final SearchCombo m_FilterCombo;
     private final JComboBox m_PluginCombo;
     private final JLabel m_Matches;
     private final StatusWidget m_SlurpStatus = new StatusWidget();
-    
+
     private final JLabel m_DownloadsNumber;
     private final Action m_DownloadAction = new DownloadAction();
-    
+
     private final Box m_StatusPanel;
-    
+
     private SearchTerm[] m_SearchTerms = new SearchTerm[0];
-    
+
     /** One of those horrible flags you wish didn't need to exist. Just see the code. */
     private boolean m_RowFilterJustUpdated = false;
 
@@ -256,14 +257,13 @@ public class TracInstantFrame extends JFrame {
     private final TableRowFilterComputer m_FilterComputor = new TableRowFilterComputer();
 
     /**
-     * The set of selected tickets taken from the table and currently in display (by
-     * the description panel, downloads util, and any other views plugins). These
-     * displays may update a short time after the table itself has updated, for UI
-     * feedback responsiveness.
+     * The set of selected tickets taken from the table and currently in display (by the description
+     * panel, downloads util, and any other views plugins). These displays may update a short time
+     * after the table itself has updated, for UI feedback responsiveness.
      * <p>
-     * It is intended mainly to short-circuit evaluation (don't update if no work
-     * is needed); it is particularly desirable to stop download-info requests
-     * hitting network resources unnecessarily.
+     * It is intended mainly to short-circuit evaluation (don't update if no work is needed); it is
+     * particularly desirable to stop download-info requests hitting network resources
+     * unnecessarily.
      */
     private Ticket[] m_DisplayedTickets = new Ticket[0];
 
@@ -301,20 +301,20 @@ public class TracInstantFrame extends JFrame {
         slurpAction = new SlurpAction(this, site);
         m_FilterCombo = createFilterBox();
         JLabel filterLabel = createLabel("Filter: ", 'F', m_FilterCombo);
-        
+
         m_Table = createTicketTable(site.getTableModel(), m_FilterCombo);
-  
+
         m_DescriptionPane = new HtmlDescriptionPane(m_Table.getModel());
-        
+
         ToolTipManager.sharedInstance().registerComponent(m_DescriptionPane);
         ToolTipManager.sharedInstance().setDismissDelay(60000);
-        
+
         m_Matches = new JLabel();
         m_Matches.setPreferredSize(new Dimension(110, m_Matches.getPreferredSize().height));
-        
+
         m_PluginCombo = createPluginCombo();
         JLabel pluginLabel = createLabel("Tools:", 'T', m_PluginCombo);
-        
+
         Box toolPanel = createToolPanel(filterLabel, m_FilterCombo, m_Matches,
                 createNewTicketButton(), pluginLabel, m_PluginCombo);
 
@@ -335,7 +335,7 @@ public class TracInstantFrame extends JFrame {
         cp.setLayout(new BorderLayout());
         cp.add(toolPanel, BorderLayout.NORTH);
         cp.add(m_MainArea);
-        
+
         FrameStatePersister wsp = new FrameStatePersister(FRAME_STATE_PROPERTY, this);
         wsp.restoreFrameState();
         wsp.startListening();
@@ -370,20 +370,23 @@ public class TracInstantFrame extends JFrame {
 
     private SearchCombo createFilterBox() {
         final SearchCombo result = new SearchCombo();
-        
+
         addFilterAccelerator(result);
-        
+
         JTextComponent editorComp = result.getEditorComponent();
         editorComp.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
                 updateRowFilterLater();
             }
+
             public void removeUpdate(DocumentEvent e) {
                 updateRowFilterLater();
             }
+
             public void changedUpdate(DocumentEvent e) {
                 updateRowFilterLater();
             }
+
             private void updateRowFilterLater() {
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
@@ -392,7 +395,7 @@ public class TracInstantFrame extends JFrame {
                 });
             }
         });
-        
+
         editorComp.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -405,7 +408,7 @@ public class TracInstantFrame extends JFrame {
                 }
             }
         });
-        
+
         try {
             result.setToolTipText(FileUtils.copyInputStreamToString(TIP, "ISO-8859-1"));
         } catch (IOException ex) {
@@ -414,15 +417,14 @@ public class TracInstantFrame extends JFrame {
 
         // Probably only suitable for some layout managers. Works with current: "Box".
         result.setMinimumSize(new Dimension(8, 8));
-        
+
         return result;
     }
 
     private void addFilterAccelerator(final SearchCombo result) {
         JComponent ancestor = (JComponent) getContentPane();
         ancestor.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
-            KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK),
-            "Select Filter");
+                KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK), "Select Filter");
         ancestor.getActionMap().put("Select Filter", new AbstractAction("Select Filter") {
             public void actionPerformed(ActionEvent e) {
                 result.requestFocusInWindow();
@@ -495,7 +497,7 @@ public class TracInstantFrame extends JFrame {
             @Override
             public void keyPressed(KeyEvent evt) {
                 if (!KeyEvent.getKeyModifiersText(evt.getModifiers()).isEmpty()) {
-                    return ;
+                    return;
                 }
                 switch (evt.getKeyCode()) {
                 case KeyEvent.VK_ENTER:
@@ -518,7 +520,7 @@ public class TracInstantFrame extends JFrame {
     private DownloadModel createDownloadModel() {
         DownloadModel result = new DownloadModel();
         result.addChangeListener(new ChangeListener() {
-            
+
             @Override
             public void stateChanged(ChangeEvent e) {
                 m_DownloadsNumber.setIcon(m_Downloads.isBusy() ? BUSY_IMAGE : null);
@@ -552,10 +554,10 @@ public class TracInstantFrame extends JFrame {
         box.add(Box.createHorizontalStrut(GAP));
         box.add(new JLabel("Attachments: "));
         box.add(downloadNumber);
-        
+
         // Extra space here
         box.add(Box.createHorizontalStrut(GAP));
-        
+
         for (Component comp : comps) {
             box.add(Box.createHorizontalStrut(GAP));
             box.add(comp);
@@ -586,7 +588,7 @@ public class TracInstantFrame extends JFrame {
 
     private static JSplitPane createSplit(JComponent top, JComponent bottom) {
         JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, top, bottom);
-        
+
         // This is crap. Want the split bar to stay __where it is put__ even when
         // resized to a postage stamp size and back. Oh well, best we can do easily.
         split.setResizeWeight(0.3);
@@ -602,7 +604,7 @@ public class TracInstantFrame extends JFrame {
             ex.printStackTrace();
         }
     }
-    
+
     protected void removeSelectedTicketsFromTable() {
         Ticket[] tickets = m_Table.getSelectedTickets();
         String oldSearch = m_FilterCombo.getEditorText().trim();
@@ -617,7 +619,7 @@ public class TracInstantFrame extends JFrame {
         } else if (oldRow > 0) {
             m_Table.getSelectionModel().setSelectionInterval(oldRow - 1, oldRow - 1);
         }
-        
+
         // This will fire change events...
         m_FilterCombo.setEditorText(newSearch.trim());
     }
@@ -658,25 +660,24 @@ public class TracInstantFrame extends JFrame {
     }
 
     private void updateRowFilter() {
-        
+
         // We set the search terms straight away, but don't fire any event so they won't
         // be applied until the view changes - typically when the search completes. It
         // could also happen earlier from a list-navigation event, but I think that's
         // fine; why not highlight matches in the description before the filtering is
         // complete anyway?
         m_SearchTerms = SearchTerm.parseSearchString(m_FilterCombo.getExpandedText());
-        
+
         Ticket[] tickets = m_Table.getModel().getTickets();
         m_FilterComputor.computeFilter(tickets, m_SearchTerms, new ResultCallback() {
-            public void filteringComplete(RowFilter<TicketTableModel,Integer> rowFilter) {
+            public void filteringComplete(RowFilter<TicketTableModel, Integer> rowFilter) {
                 long t0 = System.nanoTime();
 
                 m_RowFilterJustUpdated = true;
                 m_Table.getRowSorter().setRowFilter(rowFilter);
                 updateMatches();
 
-                System.out.format("Sort rows: %.2f ms\n",
-                    (System.nanoTime() - t0) / 1000000f);
+                System.out.format("Sort rows: %.2f ms\n", (System.nanoTime() - t0) / 1000000f);
             }
         });
     }
@@ -685,7 +686,7 @@ public class TracInstantFrame extends JFrame {
         int rows = m_Table.getRowCount();
         m_Matches.setText(rows == 0 ? "" : "Matches: " + rows);
     }
-    
+
     private void updateViews() {
         displaySelectedTickets();
         updatePlugin();
@@ -693,7 +694,7 @@ public class TracInstantFrame extends JFrame {
 
     private void displaySelectedTickets() {
         Ticket[] selected = getSelectedTickets();
-        
+
         String text = HtmlFormatter.buildDescription(selected, m_SearchTerms);
         m_DescriptionPane.updateDescription(text);
 
@@ -710,7 +711,7 @@ public class TracInstantFrame extends JFrame {
             m_ActivePlugin.ticketViewUpdated(getViewedTickets(), getSelectedTickets());
         }
     }
-    
+
     private Ticket[] getViewedTickets() {
         TicketTableModel model = m_Table.getModel();
         Ticket[] tickets = new Ticket[m_Table.getRowCount()];
@@ -720,11 +721,11 @@ public class TracInstantFrame extends JFrame {
         }
         return tickets;
     }
-    
+
     private Ticket[] getSelectedTickets() {
         int[] rows = m_Table.getSelectedRows();
         TicketTableModel model = m_Table.getModel();
-        
+
         Ticket[] tickets = new Ticket[rows.length];
         for (int i = 0; i < rows.length; i++) {
             int row = m_Table.convertRowIndexToModel(rows[i]);

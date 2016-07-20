@@ -17,8 +17,8 @@ public class SearchComboBoxModel extends DefaultComboBoxModel {
 
     private static final int MAX_SAVED_SEARCHES = 50;
 
-    private TreeMap<Integer, SavedSearch> hiddenElements = 
-        new TreeMap<Integer, SavedSearch>(); 
+    private TreeMap<Integer, SavedSearch> hiddenElements = new TreeMap<Integer, SavedSearch>();
+
     public SearchComboBoxModel() {
         loadSavedSearches();
     }
@@ -38,11 +38,11 @@ public class SearchComboBoxModel extends DefaultComboBoxModel {
     public void saveSavedSearches() {
         clearPrefixFilter();
         int i = 0;
-        for (;i < getSize(); ++i) {
+        for (; i < getSize(); ++i) {
             TracInstantProperties.get().putString("SearchHistory_" + i,
-                getElementAt(i).formatAsPreference());
+                    getElementAt(i).formatAsPreference());
         }
-        for (;i < MAX_SAVED_SEARCHES; ++i) {
+        for (; i < MAX_SAVED_SEARCHES; ++i) {
             TracInstantProperties.get().remove("SearchHistory_" + i);
         }
     }
@@ -70,12 +70,12 @@ public class SearchComboBoxModel extends DefaultComboBoxModel {
         clearPrefixFilter();
         super.insertElementAt(obj, index);
     }
-    
+
     @Override
     public SavedSearch getElementAt(int index) {
         return (SavedSearch) super.getElementAt(index);
     }
-    
+
     public void updateSearch(SavedSearch ss) {
         clearPrefixFilter();
         int count = getSize();
@@ -88,11 +88,11 @@ public class SearchComboBoxModel extends DefaultComboBoxModel {
         insertElementAt(ss, 0);
         setSelectedItem(ss);
     }
-    
+
     public SavedSearch findSearch(String text) {
         text = text.trim();
         int count = getSize();
-        
+
         // First priority: matching the full search text
         for (int i = 0; i < count; ++i) {
             SavedSearch ss = getElementAt(i);
@@ -116,7 +116,7 @@ public class SearchComboBoxModel extends DefaultComboBoxModel {
         }
         hiddenElements.clear();
     }
-    
+
     public void setPrefixFilter(String prefix) {
         clearPrefixFilter();
         if (prefix == null) {

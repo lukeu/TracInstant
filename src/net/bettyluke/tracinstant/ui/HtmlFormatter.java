@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant.ui;
 
 import java.net.URL;
@@ -24,9 +24,8 @@ import java.util.regex.Pattern;
 import net.bettyluke.tracinstant.data.Ticket;
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
 
-
 public class HtmlFormatter {
-    
+
     private static final int MAX_DESCRIPTIONS = 50;
 
     private static final Pattern BUG_PATTERN = Pattern.compile("#([0-9]{1,8}+)");
@@ -38,11 +37,11 @@ public class HtmlFormatter {
         "<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"" +
             STYLESHEET_TRAC_RESOURCE + "\">";
     
+
     private final static String HTML_END = "</html>";
 
     /**
-     * Remove a style that Java can't display, so that closed tickets display
-     * crossed out
+     * Remove a style that Java can't display, so that closed tickets display crossed out
      */
     protected static String fixHyperlinks(String text) {
         return text.replaceAll("class=\\\"closed ticket", "class=\"closed");
@@ -73,8 +72,7 @@ public class HtmlFormatter {
             }
             String description = ticket.getValue("description");
             if (description == null) {
-                body.append(
-                    "<br><i>Trac query in progress...</i><br> &nbsp;");
+                body.append("<br><i>Trac query in progress...</i><br> &nbsp;");
                 body.append("</div>");
                 break;
             }
@@ -90,7 +88,7 @@ public class HtmlFormatter {
         if (superPattern == null) {
             return body;
         }
-        
+
         StringBuilder bb = new StringBuilder();
         int rangeStart = 0, rangeEnd = 0, replacements = 0;
         while (true) {
@@ -98,20 +96,20 @@ public class HtmlFormatter {
             if (rangeEnd == -1) {
                 break;
             }
-            
+
             // Append up to end of a tag without modification.
             bb.append(body.substring(rangeStart, rangeEnd));
             rangeStart = rangeEnd;
-            
+
             rangeEnd = body.indexOf('<', rangeStart);
             if (rangeEnd == -1) {
                 break;
             }
-            
+
             // Append a text segment with any matching highlighting marked-up
             String text = body.substring(rangeStart, rangeEnd);
             Matcher m = superPattern.matcher(text);
-            
+
             replacements += appendHighlightedText(bb, m, text);
 
             // Limit to a reasonable number of highlights; not just so that this method
@@ -119,7 +117,7 @@ public class HtmlFormatter {
             if (replacements > 800) {
                 break;
             }
-            
+
             rangeStart = rangeEnd;
         }
         bb.append(body.substring(rangeStart, body.length()));
@@ -132,9 +130,8 @@ public class HtmlFormatter {
         if (m.find()) {
             StringBuffer sb = new StringBuffer();
             do {
-                m.appendReplacement(sb, 
-                    "<font color=\"white\" bgcolor=\"#66dd88\">$0</font>");
-                ++ replacements;
+                m.appendReplacement(sb, "<font color=\"white\" bgcolor=\"#66dd88\">$0</font>");
+                ++replacements;
             } while (m.find());
             m.appendTail(sb);
             bb.append(sb.toString());
@@ -149,10 +146,9 @@ public class HtmlFormatter {
         String pipe = "";
         sb.append('(');
         for (SearchTerm term : searchTerms) {
-            
+
             // TODO: create constants for special fields such as "description"
-            if (term.field == null ||
-                    "description".startsWith(term.field.toLowerCase())) {
+            if (term.field == null || "description".startsWith(term.field.toLowerCase())) {
                 sb.append(pipe).append(term.pattern.toString());
                 pipe = "|";
             }

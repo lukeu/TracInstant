@@ -64,6 +64,7 @@ public class ShowPerformanceMonitorAction extends AbstractAction {
                 public void windowClosed(WindowEvent evt) {
                     monitor.stopMonitoring();
                 }
+
                 @Override
                 public void windowClosing(WindowEvent evt) {
                     monitor.stopMonitoring();

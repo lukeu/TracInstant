@@ -26,7 +26,7 @@ import java.util.regex.PatternSyntaxException;
 
 /** One of a user's search term, in the format: <code>[-][field:][-]pattern</code> */
 final class SearchTerm {
-    
+
     private static final Pattern EMPTY_STRING_PATTERN = Pattern.compile("^$");
 
     public SearchTerm(String field, Pattern pattern, boolean exclude) {
@@ -37,16 +37,16 @@ final class SearchTerm {
 
     /** The optional field name; null to search all fields. */
     public String field;
-    
+
     /** The search pattern */
     public Pattern pattern;
-    
+
     /**
      * If true, the Ticket will only be matched if the pattern is NOT found in the
      * ticket's field(s)
      */
     public boolean exclude;
-    
+
     @Override
     public String toString() {
         return "SearchTerm [field=" + field + ", pattern=" + pattern + ", exclude="
@@ -59,7 +59,7 @@ final class SearchTerm {
         }
         List<SearchTerm> terms = new ArrayList<SearchTerm>();
         final String[] words = searchText.split("\\s");
-    
+
         try {
             for (String word : words) {
                 SearchTerm term = parseTerm(word);
@@ -70,7 +70,7 @@ final class SearchTerm {
         } catch (PatternSyntaxException ex) {
             return TableRowFilterComputer.EMPTY_SEARCH_TERMS;
         }
-    
+
         // Do what we can for filtering speed - apply a partial sorting
         // to make terms with specific fields come first.
         SearchTerm[] result = terms.toArray(new SearchTerm[terms.size()]);
@@ -82,7 +82,7 @@ final class SearchTerm {
                 return len2 - len1;
             }
         });
-        
+
         return result;
     }
 
@@ -96,7 +96,7 @@ final class SearchTerm {
         int colon = word.indexOf(':');
         if (colon != -1) {
             field = word.substring(0, colon);
-            word = word.substring(colon+1);
+            word = word.substring(colon + 1);
         }
         if (word.startsWith("-")) {
             exclude = true;

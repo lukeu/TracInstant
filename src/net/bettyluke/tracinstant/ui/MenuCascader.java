@@ -35,38 +35,38 @@ import javax.swing.JPopupMenu;
 
 import net.bettyluke.swing.ScrollingMenu;
 
-
 public class MenuCascader {
-    
+
     private static final int MAX_COMPACT_TOP_HITS = 20;
 
     interface Item extends Action {
         String getName();
+
         int getHits();
     }
 
     private final int maxSubMenuSize;
     private final int minSubMenuSize;
-    
+
     private static String m_LastName, m_NextName;
 
     public MenuCascader() {
         this(35, 15);
     }
-    
+
     public MenuCascader(int maxSubMenuSize, int minSubMenuSize) {
         if (maxSubMenuSize < 2) {
             throw new IllegalArgumentException(
-                "MenuCascader requires a maximum target size of at least 2");
+                    "MenuCascader requires a maximum target size of at least 2");
         }
         if (minSubMenuSize < 1) {
             throw new IllegalArgumentException(
-                "MenuCascader requires a minimum target size of at least 2");
+                    "MenuCascader requires a minimum target size of at least 2");
         }
         this.maxSubMenuSize = maxSubMenuSize;
         this.minSubMenuSize = minSubMenuSize;
     }
-    
+
     public JPopupMenu create(List<Item> items) {
         if (items.size() <= maxSubMenuSize) {
             return createTinyMenu(items);
@@ -106,10 +106,10 @@ public class MenuCascader {
         comp.setOpaque(true);
         comp.setFont(font.deriveFont(Font.ITALIC | Font.BOLD));
     }
-    
+
     private List<Item> getTopHits(List<Item> items, int count) {
         Item[] sorted = items.toArray(new Item[items.size()]);
-        
+
         // Sort by number of hits. Note: this uses a stable sort.
         Arrays.sort(sorted, new Comparator<Item>() {
             @Override
@@ -117,10 +117,10 @@ public class MenuCascader {
                 return -(o1.getHits() - o2.getHits());
             }
         });
-        
+
         // Trim to length.
         sorted = Arrays.copyOf(sorted, count);
-        
+
         // Resort alphabetically.
         Arrays.sort(sorted, new Comparator<Item>() {
             @Override
@@ -128,7 +128,7 @@ public class MenuCascader {
                 return o1.getName().compareToIgnoreCase(o2.getName());
             }
         });
-        
+
         return Arrays.asList(sorted);
     }
 
@@ -141,10 +141,10 @@ public class MenuCascader {
     private JPopupMenu createCascadedMenu(List<Item> items) {
         final JPopupMenu menu = new JPopupMenu();
         m_LastName = "";
-        
+
         // Destroy a copy of the list, not the passed argument.
         items = new LinkedList<Item>(items);
-        
+
         List<Item> batch = new ArrayList<Item>();
         int depth = 1;
         while (!items.isEmpty()) {
@@ -153,8 +153,8 @@ public class MenuCascader {
                 transferFromHead(items, 1, batch);
                 continue;
             }
-            String start = firstName.substring(0,depth);
-            
+            String start = firstName.substring(0, depth);
+
             int count = countItemsBeginingWith(items, start);
             if (count + batch.size() <= maxSubMenuSize) {
                 transferFromHead(items, count, batch);
@@ -189,10 +189,9 @@ public class MenuCascader {
         return titleCaps(from) + " - " + titleCaps(to);
     }
 
-    /** Return the shortest substring from 'name' that distinguishes it from 'against'*/
+    /** Return the shortest substring from 'name' that distinguishes it from 'against' */
     private String abbreviate(String name, String... others) {
-        next_char:
-        for (int i = 0; i < name.length(); ++i) {
+        next_char: for (int i = 0; i < name.length(); ++i) {
             for (String other : others) {
                 if (i < other.length() && charsMatch(name, other, i)) {
                     continue next_char;
@@ -204,16 +203,15 @@ public class MenuCascader {
     }
 
     private boolean charsMatch(String s1, String s2, int index) {
-        return Character.toUpperCase(s1.charAt(index)) ==
-        Character.toUpperCase(s2.charAt(index));
+        return Character.toUpperCase(s1.charAt(index)) == Character.toUpperCase(s2.charAt(index));
     }
-    
+
     private String titleCaps(String str) {
         if (str.isEmpty()) {
             return "";
         }
-        
-        String result = str.substring(0,1).toUpperCase();
+
+        String result = str.substring(0, 1).toUpperCase();
         return (str.length() == 1) ? result : result + str.substring(1).toLowerCase();
     }
 
@@ -221,9 +219,8 @@ public class MenuCascader {
         int count = 0;
         for (Item item : items) {
             String text = item.getName();
-            if (text.startsWith(start) ||
-                    text.toUpperCase().startsWith(start.toUpperCase())) {
-                count ++;
+            if (text.startsWith(start) || text.toUpperCase().startsWith(start.toUpperCase())) {
+                count++;
             } else {
                 break;
             }
@@ -236,7 +233,7 @@ public class MenuCascader {
             to.add(from.remove(0));
         }
     }
-    
+
     private void addAllToMenu(final JMenu menu, List<Item> items) {
         for (JMenuItem mi : createMenuItems(items)) {
             menu.add(mi);
@@ -248,7 +245,7 @@ public class MenuCascader {
             menu.add(mi);
         }
     }
-    
+
     private List<JMenuItem> createMenuItems(List<Item> items) {
         List<JMenuItem> menuItems = new ArrayList<JMenuItem>(items.size());
         for (Item item : items) {

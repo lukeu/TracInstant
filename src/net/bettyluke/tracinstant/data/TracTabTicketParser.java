@@ -23,14 +23,13 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
-
 import au.com.bytecode.opencsv.CSVReader;
 
 public class TracTabTicketParser {
-    
+
     private final BufferedReader reader;
-    
-    private Map<String,String> stringCache = new HashMap<String,String>();
+
+    private Map<String, String> stringCache = new HashMap<String, String>();
 
     public static TicketProvider parse(Reader reader) throws IOException, InterruptedException {
         TracTabTicketParser parser = new TracTabTicketParser(reader);
@@ -40,9 +39,9 @@ public class TracTabTicketParser {
     private TracTabTicketParser(Reader reader) {
         this.reader = new BufferedReader(reader);
     }
-    
+
     private TicketProvider parseFile() throws IOException, InterruptedException {
-        
+
         // Tab delimited reader with no un-escaping of '\' characters.
         CSVReader csvReader = new CSVReader(reader, '\t', '"', '\0');
         try {
@@ -50,14 +49,14 @@ public class TracTabTicketParser {
             if (headings == null) {
                 throw new IOException("Empty input given");
             }
-    
+
             final TracTabResult result;
             try {
                 result = new TracTabResult(headings);
             } catch (RuntimeException ex) {
                 throw new IOException(ex);
             }
-            
+
             String[] fields;
             while ((fields = csvReader.readNext()) != null) {
                 if (Thread.currentThread().isInterrupted()) {
@@ -79,11 +78,11 @@ public class TracTabTicketParser {
      */ 
     private String[] cacheStrings(String[] strings) {
         for (int j = 0; j < strings.length; j++) {
-            String orig = strings[j]; 
+            String orig = strings[j];
             String cached = stringCache.get(strings[j]);
             if (cached == null) {
-                
-                // Intentionally create unique strings. 
+
+                // Intentionally create unique strings.
                 cached = new String(orig);
                 stringCache.put(cached, cached);
             }

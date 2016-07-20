@@ -20,11 +20,11 @@ public class AnnotationPanel extends JPanel {
     public static ToolPlugin createPlugin() {
         return new AnnotationPanel().new Plugin();
     }
-    
+
     private int selectedTicketId = -1;
     private TicketUpdater updater;
     private JTextComponent editor;
-    
+
     /** The interface through which the application interacts with us. */
     private class Plugin extends ToolPlugin {
 
@@ -46,16 +46,16 @@ public class AnnotationPanel extends JPanel {
         public String toString() {
             return "Annotate";
         }
-        
+
         @Override
         public void hidden() {
-            // Ensure data is saved when the editor goes out of view. 
+            // Ensure data is saved when the editor goes out of view.
             // Includes shut-down.
             storeAnnotationInTicket();
             deselect();
         }
     }
-    
+
     public AnnotationPanel() {
         super(new BorderLayout());
         editor = createEditor();
@@ -67,11 +67,12 @@ public class AnnotationPanel extends JPanel {
 
     private JTextComponent createEditor() {
         JTextArea result = new JTextArea();
-        result.setBackground(new Color(255,255,230));
+        result.setBackground(new Color(255, 255, 230));
         result.addFocusListener(new FocusListener() {
             public void focusLost(FocusEvent e) {
                 storeAnnotationInTicket();
             }
+
             public void focusGained(FocusEvent e) {
             }
         });
@@ -111,7 +112,7 @@ public class AnnotationPanel extends JPanel {
         editor.setEditable(true);
         editor.setText(text);
     }
-    
+
     private void hideText() {
         editor.setText("");
         editor.setEnabled(false);

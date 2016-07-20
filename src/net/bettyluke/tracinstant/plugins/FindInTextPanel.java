@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant.plugins;
 
 import java.awt.BorderLayout;
@@ -48,11 +48,11 @@ import net.bettyluke.tracinstant.data.Ticket;
  *  - format the result as an Outlook-style search query
  */
 public class FindInTextPanel extends JPanel {
-    
+
     public static ToolPlugin createPlugin() {
         return new FindInTextPanel().new Plugin();
     }
-    
+
     /** The interface through which the application interacts with us. */
     private class Plugin extends ToolPlugin {
 
@@ -79,8 +79,8 @@ public class FindInTextPanel extends JPanel {
     private static final Pattern TICKET_PATTERN = Pattern.compile("\\#(\\d+)");
 
     /**
-     * Class that performs a single action 'later', following one or more modifications
-     * in the processing of a single EDT event.
+     * Class that performs a single action 'later', following one or more modifications in the
+     * processing of a single EDT event.
      */
     private static final class DocChangeListener implements DocumentListener {
         private final Runnable wrappedRunner;
@@ -94,15 +94,19 @@ public class FindInTextPanel extends JPanel {
                 }
             };
         }
+
         public void removeUpdate(DocumentEvent e) {
             maybeRun();
         }
+
         public void insertUpdate(DocumentEvent e) {
             maybeRun();
         }
+
         public void changedUpdate(DocumentEvent e) {
             maybeRun();
         }
+
         private void maybeRun() {
             if (!pending) {
                 pending = true;
@@ -134,10 +138,10 @@ public class FindInTextPanel extends JPanel {
         grid.add(scroll1);
         grid.add(new JLabel("Filtered Tickets (in Outlook Query format)..."));
         grid.add(scroll2);
-        
+
         add(new JLabel("Paste text to scan for ticket numbers:"), BorderLayout.NORTH);
         add(createSplit(new JScrollPane(sourceTextEditor), grid));
-        
+
         sourceTextEditor.getDocument().addDocumentListener(new DocChangeListener(new Runnable() {
             public void run() {
                 ticketsInText = scanText(sourceTextEditor.getText());
@@ -145,13 +149,13 @@ public class FindInTextPanel extends JPanel {
             }
         }));
     }
-    
+
     private void updateOutputFields() {
         String newFoundText = formatFoundTicketText(ticketsInText);
         if (!newFoundText.equals(foundTicketNumbersArea.getText())) {
             foundTicketNumbersArea.setText(newFoundText);
         }
-        
+
         Set<Integer> intersection = new TreeSet<Integer>(ticketsInText);
         intersection.retainAll(filter);
         String newFilteredText = formatOutlookQuery(intersection);
@@ -161,12 +165,11 @@ public class FindInTextPanel extends JPanel {
     }
 
     private JSplitPane createSplit(JComponent top, JComponent bottom) {
-        JSplitPane split = new JSplitPane(
-            JSplitPane.VERTICAL_SPLIT, true, top, bottom);
+        JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, top, bottom);
         split.setResizeWeight(.5f);
         return split;
     }
-    
+
     /**
      * Prints ticket numbers as a (multiple) search queries that Microsoft Outlook can
      * handle. It can only handle short strings!
@@ -182,7 +185,7 @@ public class FindInTextPanel extends JPanel {
                 sb.append(" OR ");
             }
             sb.append(ticket);
-            ++ count;
+            ++count;
         }
         sb.append(')');
         return sb.toString();
@@ -208,17 +211,17 @@ public class FindInTextPanel extends JPanel {
             sb.append(separator).append(i);
             separator = "|";
         }
-        if (sb.length() > 0) { 
+        if (sb.length() > 0) {
             sb.append(")$");
         }
         return sb.toString();
     }
-    
+
     /** A little interactive test. */
     public static void main(String[] args) {
         JDialog dialog = new JDialog();
         dialog.getContentPane().add(new FindInTextPanel());
-        dialog.setSize(300,600);
+        dialog.setSize(300, 600);
         dialog.setModal(true);
         dialog.setVisible(true);
         System.exit(0);

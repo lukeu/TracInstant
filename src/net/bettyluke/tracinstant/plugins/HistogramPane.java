@@ -26,7 +26,6 @@ import javax.swing.JScrollPane;
 
 import net.bettyluke.util.swing.VerticallyScrollingPanel;
 
-
 import net.bettyluke.tracinstant.data.Ticket;
 import net.bettyluke.util.swing.ArrayListModel;
 
@@ -155,7 +154,7 @@ public class HistogramPane {
 
             g2.setColor(new Color(96, 96, 224));
             g2.fillRect(0, 5, (int) (w * selClosedRatio), 13);
-            g2.setColor(new Color(200,200,255));
+            g2.setColor(new Color(200, 200, 255));
             g2.fillRect(xClosed, 6, (int) (w * selActiveRatio), 11);
 
             g2.setColor(Color.RED.darker());
@@ -236,9 +235,9 @@ public class HistogramPane {
             if (value != null) {
                 Bar bar = getOrCreate(results, value);
                 if ("closed".equals(ticket.getValue("status"))) {
-                    bar.closed ++;
+                    bar.closed++;
                 } else {
-                    bar.active ++;
+                    bar.active++;
                 }
             }
         }
@@ -247,9 +246,9 @@ public class HistogramPane {
             if (value != null) {
                 Bar bar = getOrCreate(results, value);
                 if ("closed".equals(ticket.getValue("status"))) {
-                    bar.selectedClosed ++;
+                    bar.selectedClosed++;
                 } else {
-                    bar.selectedActive ++;
+                    bar.selectedActive++;
                 }
             }
         }

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant.prefs;
 
 import java.awt.Rectangle;
@@ -26,41 +26,40 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import net.bettyluke.util.AppProperties;
 
-
 public final class TracInstantProperties {
-    
-    private static final String TRAC_PWD = "TracPwd";
-	private static final String TRAC_USERNAME = "TracUser";
 
-	private TracInstantProperties() {}
-    
-    private static final AtomicReference<AppProperties> s_SharedInstance =
-        new AtomicReference<AppProperties>();
+    private static final String TRAC_PWD = "TracPwd";
+    private static final String TRAC_USERNAME = "TracUser";
     private static final int MAX_MRU = 8;
-    
+
+    private TracInstantProperties() {}
+
+    private static final AtomicReference<AppProperties> s_SharedInstance =
+            new AtomicReference<AppProperties>();
+
     public static void initialise(String companyName, String appName) {
         s_SharedInstance.set(new AppProperties(companyName, appName));
         s_SharedInstance.get().loadProperties();
     }
-    
+
     public static AppProperties get() {
         return s_SharedInstance.get();
     }
 
     public static String getUsername() {
-	return get().getString(TRAC_USERNAME, "");
+        return get().getString(TRAC_USERNAME, "");
     }
 
     public static void addUsername(String username) {
-	get().putString(TRAC_USERNAME, username);
+        get().putString(TRAC_USERNAME, username);
     }
 
     public static String getPassword() {
-	return get().getString(TRAC_PWD, "");
+        return get().getString(TRAC_PWD, "");
     }
 
     public static void addPassword(String password) {
-	get().putString(TRAC_PWD, password);
+        get().putString(TRAC_PWD, password);
     }
 
     public static String getURL() {
@@ -71,24 +70,24 @@ public final class TracInstantProperties {
     public static List<String> getURL_MRU() {
         return getStringList("TracURL_MRU", "[http://trac.edgewall.org]");
     }
-    
+
     /** Whether the option to cache data was selected. */
     public static boolean getUseCache() {
         return get().getBoolean("CacheSlurpedData", true);
     }
-    
+
     public static void setUseCache(boolean bool) {
         get().putBoolean("CacheSlurpedData", bool);
     }
-    
+
     public static boolean getActiveTicketsOnly() {
         return TracInstantProperties.get().getBoolean("FetchActiveTicketsOnly", false);
     }
-    
+
     public static void setActiveTicketsOnly(boolean b) {
         TracInstantProperties.get().putBoolean("FetchActiveTicketsOnly", b);
     }
-    
+
     public static void addURL_MRU(String urlText) {
         addMRU("TracURL_MRU", urlText);
     }
@@ -101,10 +100,11 @@ public final class TracInstantProperties {
     public static List<String> getAttachmentsDir_MRU() {
         return getStringList("AttachmentsDir_MRU", "");
     }
+
     public static void addAttachmentsDir_MRU(String dir) {
         addMRU("AttachmentsDir_MRU", dir);
     }
-    
+
     public static void putStringList(String key, List<String> list) {
         get().putString(key, list.toString());
     }
@@ -126,7 +126,7 @@ public final class TracInstantProperties {
         }
         return result;
     }
-    
+
     private static void addMRU(String key, String value) {
         List<String> list = getStringList(key, "");
         while (list.remove(value)) {

@@ -44,18 +44,18 @@ public final class ScrollingMenu extends JPopupMenu {
     private final Controller controller = new Controller();
     private final Component[] menuItems;
     private final int viewLength;
-    
+
     private int topComp = 0;
-    
+
     /**
      * In lieu of a full MVC separation, this class at least separates out the
      * behavioural logic from view objects.
      */
     private final class Controller extends MouseAdapter implements ActionListener {
-        
+
         private Timer timer = new Timer(66, this);
         private float increment = 1;
-        
+
         public void attach() {
             upButton.addMouseListener(this);
             downButton.addMouseListener(this);
@@ -88,12 +88,12 @@ public final class ScrollingMenu extends JPopupMenu {
             timer.stop();
             ((AbstractButton) e.getSource()).getModel().setPressed(false);
         }
-        
+
         private int clampPosition(int newTop) {
             return Math.max(0, Math.min(newTop, end() - 1));
         }
     }
-    
+
     /** Constructor which <b>rips</b> all the menu-items out of menu, taking them over. */
     public ScrollingMenu(JPopupMenu menu, int visibleLength) {
         this.menuItems = Arrays.copyOf(menu.getComponents(), menu.getComponentCount());
@@ -101,11 +101,11 @@ public final class ScrollingMenu extends JPopupMenu {
         this.viewLength = visibleLength - 2;
         upButton.setEnabled(false);
         add(upButton);
-        for(int i = 0; i < viewLength; ++i) {
+        for (int i = 0; i < viewLength; ++i) {
             add(menuItems[i]);
         }
         add(downButton);
-        setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
         controller.attach();
     }
 
@@ -118,16 +118,16 @@ public final class ScrollingMenu extends JPopupMenu {
         downButton.setEnabled(newTop < end() - 1);
 
         if (newTop < topComp) {
-            for(int i = topComp - 1; i >= newTop; --i) {
+            for (int i = topComp - 1; i >= newTop; --i) {
                 assert menuItems[i].getParent() == null;
                 remove(viewLength);
                 insert(menuItems[i], 1);
             }
         } else {
-            for(int i = topComp; i < newTop; ++i) {
+            for (int i = topComp; i < newTop; ++i) {
                 Component toAdd = menuItems[i + viewLength];
                 assert toAdd.getParent() == null;
-                insert(toAdd, viewLength+1);
+                insert(toAdd, viewLength + 1);
                 remove(1);
             }
         }
@@ -148,7 +148,7 @@ public final class ScrollingMenu extends JPopupMenu {
                 UIManager.getColor("controlShadow"),
                 Color.DARK_GRAY,
                 UIManager.getColor("controlLtHighlight")) {
-            
+
             @Override
             public Dimension getPreferredSize() {
                 return new Dimension(24, 24);
@@ -157,4 +157,3 @@ public final class ScrollingMenu extends JPopupMenu {
         return result;
     }
 }
-

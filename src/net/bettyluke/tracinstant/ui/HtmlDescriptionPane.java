@@ -33,9 +33,9 @@ import net.bettyluke.tracinstant.prefs.TracInstantProperties;
 import net.bettyluke.util.DesktopUtils;
 
 public class HtmlDescriptionPane extends JEditorPane {
-    
+
     private String lastDescriptionText = "";
-    
+
     private static final class MyHyperlinkListener implements HyperlinkListener {
         
         private final Pattern TICKET_URL_PATTERN = 
@@ -72,15 +72,15 @@ public class HtmlDescriptionPane extends JEditorPane {
             String title = ticket.getValue("title");
             return (title == null) ? original : title;
         }
-    }    
-    
+    }
+
     public HtmlDescriptionPane(TicketTableModel ticketModel) {
         super("text/html", "");
         putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
         setEditable(false);
         addHyperlinkListener(new MyHyperlinkListener(ticketModel));
     }
-    
+
     // Update description if anything (even just the highlighting) changed.
     public void updateDescription(String text) {
         if (!text.equals(lastDescriptionText)) {
@@ -89,20 +89,20 @@ public class HtmlDescriptionPane extends JEditorPane {
             setCaretPosition(0);
         }
     }
-    
+
     public static void browseToTickets(Ticket[] tickets) throws MalformedURLException {
         String baseUrl = TracInstantProperties.getURL();
         int count = tickets.length;
         if (count == 1) {
-            
+
             String query = baseUrl + "/ticket/" + tickets[0].getNumber();
             DesktopUtils.browseTo(new URL(query));
             return;
         }
-        
+
         if (count > 1) {
             count = Math.min(300, count);
-            
+
             StringBuilder sb = new StringBuilder();
             sb.append(baseUrl).append("/query?id=");
             String joint = "";

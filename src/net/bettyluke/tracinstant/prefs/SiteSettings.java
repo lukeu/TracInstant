@@ -14,9 +14,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
-package net.bettyluke.tracinstant.prefs;
 
+package net.bettyluke.tracinstant.prefs;
 
 public class SiteSettings {
 
@@ -54,7 +53,7 @@ public class SiteSettings {
     public void setFetchOnlyActiveTickets(boolean b) {
         fetchOnlyActiveTickets = b;
     }
-    
+
     public void setCacheData(boolean b) {
         cacheData = b;
     }
@@ -70,15 +69,15 @@ public class SiteSettings {
     public String getURL() {
         return url;
     }
-    
+
     public String getAttachmentsDir() {
         return attachmentsDir;
     }
-    
+
     public boolean isFetchOnlyActiveTickets() {
         return fetchOnlyActiveTickets;
     }
-    
+
     public boolean isCacheData() {
         return cacheData;
     }
@@ -95,7 +94,7 @@ public class SiteSettings {
     }
 
     public void updatePreferences() {
-	TracInstantProperties.addUsername(getUsername());
+        TracInstantProperties.addUsername(getUsername());
         TracInstantProperties.addURL_MRU(getURL());
         TracInstantProperties.addAttachmentsDir_MRU(getAttachmentsDir());
         TracInstantProperties.setUseCache(isCacheData());

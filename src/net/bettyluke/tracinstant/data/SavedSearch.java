@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant.data;
 
 public class SavedSearch {
@@ -41,7 +41,7 @@ public class SavedSearch {
             str = str.substring(pos + MARKER.length());
         } else {
             alias = "";
-        }   
+        }
         pos = str.indexOf(MARKER);
         if (pos >= 0) {
             name = str.substring(0, pos).trim();
@@ -51,30 +51,30 @@ public class SavedSearch {
         }
         searchText = str.trim();
     }
-    
+
     public String formatAsPreference() {
         return alias + MARKER + name + MARKER + searchText;
     }
-    
+
     public String getSearchText() {
         return searchText;
     }
-    
+
     public String getAlias() {
         return alias;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     @Override
     public String toString() {
         return searchText;
     }
-    
-    /** 
-     * Required by BasicComboBoxEditor#getItem ... OBVIOUSLY. (Called reflectively.) 
+
+    /**
+     * Required by BasicComboBoxEditor#getItem ... OBVIOUSLY. (Called reflectively.)
      */
     public static SavedSearch valueOf(String searchText) {
         return new SavedSearch(searchText);

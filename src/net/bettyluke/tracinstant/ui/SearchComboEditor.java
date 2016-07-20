@@ -63,18 +63,18 @@ public class SearchComboEditor extends JTextField {
         GradientBox() {
             super(BoxLayout.Y_AXIS);
         }
-        
+
         @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g;
             Shape clip = g2.getClip();
             int h = getHeight();
             Color bg = getBackground();
-            g2.setPaint(new GradientPaint(0,0,bg,0,h,bg.darker()));
+            g2.setPaint(new GradientPaint(0, 0, bg, 0, h, bg.darker()));
             g2.fill(clip);
         }
     }
-    
+
     private class SavedSearchCallout extends CalloutOverlay {
 
         private final JTextField shorthand = new JTextField();
@@ -82,20 +82,20 @@ public class SearchComboEditor extends JTextField {
 
         public SavedSearchCallout(JFrame wind) {
             super(wind, new GradientBox());
-            
+
             final Action doneAction = createDoneAction();
             final Action cancelAction = createCancelAction();
             final Action removeSearchAction = createRemoveSearchAction();
-            
+
             JButton removeStarButton = new JButton(removeSearchAction);
             removeStarButton.setAlignmentX(0.0f);
-            
+
             Box buttonBox = Box.createHorizontalBox();
             buttonBox.add(Box.createHorizontalGlue());
             buttonBox.add(new JButton(doneAction));
             buttonBox.add(Box.createHorizontalStrut(6));
             buttonBox.add(new JButton(cancelAction));
-            
+
             Box box = (GradientBox) getContent();
             box.add(removeStarButton);
             box.add(Box.createVerticalStrut(6));
@@ -107,22 +107,22 @@ public class SearchComboEditor extends JTextField {
             box.add(Box.createVerticalStrut(6));
             box.add(buttonBox);
             box.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-            box.setBackground(new Color(220,230,250));
+            box.setBackground(new Color(220, 230, 250));
             box.setOpaque(true);
             for (Component comp : box.getComponents()) {
                 ((JComponent) comp).setAlignmentX(0f);
             }
-            
+
             populateSavedSearchFields();
-            
+
             addAncestorAcceleratorKey(box, doneAction, KeyEvent.VK_ENTER);
             addAncestorAcceleratorKey(box, cancelAction, KeyEvent.VK_ESCAPE);
             removeSearchAction.putValue(Action.MNEMONIC_KEY, KeyEvent.VK_R);
-            
+
             // Set the action for (e.g.) when the user clicks outside the callout.
             addDismissListener(doneAction);
         }
-        
+
         @Override
         public void showAt(int x, int y) {
             super.showAt(x, y);
@@ -157,7 +157,7 @@ public class SearchComboEditor extends JTextField {
                 }
             };
         }
-        
+
         private void populateSavedSearchFields() {
             SavedSearch ss = comboModel.findSearch(getText());
             shorthand.setText((ss == null || ss.alias == null) ? "" : ss.alias);
@@ -174,12 +174,11 @@ public class SearchComboEditor extends JTextField {
         }
 
         protected void applyChanges() {
-            SavedSearch ss = new SavedSearch(
-                getText(), shorthand.getText(), desc.getText());
+            SavedSearch ss = new SavedSearch(getText(), shorthand.getText(), desc.getText());
             comboModel.updateSearch(ss);
             dismiss();
         }
-        
+
         @Override
         public void dismiss() {
             super.dismiss();
@@ -187,33 +186,32 @@ public class SearchComboEditor extends JTextField {
         }
     }
 
-    private static final Color MID_SHADOW = new Color(199,202,207);
-    private static final Color LIGHTER_SHADOW = new Color(203,203,204);
+    private static final Color MID_SHADOW = new Color(199, 202, 207);
+    private static final Color LIGHTER_SHADOW = new Color(203, 203, 204);
     private static final Color DARK_BORDER = new Color(141, 142, 143);
-    
+
     private static enum StarIcons {
-        NORMAL("res/star_grey.png"),
-        SELECTED("res/star_yellow.png"),
-        ROLLOVER("res/star_grey_roll.png"),
-        SELECTED_ROLLOVER("res/star_yellow_roll.png"),
-        PRESSED("res/star_yellow_pressed.png");
-        
+        NORMAL("res/star_grey.png"), SELECTED("res/star_yellow.png"), ROLLOVER(
+                "res/star_grey_roll.png"), SELECTED_ROLLOVER(
+                        "res/star_yellow_roll.png"), PRESSED("res/star_yellow_pressed.png");
+
         private ImageIcon icon;
 
         private StarIcons(String resourcePath) {
             icon = createImageIcon(resourcePath);
         }
-        
+
         /** Returns an ImageIcon, or null if the path was invalid. */
         protected static ImageIcon createImageIcon(String path) {
             URL imgURL = SearchComboEditor.class.getResource(path);
             return new ImageIcon(imgURL);
         }
-        
+
         public Icon getIcon() {
             return icon;
         }
     }
+
     private static final int iconWidth;
     private static final int iconHeight;
 
@@ -222,16 +220,16 @@ public class SearchComboEditor extends JTextField {
         iconHeight = normal.getIconHeight();
         iconWidth = normal.getIconWidth();
     }
-    
+
     private class Listener implements MouseListener, MouseMotionListener {
         private Boolean lastOverStar = null;
-    
+
         @Override
         public void mouseMoved(MouseEvent e) {
-    
+
             Boolean overStar = isOverStar(e.getX(), e.getY());
             starModel.setRollover(overStar);
-            
+
             // Avoid extra work updating cursor
             if (!overStar.equals(lastOverStar)) {
                 lastOverStar = overStar;
@@ -239,28 +237,30 @@ public class SearchComboEditor extends JTextField {
                 ((Component) e.getSource()).setCursor(Cursor.getPredefinedCursor(cursor));
             }
         }
-        
+
         @Override
         public void mouseDragged(MouseEvent e) {
-            if (Boolean.TRUE.equals(lastOverStar) &&
-                    !isOverStar(e.getX(), e.getY())) {
+            if (Boolean.TRUE.equals(lastOverStar) && !isOverStar(e.getX(), e.getY())) {
                 exitStar();
             }
         }
-        
+
         @Override
         public void mouseEntered(MouseEvent e) {
         }
+
         @Override
         public void mouseExited(MouseEvent e) {
             exitStar();
         }
+
         @Override
         public void mousePressed(MouseEvent e) {
             if (isMouseEventRelevant(e)) {
                 starModel.setPressed(true);
             }
         }
+
         @Override
         public void mouseReleased(MouseEvent e) {
             if (isMouseEventRelevant(e) && starModel.isPressed()) {
@@ -272,15 +272,15 @@ public class SearchComboEditor extends JTextField {
             }
             starModel.setPressed(false);
         }
+
         @Override
         public void mouseClicked(MouseEvent e) {
         }
-        
+
         private boolean isMouseEventRelevant(MouseEvent e) {
-            return SwingUtilities.isLeftMouseButton(e) &&
-                isOverStar(e.getX(), e.getY());
+            return SwingUtilities.isLeftMouseButton(e) && isOverStar(e.getX(), e.getY());
         }
-        
+
         private void exitStar() {
             starModel.setRollover(false);
             starModel.setPressed(false);
@@ -312,14 +312,16 @@ public class SearchComboEditor extends JTextField {
                 repaint();
             }
         });
-        
+
         getDocument().addDocumentListener(new DocumentListener() {
             public void removeUpdate(DocumentEvent e) {
                 updateStar();
             }
+
             public void insertUpdate(DocumentEvent e) {
                 updateStar();
             }
+
             public void changedUpdate(DocumentEvent e) {
                 updateStar();
             }
@@ -350,7 +352,7 @@ public class SearchComboEditor extends JTextField {
         SavedSearch ss = new SavedSearch(getText());
         comboModel.updateSearch(ss);
     }
-    
+
     public void clearSavedSearch() {
         SavedSearch ss = comboModel.findSearch(getText());
         if (ss != null) {
@@ -358,7 +360,7 @@ public class SearchComboEditor extends JTextField {
         }
         comboModel.setSelectedItem(ss);
     }
-    
+
     // workaround for 4530952
     @Override
     public void setText(String s) {
@@ -375,23 +377,23 @@ public class SearchComboEditor extends JTextField {
         int left = in.left - extraLeft;
         int right = getWidth() - in.right + extraRight;
         int bottom = getHeight() - in.bottom - 1;
-        
+
         // All this faffing-around may be more reason to ditch Combo and use a simple
         // text field
         g.setColor(getBackground());
-        g.fillRect(right-3, in.top, right, getHeight()-in.bottom-in.top);
+        g.fillRect(right - 3, in.top, right, getHeight() - in.bottom - in.top);
         super.paintComponent(g);
         g.setColor(MID_SHADOW);
-        
+
         g.drawLine(left, y, right, y);
         g.setColor(LIGHTER_SHADOW);
         ++y;
         g.drawLine(left, y, right, y);
-        
+
         g.setColor(MID_SHADOW);
         g.drawLine(left, in.top, left, bottom);
         g.drawLine(left, bottom, right, bottom);
-        
+
         Icon star = getCurrentStarIcon();
         star.paintIcon(this, g, getStarX(), getStarY());
     }
@@ -416,7 +418,7 @@ public class SearchComboEditor extends JTextField {
         int space = getHeight() - insets.top - insets.bottom - iconHeight;
         return insets.top + space / 2;
     }
-    
+
     public int getStarWidth() {
         return iconWidth;
     }
@@ -426,11 +428,11 @@ public class SearchComboEditor extends JTextField {
     }
 
     public boolean isOverStar(int x, int y) {
-        
+
         // Y ignored: don't leave "cracks" that don't work above & below the star.
         return x >= getStarX();
     }
-    
+
     public void showCallout() {
         if (callout != null) {
             callout.dismiss();

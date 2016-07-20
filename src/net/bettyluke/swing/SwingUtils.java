@@ -30,7 +30,7 @@ public class SwingUtils {
         assert comp != null;
         for (; comp != null; comp = comp.getParent()) {
             if (comp instanceof Frame || comp instanceof Dialog) {
-                
+
                 return (Window) comp;
             }
         }

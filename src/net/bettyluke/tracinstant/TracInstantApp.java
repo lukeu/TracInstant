@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant;
 
 import java.awt.event.WindowAdapter;
@@ -40,9 +40,8 @@ import net.bettyluke.tracinstant.prefs.SiteSettings;
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
 import net.bettyluke.tracinstant.ui.TracInstantFrame;
 
-
 public final class TracInstantApp {
-    
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -50,11 +49,11 @@ public final class TracInstantApp {
             }
         });
     }
-    
+
     public TracInstantApp() {
         TracInstantProperties.initialise("bettyluke.net", "TracInstant");
     }
-    
+
     public void startOnEDT() {
         setLaF();
         final SiteData site = new SiteData();
@@ -71,15 +70,15 @@ public final class TracInstantApp {
                 saveApplicationState();
             }
         });
-        
+
         // HACK: Cache-loading should be pretty darn fast, nevertheless it will not be
-        // cancelled by a user selecting a different Trac server and starting a new 
+        // cancelled by a user selecting a different Trac server and starting a new
         // "slurp". So: we currently just disable the action.
-        // (TODO: Create new 'TicketLoader' to more-cleanly manage loading from the 4 
-        // data sources, and the cancellation of these tasks.) 
- 
+        // (TODO: Create new 'TicketLoader' to more-cleanly manage loading from the 4
+        // data sources, and the cancellation of these tasks.)
+
         frame.getSlurpAction().setEnabled(false);
-        
+
         frame.setVisible(true);
 
         if (site.isOkToUseCachedTickets()) {
@@ -91,7 +90,7 @@ public final class TracInstantApp {
                 }
             });
         } else {
-            
+
             // Proceed with next step immediately.
             loadServerTickets(frame, site);
         }
@@ -101,7 +100,7 @@ public final class TracInstantApp {
         // HACK
         SlurpAction slurper = frame.getSlurpAction();
         slurper.setEnabled(true);
-        
+
         Authenticator.setDefault(SITE_AUTHENTICATOR);
         Ticket[] tickets = site.getTableModel().getTickets();
         if (tickets.length == 0) {

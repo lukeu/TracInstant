@@ -46,7 +46,7 @@ public class SlurpAction extends AbstractAction {
 
     /** The slurp task, held so it can be cancelled. */
     private SlurpTask task = null;
-    
+
     private final Runnable onTaskEnded = new Runnable() {
         public void run() {
             SlurpTask t = task;
@@ -132,13 +132,13 @@ public class SlurpAction extends AbstractAction {
         TracUrlSelectionPanel panel = new TracUrlSelectionPanel(settings);
         panel.setURLHistory(TracInstantProperties.getURL_MRU());
         panel.setAttachmentsDirHistory(TracInstantProperties.getAttachmentsDir_MRU());
-        
+
         settings = panel.showAsDialog(frame);
         if (settings != null) {
             settings.updatePreferences();
             return true;
         }
-        
+
         // Dialog cancelled
         return false;
     }
@@ -147,10 +147,10 @@ public class SlurpAction extends AbstractAction {
         cancel();
         slurp(null);
     }
-    
+
     private void slurpIncremental() {
         if (task != null) {
-            
+
             // TODO: Should we instead queue up a single incremental update(?)
             System.out.println("Incremental update aborted due to running tasks");
             return;
@@ -163,13 +163,13 @@ public class SlurpAction extends AbstractAction {
         Ticket[] tickets = site.getTableModel().getTickets();
         String lastChanged = SlurpTask.getMostRecentlyModifiedTime(site, tickets);
         System.out.println("Last changed ticket:" + lastChanged);
-        
+
         slurp(lastChanged);
     }
 
     /**
-     * Terminate any in-progress slurp task. It may carry on for a while - but 
-     * it will discard its results. (No need to wait for it.)
+     * Terminate any in-progress slurp task. It may carry on for a while - but it will discard its
+     * results. (No need to wait for it.)
      */
     public void cancel() {
         if (task != null) {

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.util;
 
 import java.util.Arrays;
@@ -31,7 +31,7 @@ public class ObjectUtils {
         }
         return o1.equals(o2);
     }
-    
+
     public static int hash(Object... relevantData) {
         return Arrays.deepHashCode(relevantData);
     }

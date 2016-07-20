@@ -34,7 +34,7 @@ import javax.swing.text.JTextComponent;
 
 /** A general panel for displaying an editable path and a Browse button. */
 public class BrowsePanel extends JPanel implements ActionListener {
-    
+
     private final JTextField m_LocationEditor;
 
     public BrowsePanel(File folder) {
@@ -52,7 +52,7 @@ public class BrowsePanel extends JPanel implements ActionListener {
     public File getPath() {
         return new File(m_LocationEditor.getText());
     }
-    
+
     public JTextComponent getLocationEditor() {
         return m_LocationEditor;
     }
@@ -67,7 +67,7 @@ public class BrowsePanel extends JPanel implements ActionListener {
             m_LocationEditor.setText(chooser.getSelectedFile().getAbsolutePath());
         }
     }
-    
+
     @Override
     public void setToolTipText(String text) {
         super.setToolTipText(text);

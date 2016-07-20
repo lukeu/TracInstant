@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant.data;
 
 import java.text.DateFormat;
@@ -80,27 +80,28 @@ public class DateFormatDetector {
             format.setLenient(false);
             latestMatchedDate = LONG_AGO;
         }
+
         public String string;
         public DateFormat format;
         public Date latestMatchedDate;
     }
-    
+
     private final List<String> dateStringsAscending;
     private final List<Attempt> possibleFormats;
-    
+
     /**
      * Will decrement with each check after only a single 'possibleFormat' remains. 
      * When it reaches zero we will terminate with success. 
      */
     private int confirmationsRemaining = 10;
-    
+
     public static String detectFormat(List<String> dateTimeStringsAscending) {
         return new DateFormatDetector(dateTimeStringsAscending).detectFormat();
     }
-    
+
     private DateFormatDetector(List<String> dateTimeStringsAscending) {
         this.dateStringsAscending = stripTime(trimIfLarge(dateTimeStringsAscending));
-        
+
         possibleFormats = new ArrayList<Attempt>(PERMUTATIONS.size() * 4);
         for (String dateString : PERMUTATIONS) {
             possibleFormats.add(new Attempt(dateString));
@@ -109,18 +110,18 @@ public class DateFormatDetector {
             possibleFormats.add(new Attempt(dateString.replaceAll("\\-", " ")));
         }
     }
-    
+
     private List<String> trimIfLarge(List<String> ss) {
         if (ss.size() <= MAX_SAMPLES_TO_CONSIDER) {
             return ss;
         }
-        
+
         // Use the start and end of the given list.
         List<String> result = new ArrayList<String>(MAX_SAMPLES_TO_CONSIDER);
-        for (int i = 0; i < MAX_SAMPLES_TO_CONSIDER/2; i++) {
+        for (int i = 0; i < MAX_SAMPLES_TO_CONSIDER / 2; i++) {
             result.add(ss.get(i));
         }
-        for (int i = ss.size() - MAX_SAMPLES_TO_CONSIDER/2; i < ss.size(); i++) {
+        for (int i = ss.size() - MAX_SAMPLES_TO_CONSIDER / 2; i < ss.size(); i++) {
             result.add(ss.get(i));
         }
         return result;
@@ -147,11 +148,11 @@ public class DateFormatDetector {
         for (String dateString : dateStringsAscending) {
             eliminateFormats(dateString);
         }
-        
+
         for (String dateString : dateStringsAscending) {
             eliminateIncorrectFieldLengths(dateString);
         }
-        
+
         if (possibleFormats.size() > 1) {
             System.err.println("WARNING ambiguous date format. Possibilites:");
             for (Attempt a : possibleFormats) {
@@ -201,10 +202,10 @@ public class DateFormatDetector {
             try {
                 String reformatted = a.format.format(a.format.parse(dateString));
                 if (stripZerosSpaces(dateString).equals(stripZerosSpaces(reformatted))) {
-                    
+
                     // Early termination
                     if (possibleFormats.size() == 1) {
-                        if ((-- confirmationsRemaining) == 0) {
+                        if ((--confirmationsRemaining) == 0) {
                             return;
                         }
                     }

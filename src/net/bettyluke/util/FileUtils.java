@@ -27,10 +27,10 @@ import java.io.OutputStream;
 import java.io.Reader;
 
 public class FileUtils {
-    
+
     private static final int BUFFER_SIZE = 4 * 1024;
 
-    public static void copyAndClose(InputStream from, OutputStream to) throws IOException{
+    public static void copyAndClose(InputStream from, OutputStream to) throws IOException {
         try {
             copy(from, to);
         } finally {
@@ -38,12 +38,12 @@ public class FileUtils {
             to.close();
         }
     }
-    
+
     public static void copy(InputStream from, OutputStream to) throws IOException {
         BufferedInputStream input = new BufferedInputStream(from);
         BufferedOutputStream output = new BufferedOutputStream(to);
 
-        byte buf[] = new byte [BUFFER_SIZE];
+        byte buf[] = new byte[BUFFER_SIZE];
         int nRead;
         while ((nRead = input.read(buf)) != -1) {
             output.write(buf, 0, nRead);
@@ -60,8 +60,8 @@ public class FileUtils {
             ex.printStackTrace();
         }
     }
-    
-    public static String copyInputStreamToString(InputStream is, String charset) 
+
+    public static String copyInputStreamToString(InputStream is, String charset)
             throws IOException {
         StringBuilder out = new StringBuilder();
         copyInputStreamToStringBuilder(out, is, charset);

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant.data;
 
 import java.util.Collection;
@@ -24,26 +24,26 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 public class Ticket {
-    
+
     private Map<String, String> m_Fields = new TreeMap<String, String>();
-    
+
     private final int m_Number;
-    
+
     public Ticket(int Number) {
         m_Number = Number;
     }
-    
+
     public Ticket(Ticket original) {
         m_Number = original.m_Number;
         setFieldsFromTicket(original);
     }
-    
+
     /** Set (or overwrite) our fields using those in the supplied ticket. */
     public final void setFieldsFromTicket(Ticket ticket) {
         if (m_Number != ticket.m_Number) {
             System.err.println("Ticket numbers don't match");
         }
-        
+
         for (Entry<String, String> field : ticket.m_Fields.entrySet()) {
             m_Fields.put(field.getKey(), field.getValue());
         }
@@ -52,7 +52,7 @@ public class Ticket {
     public int getNumber() {
         return m_Number;
     }
-    
+
     @Override
     public String toString() {
         return "Ticket " + m_Number + ", " + super.toString();
@@ -65,7 +65,7 @@ public class Ticket {
             m_Fields.put(fieldName, value);
         }
     }
-    
+
     public void remove(String fieldName) {
         m_Fields.remove(fieldName);
     }

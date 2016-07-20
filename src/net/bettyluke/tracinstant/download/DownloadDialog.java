@@ -67,28 +67,34 @@ public class DownloadDialog extends JDialog {
 
     public class TargetTableModel extends AbstractTableModel {
         private ListModelView listModel;
+
         public TargetTableModel(ListModelView listModel) {
             this.listModel = listModel;
             listModel.addListDataListener(new ListDataListener() {
                 public void intervalRemoved(ListDataEvent e) {
                     fireTableRowsDeleted(e.getIndex0(), e.getIndex1());
                 }
+
                 public void intervalAdded(ListDataEvent e) {
                     fireTableRowsInserted(e.getIndex0(), e.getIndex1());
                 }
+
                 public void contentsChanged(ListDataEvent e) {
                     fireTableRowsUpdated(e.getIndex0(), e.getIndex1());
                 }
             });
         }
+
         @Override
         public int getRowCount() {
             return listModel.getSize();
         }
+
         @Override
         public int getColumnCount() {
             return COLUMNS.length;
         }
+
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             Target target = listModel.getElementAt(rowIndex);
@@ -116,6 +122,7 @@ public class DownloadDialog extends JDialog {
             }
             throw new AssertionError();
         }
+
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
             Target target = listModel.getElementAt(rowIndex);
@@ -125,20 +132,20 @@ public class DownloadDialog extends JDialog {
                 updateControls();
             }
         }
-        
+
         @Override
         public String getColumnName(int column) {
             return COLUMNS[column];
         }
-        
+
         @Override
         public Class<?> getColumnClass(int columnIndex) {
             if ("".equals(COLUMNS[columnIndex])) {
                 return Boolean.class;
-            } 
+            }
             return String.class;
         }
-        
+
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             return columnIndex == 0;
@@ -162,21 +169,21 @@ public class DownloadDialog extends JDialog {
                 showErrorMessage("Directory not found: " + bugsFolder);
                 return;
             }
-            
+
             // TODO: split actions so that setting the bugs folder updates the download
             // list immediately, and the OK button is disabled unless the
             // folder exists (perhaps with a separate "create this folder" option).
-            
+
             downloadModel.setBugsFolder(bugsFolder);
             downloadModel.download();
         }
-        
+
         private void showErrorMessage(String message) {
             JOptionPane.showMessageDialog(
                 DownloadDialog.this, message, getTitle(), JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     class StopDownloadAction extends AbstractAction {
 
         public StopDownloadAction() {
@@ -188,7 +195,7 @@ public class DownloadDialog extends JDialog {
             downloadModel.cancelDownload();
         }
     }
-    
+
     class HideAction extends AbstractAction {
 
         public HideAction() {
@@ -197,7 +204,7 @@ public class DownloadDialog extends JDialog {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            
+
             // This is intended as a singleton dialog
             setVisible(false);
         }
@@ -208,11 +215,11 @@ public class DownloadDialog extends JDialog {
     private final BrowsePanel browsePanel;
     private final JComponent tablePanel;
     private final JTextComponent statusPanel;
-    
+
     private final Action startAction = new StartDownloadAction();
     private final Action stopAction = new StopDownloadAction();
     private final Action hideAction = new HideAction();
-    
+
     JButton startButton = new JButton(startAction);
     JButton stopButton = new JButton(stopAction);
 
@@ -222,10 +229,10 @@ public class DownloadDialog extends JDialog {
         this.browsePanel = createBrowsePanel();
         this.tablePanel = createTablePanel();
         this.statusPanel = createFeedbackPanel();
-        
+
         JPanel mainPanel = newBorderedPanel(browsePanel, tablePanel, statusPanel);
         getContentPane().add(newBorderedPanel(null, mainPanel, createButtonRow()));
-        
+
         updateControls();
         addKeyboardShortcuts();
         addBehaviour();
@@ -238,8 +245,7 @@ public class DownloadDialog extends JDialog {
     private void addKeyboardShortcuts() {
         getRootPane().setDefaultButton(startButton);
         getRootPane().registerKeyboardAction(hideAction,
-            KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-            JComponent.WHEN_IN_FOCUSED_WINDOW);
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
     }
 
     private void addBehaviour() {
@@ -254,23 +260,26 @@ public class DownloadDialog extends JDialog {
             public void removeUpdate(DocumentEvent e) {
                 update();
             }
+
             public void insertUpdate(DocumentEvent e) {
                 update();
             }
+
             public void changedUpdate(DocumentEvent e) {
                 update();
             }
+
             private void update() {
                 downloadModel.setBugsFolder(new File(ed.getText()));
             }
         });
     }
-    
+
     protected void updateControls() {
         updateButtonEnabledStates();
         statusPanel.setText(getStatusText());
     }
-    
+
     private String getStatusText() {
         switch (downloadModel.getState()) {
         case CANCELLING:
@@ -302,10 +311,9 @@ public class DownloadDialog extends JDialog {
 
     private void updateButtonEnabledStates() {
         boolean startWasEnabled = startAction.isEnabled();
-        startAction.setEnabled(
-            !downloadModel.isBusy() && downloadModel.getNumDownloads() > 0);
+        startAction.setEnabled(!downloadModel.isBusy() && downloadModel.getNumDownloads() > 0);
         stopAction.setEnabled(downloadModel.isDownloading());
-        
+
         if (startWasEnabled && !startAction.isEnabled()) {
             if (stopAction.isEnabled()) {
                 stopButton.requestFocusInWindow();
@@ -328,7 +336,7 @@ public class DownloadDialog extends JDialog {
         for (int w : DEFAULT_COL_WIDTH) {
             table.getColumnModel().getColumn(i++).setPreferredWidth(w);
         }
-        
+
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {
@@ -339,29 +347,26 @@ public class DownloadDialog extends JDialog {
                 }
             }
         });
-        
+
         table.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent evt) {
                 if (!KeyEvent.getKeyModifiersText(evt.getModifiers()).isEmpty()) {
-                    return ;
+                    return;
                 }
-                if (evt.getKeyCode() == KeyEvent.VK_ENTER && 
-                        1 == table.getSelectedRowCount()) {
+                if (evt.getKeyCode() == KeyEvent.VK_ENTER && 1 == table.getSelectedRowCount()) {
                     browseToFolderOfSelectedRow(table);
                     evt.consume();
                 }
-                if (evt.getKeyCode() == KeyEvent.VK_SPACE && 
-                        table.getSelectedRowCount() > 0) {
+                if (evt.getKeyCode() == KeyEvent.VK_SPACE && table.getSelectedRowCount() > 0) {
                     toggleSelected();
                     evt.consume();
                 }
             }
 
-            // Toggle the checkbox on all selected rows  
+            // Toggle the checkbox on all selected rows
             private void toggleSelected() {
-                boolean selected = 
-                    (Boolean) table.getModel().getValueAt(table.getSelectedRow(), 0);
+                boolean selected = (Boolean) table.getModel().getValueAt(table.getSelectedRow(), 0);
                 for (int viewRow : table.getSelectedRows()) {
                     int row = table.convertRowIndexToModel(viewRow);
                     table.getModel().setValueAt(!selected, row, 0);
@@ -398,7 +403,7 @@ public class DownloadDialog extends JDialog {
         JEditorPane pane = new JEditorPane();
         pane.setContentType("text/html");
         pane.setText("&nbsp;");
-        pane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);  
+        pane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
         pane.putClientProperty("Nimbus.Overrides.InheritDefaults", true);
         UIDefaults defaults = new UIDefaults();
         Color bg = new Color(getBackground().getRGB());
@@ -409,13 +414,11 @@ public class DownloadDialog extends JDialog {
         pane.setFocusable(false);
         pane.setEditable(false);
         Insets in = pane.getInsets();
-        pane.setBorder(BorderFactory.createEmptyBorder(
-            in.top, in.left, in.bottom, in.right));
+        pane.setBorder(BorderFactory.createEmptyBorder(in.top, in.left, in.bottom, in.right));
         return pane;
     }
 
-    private static JPanel newBorderedPanel(
-            Component north, Component centre, Component south) {
+    private static JPanel newBorderedPanel(Component north, Component centre, Component south) {
         BorderLayout layout = new BorderLayout();
         layout.setVgap(GAP);
         JPanel panel = new JPanel(layout);
@@ -426,7 +429,7 @@ public class DownloadDialog extends JDialog {
         if (south != null) {
             panel.add(south, BorderLayout.SOUTH);
         }
-        
+
         return panel;
     }
 

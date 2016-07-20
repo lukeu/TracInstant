@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant.data;
 
 import java.io.BufferedInputStream;
@@ -44,9 +44,8 @@ import net.bettyluke.util.XML10FilterReader;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-
 public class SlurpTask extends TicketLoadTask {
-    
+
     private static final String STATUS_EXCLUSION_PLACEHOLDER = "<<STATUS>>";
 
     private static final String FIELDS_QUERY =
@@ -57,7 +56,7 @@ public class SlurpTask extends TicketLoadTask {
         "&col=resolution&col=version&order=id";
 
     private static final int RESULTS_PER_PAGE = 200;
-    
+
     // A query to slurp pages while still supporting Trac 0.10, which did not support
     // the 'max' and 'page' requests (and so slurps everything at once).
     private static final String RSS_QUERY =
@@ -66,6 +65,7 @@ public class SlurpTask extends TicketLoadTask {
         "&order=id" +
         "&max=" + RESULTS_PER_PAGE;
         
+
     // Note: ordering by changetime is required by the heuristics in DateFormatDetector
     private static final String MODIFIED_TIME_QUERY =
         "query?format=tab" + STATUS_EXCLUSION_PLACEHOLDER + 
@@ -74,11 +74,11 @@ public class SlurpTask extends TicketLoadTask {
     private final SiteData site;
     private final SiteSettings siteSettings;
     private final String sinceDateTime;
-    
+
     /** An externally-executed scan of the attachmentFolder, we monitor its completion. */
     private final Future<?> attachmentScanFuture;
 
-    /** 
+    /**
      * The format used only to form part of url requests. Trac appears to support this
      * format irrespective of user/server date settings.
      */
@@ -93,7 +93,7 @@ public class SlurpTask extends TicketLoadTask {
         this.sinceDateTime = since;
         this.attachmentScanFuture = attachmentScanFuture;
     }
-    
+
     public boolean isIncremental() {
         return sinceDateTime != null;
     }
@@ -114,12 +114,12 @@ public class SlurpTask extends TicketLoadTask {
     }
 
     protected Void doInternal() throws IOException, SAXException, InterruptedException {
-        
+
         // Slurp timestamps prior to all other data.
         TicketProvider changetimeProvider = slurpChangetimes();
         List<Ticket> tickets = changetimeProvider.getTickets();
         int fieldsFound = tickets.size();
-        
+
         // Update DateFormat always when (and only when) doing a full slurp
         if (sinceDateTime == null) {
             List<String> dateTimeStringsAscending = extractModificationDates(tickets);
@@ -129,30 +129,30 @@ public class SlurpTask extends TicketLoadTask {
             }
             site.setDateFormat(format);
         }
-        
+
         if (isTicketModified(tickets)) {
-        
+
             System.out.println("" + fieldsFound + " tickets require field updates");
-            
+
             slurpFields(FIELDS_QUERY);
             slurpDescriptions(fieldsFound);
-            
+
             // Finally publish timestamps AFTER slurping all other data.
             publish(new Update(changetimeProvider));
         }
 
-        // Monitor the completion of attachment folder scanning. (It is hacked in here 
+        // Monitor the completion of attachment folder scanning. (It is hacked in here
         // so that status updates are more-simple: they are issued from only one source.)
         if (!siteSettings.getAttachmentsDir().trim().isEmpty()) {
-            publish(new Update("Scanning Attachments Folder... ", 
-                "Scanning: " + siteSettings.getAttachmentsDir()));
+            publish(new Update("Scanning Attachments Folder... ",
+                    "Scanning: " + siteSettings.getAttachmentsDir()));
             awaitCompletionNoExceptions(attachmentScanFuture, 10, TimeUnit.SECONDS);
         }
-        
+
         // All data was passed (and must be consumed) via the publish/process mechanism
         return null;
     }
-    
+
     private List<String> extractModificationDates(Collection<Ticket> tickets) {
         List<String> result = new ArrayList<String>(tickets.size());
         for (Ticket ticket : tickets) {
@@ -184,7 +184,7 @@ public class SlurpTask extends TicketLoadTask {
         publish(new Update("Checking ticket timestamps...", "Querying: " + url));
         return slurpTabDelimited(url);
     }
-    
+
     private int slurpFields(String query) throws IOException, InterruptedException {
         URL url = new URL(makeQueryURL(query));
         publish(new Update("Downloading ticket fields...", "Querying: " + url));
@@ -192,7 +192,7 @@ public class SlurpTask extends TicketLoadTask {
         publish(new Update(tabData));
         return tabData.getTickets().size();
     }
-    
+
     private String makeModifiedFilter() {
         try {
             if (sinceDateTime != null && site.getDateFormat() != null) {
@@ -215,7 +215,7 @@ public class SlurpTask extends TicketLoadTask {
     private void slurpDescriptions(int expectedCount) throws IOException, SAXException {
         String basicDescriptionURL = makeQueryURL(RSS_QUERY);
         String pageSuffix = "";
-        
+
         int found = 0;
         int page = 1;
         while (found < expectedCount) {
@@ -239,10 +239,10 @@ public class SlurpTask extends TicketLoadTask {
         } catch (CancellationException e) {
             // Ignore
         } catch (InterruptedException e) {
-            
+
             future.cancel(true);
-            
-            // Don't mask the interrupt state from higher-up the call stack. 
+
+            // Don't mask the interrupt state from higher-up the call stack.
             Thread.currentThread().interrupt();
         } catch (ExecutionException e) {
             e.printStackTrace();
@@ -266,7 +266,7 @@ public class SlurpTask extends TicketLoadTask {
         InputStream in = null;
         try {
             in = authenticateAndGetStream(url);
-            
+
             // Parse, filtering-out duff chars. Note one proposal of converting the
             // header to the more lenient XML 1.1 <?xml version="1.1"?> still failed
             // to handle some crap spewed out by one test server.
@@ -282,7 +282,8 @@ public class SlurpTask extends TicketLoadTask {
         }
     }
 
-    private TicketProvider slurpTabDelimited(URL url) throws MalformedURLException, IOException, InterruptedException {
+    private TicketProvider slurpTabDelimited(URL url)
+            throws MalformedURLException, IOException, InterruptedException {
         InputStream in = null;
         try {
             in = authenticateAndGetStream(url);
@@ -297,7 +298,7 @@ public class SlurpTask extends TicketLoadTask {
         DateFormat dateFormat = site.getDateFormat();
 
         if (dateFormat == null) {
-            // Force an entire re-fetch. 
+            // Force an entire re-fetch.
             System.err.println("Unknown server DateFormat");
             return null;
         }
@@ -317,7 +318,7 @@ public class SlurpTask extends TicketLoadTask {
                 } catch (ParseException e) {
                 }
             }
-            
+
             // HACK! FAIL upon mis-formatted fields, causing an entire re-fetch.
             if (changeTime != null && !changeTime.trim().isEmpty()) {
                 System.err.println("Unrecognised modified time: " + changeTime);

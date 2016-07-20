@@ -44,18 +44,17 @@ import net.bettyluke.tracinstant.prefs.SiteSettings;
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
 import net.bettyluke.util.FileUtils;
 
-
 public class AttachmentCounter {
-    
+
     private static final Pattern NAME_MATCHER = Pattern.compile("^(\\d+).*");
-    
     private static final Pattern ATTACHMENT_LINK =
         Pattern.compile("href=\\\"(/attachment/ticket/[^\\\"]+)\\\"");
 
+
     /** A master list, collected once, of all AttachmentDirectory sub-directories. */
-    private static Map<Integer,File> s_AttachmentDirListing =
-        Collections.synchronizedMap(new TreeMap<Integer,File>());
-    
+    private static Map<Integer, File> s_AttachmentDirListing = Collections
+            .synchronizedMap(new TreeMap<Integer, File>());
+
     /**
      * The most recently executed AttachmentCounter. Thread-safety: always accessed
      * by the EDT.
@@ -67,14 +66,14 @@ public class AttachmentCounter {
 
     /** Counts attachments found under the additional attachment directory. */
     private final FileCounter m_DirectoryCounter = new FileCounter();
-    
+
     private final Ticket[] m_Tickets;
     private final CountCallback m_Callback;
-    
+
     private boolean m_FoundFiles = false;
     private boolean m_FoundAttachments = false;
     private boolean m_Cancelled = false;
-    
+
     private AttachmentCounter(Ticket[] tickets, CountCallback callback) {
         m_Tickets = tickets;
         m_Callback = callback;
@@ -82,7 +81,9 @@ public class AttachmentCounter {
 
     public static interface CountCallback {
         void restart();
+
         void downloadsFound(List<? extends Downloadable> attachments);
+
         void done();
     }
 
@@ -99,15 +100,15 @@ public class AttachmentCounter {
         
         SwingWorker<Map<Integer, File>, Void> scanner =
                 new SwingWorker<Map<Integer,File>, Void>() {
-            
+
             @Override
             protected Map<Integer, File> doInBackground() throws Exception {
                 return scanAttachmentsFolder();
             }
-            
+
             private Map<Integer, File> scanAttachmentsFolder() {
                 long t0 = System.nanoTime();
-                
+
                 if (topFolder.trim().isEmpty()) {
                     return Collections.emptyMap();
                 }
@@ -118,14 +119,14 @@ public class AttachmentCounter {
                 File bugDir = new File(topFolder);
 
                 // Unfortunately there doesn't seem to be an easy way to interrupt this
-                // potentially-long command. (It is slow on certain network drives.) 
+                // potentially-long command. (It is slow on certain network drives.)
                 String[] listing = bugDir.list();
-                
+
                 if (listing == null) {
                     System.err.println("Failed to list directory: " + bugDir);
                     return results;
                 }
-                
+
                 for (String name : listing) {
                     Matcher m = NAME_MATCHER.matcher(name);
                     if (m.matches()) {
@@ -137,10 +138,10 @@ public class AttachmentCounter {
 
                 long t1 = System.nanoTime();
                 System.out.format("Time to scan the AttachmentsFolder: %.2f ms\n",
-                    (t1 - t0) / 1000000f);
+                        (t1 - t0) / 1000000f);
                 return results;
             }
-            
+
             @Override
             protected void done() {
                 if (isCancelled()) {
@@ -155,11 +156,11 @@ public class AttachmentCounter {
                 }
             }
         };
-        
+
         scanner.execute();
         return scanner;
     }
-    
+
     public static void restartCounting(Ticket[] tickets, CountCallback callback) {
         assert SwingUtilities.isEventDispatchThread();
         if (s_CurrentJob != null) {
@@ -170,7 +171,7 @@ public class AttachmentCounter {
         s_CurrentJob.m_DirectoryCounter.execute();
         s_CurrentJob.m_TicketCounter.execute();
     }
-    
+
     private void cancel() {
         m_Cancelled = true;
         m_DirectoryCounter.cancel(true);
@@ -204,7 +205,7 @@ public class AttachmentCounter {
             }
             return null;
         }
-        
+
         @Override
         protected void process(List<FileDownloadable> chunks) {
             if (!m_Cancelled) {
@@ -218,10 +219,10 @@ public class AttachmentCounter {
             checkAllDone();
         }
     }
-    
+
     /** Counts attachments found attached to Trac ticket(s). */
     public class TracCounter extends SwingWorker<Void, TracDownloadable> {
-        
+
         @Override
         protected Void doInBackground() throws InterruptedException {
             for (Ticket ticket : m_Tickets) {
@@ -235,21 +236,20 @@ public class AttachmentCounter {
                 } catch (MalformedURLException ex) {
                     ex.printStackTrace();
                 } catch (IOException ex) {
-                    
+
                     // TODO: Error reporting
                     ex.printStackTrace();
                 }
             }
             return null;
         }
-        
+
         private URL createAttachmentPageURL(int number) throws MalformedURLException {
-            
+
             // Trailing '/' required for Trac 0.12 (wasn't needed for 0.10)
-            return new URL(
-                TracInstantProperties.getURL() + "/attachment/ticket/" + number + '/');
+            return new URL(TracInstantProperties.getURL() + "/attachment/ticket/" + number + '/');
         }
-        
+
         private void scanTracAttachementPage(int ticketNum, URL url) throws IOException {
             InputStream in = null;
             BufferedReader reader = null;
@@ -268,7 +268,7 @@ public class AttachmentCounter {
                 FileUtils.close(reader);
             }
         }
-        
+
         @Override
         protected void process(List<TracDownloadable> chunks) {
             if (!m_Cancelled) {
@@ -282,7 +282,7 @@ public class AttachmentCounter {
             checkAllDone();
         }
     }
-    
+
     void checkAllDone() {
         assert SwingUtilities.isEventDispatchThread();
         if (!m_Cancelled && m_FoundFiles && m_FoundAttachments) {

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant.ui;
 
 import java.awt.BorderLayout;
@@ -39,12 +39,12 @@ import javax.swing.text.Document;
 import net.bettyluke.tracinstant.data.SavedSearch;
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
 
-/** 
- * NB: Most of the customisation is in SearchComboEditor. This class mainly ties a 
- * few parts together. 
+/**
+ * NB: Most of the customisation is in SearchComboEditor. This class mainly ties a few parts
+ * together.
  */
 public class SearchCombo extends JComboBox {
-    
+
     private final class DropDownRenderer extends DefaultListCellRenderer {
 
         JPanel panel = new JPanel(new BorderLayout());
@@ -54,18 +54,18 @@ public class SearchCombo extends JComboBox {
         JLabel searchText = new JLabel(" ");
         Font monoFont = new Font(Font.MONOSPACED, Font.BOLD, 12);
         Font descFont = desc.getFont().deriveFont(desc.getFont().getSize() + 2f);
-        
+
         public DropDownRenderer() {
             desc.setBackground(TRANSPARENT);
             desc.setFont(descFont);
             desc.setBorder(BorderFactory.createEmptyBorder(2, 6, 2, 6));
-            
+
             alias.setBackground(TRANSPARENT);
             alias.setFont(monoFont);
 
             searchText.setBackground(TRANSPARENT);
             searchText.setFont(monoFont);
-            
+
             box.add(alias);
             box.add(searchText);
             box.add(Box.createGlue());
@@ -77,24 +77,22 @@ public class SearchCombo extends JComboBox {
         }
 
         @Override
-        public Component getListCellRendererComponent(
-                JList list, Object value, int index,
+        public Component getListCellRendererComponent(JList list, Object value, int index,
                 boolean isSelected, boolean cellHasFocus) {
             SavedSearch ss = (SavedSearch) value;
-            
-            Color fg = isSelected ? 
-                list.getSelectionForeground() : list.getForeground();
+
+            Color fg = isSelected ? list.getSelectionForeground() : list.getForeground();
 
             desc.setText(ss.name.isEmpty() ? "" : ss.name);
             desc.setForeground(fg);
-            
+
             alias.setText(ss.alias);
             alias.setForeground(isSelected ? fg : Color.BLUE);
 
             String searchBase = ss.alias.isEmpty() ? "" : " : ";
             searchText.setText(searchBase + ss.searchText);
             searchText.setForeground(isSelected ? fg : Color.GRAY);
-            
+
             Color bg = isSelected ? list.getSelectionBackground() : TRANSPARENT;
             panel.setBackground(bg);
             panel.setOpaque(isSelected);
@@ -118,22 +116,22 @@ public class SearchCombo extends JComboBox {
             protected JTextField createEditorComponent() {
                 return new SearchComboEditor(getModel(), "", 9);
             }
-            
+
             @Override
             public Component getEditorComponent() {
                 Component editorComponent = super.getEditorComponent();
                 return editorComponent;
             }
         });
-        
+
         SearchComboEditor ed = getEditorComponent();
         ed.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
-        
+
         setPreferredSize(getPreferredSize());
         changeListRenderer();
         loadLastSearch();
     }
-    
+
     protected final String getText() {
         try {
             Document doc = getEditorComponent().getDocument();
@@ -142,11 +140,11 @@ public class SearchCombo extends JComboBox {
             throw new RuntimeException(e);
         }
     }
-    
+
     private void changeListRenderer() {
         setRenderer(new DropDownRenderer());
     }
-    
+
     @Override
     public SearchComboBoxModel getModel() {
         return (SearchComboBoxModel) super.getModel();
@@ -165,15 +163,15 @@ public class SearchCombo extends JComboBox {
         getEditorComponent().setText(text);
     }
 
-    public SearchComboEditor getEditorComponent() { 
+    public SearchComboEditor getEditorComponent() {
         return (SearchComboEditor) getEditor().getEditorComponent();
     }
 
-    /** Get the text, with all saved shorthands expanded. */ 
+    /** Get the text, with all saved shorthands expanded. */
     public String getExpandedText() {
-        
-        TreeMap<String, SavedSearch> map = new TreeMap<String,SavedSearch>(
-            String.CASE_INSENSITIVE_ORDER);
+
+        TreeMap<String, SavedSearch> map = new TreeMap<String, SavedSearch>(
+                String.CASE_INSENSITIVE_ORDER);
         int num = getModel().getSize();
         for (int i = 0; i < num; i++) {
             SavedSearch ss = getModel().getElementAt(i);
@@ -181,10 +179,10 @@ public class SearchCombo extends JComboBox {
                 map.put(ss.alias, ss);
             }
         }
-        
+
         StringBuilder result = new StringBuilder();
         String space = "";
-        
+
         // Perhaps this class should just be returning data, rather than processing it,
         // but it seems a little easier to do this here.
         final String[] words = getEditorText().split("\\s");
@@ -201,7 +199,7 @@ public class SearchCombo extends JComboBox {
 
         return result.toString();
     }
-    
+
     private void loadLastSearch() {
         setEditorText(TracInstantProperties.get().getValue("CurrentFilter"));
     }

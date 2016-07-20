@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant.download;
 
 import java.io.File;
@@ -34,25 +34,26 @@ public class AttachmentDownloader extends SwingWorker<Void, Result> {
     private final List<Target> downloadQueue = new ArrayList<Target>();
     private DownloadModel model;
     private Runnable allDoneCallback;
-    
+
     protected static class Result {
         public Result(Target target, State newState) {
             this.target = target;
             this.newState = newState;
         }
+
         Target target;
         State newState;
     }
-    
+
     AttachmentDownloader(DownloadModel model) {
         this(model, null);
     }
-    
+
     AttachmentDownloader(DownloadModel model, Runnable doneCallback) {
         this.model = model;
         this.allDoneCallback = doneCallback;
     }
-    
+
     public void add(Target target) {
         downloadQueue.add(target);
     }
@@ -78,14 +79,14 @@ public class AttachmentDownloader extends SwingWorker<Void, Result> {
         }
         return null;
     }
-    
+
     @Override
     protected void process(List<Result> chunks) {
-        for (Result result: chunks) {
+        for (Result result : chunks) {
             model.setTargetState(result.target, result.newState);
         }
     }
-    
+
     @Override
     protected void done() {
         if (allDoneCallback != null) {

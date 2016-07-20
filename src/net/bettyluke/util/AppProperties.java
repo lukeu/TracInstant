@@ -15,12 +15,12 @@ public class AppProperties {
     Properties m_Props = new Properties();
     private final String m_AppName;
     private final String m_CompanyName;
-    
+
     public AppProperties(String companyName, String appName) {
         m_CompanyName = companyName;
         m_AppName = appName;
     }
-    
+
     public void remove(String key) {
         m_Props.remove(key);
     }
@@ -28,19 +28,19 @@ public class AppProperties {
     public void putString(String key, String value) {
         m_Props.put(key, value);
     }
-    
+
     public String getValue(String key) {
         return (String) m_Props.get(key);
     }
-    
+
     public String getString(String key, String fallback) {
         String result = getValue(key);
         return (result == null) ? fallback : result;
     }
-    
+
     /**
-     * @return The string value for the first item in 'keys' that maps to a non-null
-     *         value, otherwise fallback.
+     * @return The string value for the first item in 'keys' that maps to a non-null value,
+     *         otherwise fallback.
      */
     public String getString(String[] keys, String fallback) {
         String result = null;
@@ -53,11 +53,10 @@ public class AppProperties {
         return (result == null) ? fallback : result;
     }
 
-    
     public void putBoolean(String key, boolean b) {
         m_Props.put(key, "" + b);
     }
-    
+
     public boolean getBoolean(String key, boolean fallback) {
         String value = getValue(key);
         if ("true".equals(value)) {
@@ -80,7 +79,7 @@ public class AppProperties {
             return fallback;
         }
     }
-    
+
     public int getBoundedInt(String key, int fallback, int min, int max) {
         if (fallback < min || fallback > max) {
             throw new IllegalArgumentException();
@@ -92,7 +91,7 @@ public class AppProperties {
     public void putFilePath(String key, File value) {
         m_Props.put(key, value.getPath());
     }
-    
+
     public File getFilePath(String key, File fallback) {
         String s = (String) m_Props.get(key);
         return (s == null) ? fallback : new File(s);
@@ -112,7 +111,7 @@ public class AppProperties {
         }
         return result;
     }
-    
+
     /**
      * @return The path specified by 'key', if the file actually exists on the
      *         file system, otherwise null.
@@ -137,18 +136,18 @@ public class AppProperties {
         }
         return result;
     }
-    
+
     public Properties getProperties() {
         return m_Props;
     }
-    
+
     public void saveProperties() throws IOException {
         File outFile = getPropertiesFilePath();
         File dir = outFile.getParentFile();
         if (!dir.isDirectory() && !dir.mkdirs()) {
             throw new IOException("Could not create file: " + outFile);
         }
-        
+
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(outFile);
@@ -157,7 +156,6 @@ public class AppProperties {
             FileUtils.close(out);
         }
     }
-
 
     public void loadProperties() {
         FileInputStream in = null;

@@ -14,8 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
-        
+
 package net.bettyluke.tracinstant.ui;
 
 import java.awt.event.ActionEvent;
@@ -49,18 +48,18 @@ import net.bettyluke.tracinstant.ui.MenuCascader.Item;
 public class TicketTable extends JTable {
 
     public static class ColumnWidthMemoriser {
-        
+
         private static final String COLUMNS_KEY = "TicketTableColumns";
-        
+
         /**
          * Basic defaults so that a few specific columns appear together on the left,
          * prior to being user-customised. TODO: Numbers are currently based on the
          * HACK (commented lower in the file) and will need revising.
          */
         private static final String COLUMNS_DEFAULT = "[#=65, summary=350, reporter=100]";
-        
+
         private final JTableHeader tableHeader;
-        
+
         public ColumnWidthMemoriser(JTableHeader header) {
             tableHeader = header;
         }
@@ -72,16 +71,20 @@ public class TicketTable extends JTable {
                     memoriseColumnLayout();
                 }
             });
-            
+
             tableHeader.getColumnModel().addColumnModelListener(new TableColumnModelListener() {
                 public void columnSelectionChanged(ListSelectionEvent e) {
                 }
+
                 public void columnRemoved(TableColumnModelEvent e) {
                 }
+
                 public void columnMoved(TableColumnModelEvent e) {
                 }
+
                 public void columnMarginChanged(ChangeEvent e) {
                 }
+
                 public void columnAdded(TableColumnModelEvent e) {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
@@ -91,7 +94,7 @@ public class TicketTable extends JTable {
                 }
             });
         }
-        
+
         protected void memoriseColumnLayout() {
             TableColumnModel cm = tableHeader.getColumnModel();
             List<String> headerWidths = new ArrayList<String>();
@@ -102,7 +105,7 @@ public class TicketTable extends JTable {
             }
             TracInstantProperties.putStringList(COLUMNS_KEY, headerWidths);
         }
-        
+
         protected void recallColumnLayout() {
             List<String> stored = TracInstantProperties.getStringList(
                 COLUMNS_KEY, COLUMNS_DEFAULT);
@@ -119,15 +122,14 @@ public class TicketTable extends JTable {
             } catch (NumberFormatException ex) {
                 ex.printStackTrace();
             }
-            
+
             TableColumnModel cm = tableHeader.getColumnModel();
             int newIndex = 0;
             for (String colName : widths.keySet()) {
                 int oldIndex = findColumnIndex(cm, newIndex, colName);
                 if (oldIndex > -1) {
                     cm.moveColumn(oldIndex, newIndex);
-                    
-                    
+
                     // HACK! only a temporary sizing measure.
                     // TODO: Proportion correctly to the total size of the header.
                     // (then fix basic defaults!)
@@ -146,10 +148,10 @@ public class TicketTable extends JTable {
             return -1;
         }
     }
-    
+
     /**
-     * We simply store a reference to the main-frame's text component to update it
-     * directly. (Perhaps it would be cleaner to access it via an interface.)
+     * We simply store a reference to the main-frame's text component to update it directly.
+     * (Perhaps it would be cleaner to access it via an interface.)
      */
     private final SearchCombo searchCombo;
 
@@ -177,42 +179,41 @@ public class TicketTable extends JTable {
             }
         });
     }
-    
+
     private JPopupMenu createColumnFilterMenu(int viewColumn) {
         String colName = getColumnName(viewColumn);
-        
-        Map<String, Integer> map =
-            new TreeMap<String, Integer>(String.CASE_INSENSITIVE_ORDER);
+
+        Map<String, Integer> map = new TreeMap<String, Integer>(String.CASE_INSENSITIVE_ORDER);
         for (int r = 0, end = getRowCount(); r < end; ++r) {
             Object value = getValueAt(r, viewColumn);
             String[] strs = value.toString().split("[\\s\\,]+");
             for (String s : strs) {
                 Integer count = map.get(s);
-                map.put(s, (count == null) ? 1 : count+1);
+                map.put(s, (count == null) ? 1 : count + 1);
             }
         }
-        
+
         List<Item> items = new ArrayList<Item>();
         for (Entry<String, Integer> s : map.entrySet()) {
             items.add(new FilterColumnAction(colName, s.getKey(), s.getValue()));
         }
-        
+
         return new MenuCascader().create(items);
     }
-    
+
     /** An action that adds a new search-term to m_FilterText when invoked. */
     public class FilterColumnAction extends AbstractAction implements MenuCascader.Item {
         private final String columnName;
         private final String item;
         private final int hitCount;
-    
+
         public FilterColumnAction(String columnName, String item, int hitCount) {
             super(item + " (" + hitCount + ")");
             this.columnName = columnName;
             this.item = item;
             this.hitCount = hitCount;
         }
-    
+
         @Override
         public void actionPerformed(ActionEvent e) {
             String text = searchCombo.getEditorText();
@@ -222,20 +223,20 @@ public class TicketTable extends JTable {
             searchCombo.setEditorText(sb.toString().trim());
             searchCombo.requestFocusInWindow();
         }
-    
+
         private String escape(String text) {
             return text.replaceAll("([^0-9a-zA-Z_])", "\\\\$1");
         }
-    
+
         private String addWordBoundaries(String text) {
             if (text.isEmpty()) {
                 return text;
             }
-            Pattern startPattern = Pattern.compile(
-                Pattern.quote(text) + "\\B", Pattern.CASE_INSENSITIVE);
-            Pattern endPattern = Pattern.compile(
-                "\\B" + Pattern.quote(text), Pattern.CASE_INSENSITIVE);
-    
+            Pattern startPattern = Pattern.compile(Pattern.quote(text) + "\\B",
+                    Pattern.CASE_INSENSITIVE);
+            Pattern endPattern = Pattern.compile("\\B" + Pattern.quote(text),
+                    Pattern.CASE_INSENSITIVE);
+
             int nTickets = getModel().getRowCount();
             boolean startMatch = false;
             boolean endMatch = false;
@@ -245,32 +246,32 @@ public class TicketTable extends JTable {
                 startMatch |= startPattern.matcher(value).find();
                 endMatch |= endPattern.matcher(value).find();
             }
-            
+
             return (endMatch ? "\\b" : "") + text + (startMatch ? "\\b" : "");
         }
-    
+
         @Override
         public String getName() {
             return item;
         }
-    
+
         @Override
         public int getHits() {
             return hitCount;
         }
     }
-    
+
     @Override
     public TicketTableModel getModel() {
         return (TicketTableModel) super.getModel();
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public TableRowSorter<? extends TicketTableModel> getRowSorter() {
         return (TableRowSorter<? extends TicketTableModel>) super.getRowSorter();
     }
-    
+
     public Ticket[] getSelectedTickets() {
         TicketTableModel model = getModel();
         Ticket[] result = new Ticket[getSelectedRowCount()];

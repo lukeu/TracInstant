@@ -14,14 +14,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant.data;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 
 /** Just a few heading-like fields, plus ticket data. */
 public class TracXmlResult implements TicketProvider {
@@ -34,14 +33,14 @@ public class TracXmlResult implements TicketProvider {
     public void addTicket(Ticket ticket) {
         m_Tickets.put(ticket.getNumber(), ticket);
     }
-    
+
     @Override
     public List<Ticket> getTickets() {
-        
+
         // The Ticket objects are still mutable. Never mind.
         return new ArrayList<Ticket>(m_Tickets.values());
     }
-    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Title=" + m_Title + ", Link=" + m_Link);

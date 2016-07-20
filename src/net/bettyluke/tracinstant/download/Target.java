@@ -20,9 +20,11 @@ package net.bettyluke.tracinstant.download;
 import java.io.File;
 
 public class Target {
-    public enum State { IDLE, STARTED, ENDED, ERROR }
-    
-    private final Downloadable source;  // TODO: Consider refactoring out, once the rest is working.
+    public enum State {
+        IDLE, STARTED, ENDED, ERROR
+    }
+
+    private final Downloadable source; // TODO: Consider refactoring out, once the rest is working.
     private boolean alreadyExists;
     private File targetFile;
     private State state = State.IDLE;
@@ -30,54 +32,65 @@ public class Target {
     private String errorMessage = null;
     private boolean selected = true;
     private File topFolder;
-    
+
     public Target(File topFolder, Downloadable source) {
         this.source = source;
         this.topFolder = topFolder;
         updateTargetFile();
     }
+
     private void updateTargetFile() {
         File folder = new File(topFolder, Integer.toString(source.getTicketNumber()));
         targetFile = new File(folder, source.getFileName());
         alreadyExists = targetFile.exists();
     }
+
     public void setTopFolder(File topFolder) {
         this.topFolder = topFolder;
-        updateTargetFile(); 
+        updateTargetFile();
     }
+
     public boolean isOverwriting() {
         return alreadyExists;
     }
+
     public Downloadable getSource() {
         return source;
     }
+
     public File getTargetFile() {
         return targetFile;
     }
+
     public State getState() {
         return state;
     }
+
     public void setState(State state) {
         this.state = state;
     }
+
     public long getBytesDownloaded() {
         return bytesDownloaded;
     }
+
     public void setBytesDownloaded(long bytesDownloaded) {
         this.bytesDownloaded = bytesDownloaded;
     }
+
     public String getErrorMessage() {
         return errorMessage;
     }
+
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
     }
-    
+
     @Override
     public String toString() {
         return "" + source.getTicketNumber() + File.separator + source.getFileName();
     }
-    
+
     public boolean isSelected() {
         return selected;
     }

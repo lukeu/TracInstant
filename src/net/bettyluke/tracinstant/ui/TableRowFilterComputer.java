@@ -51,13 +51,12 @@ public class TableRowFilterComputer {
             return thread;
         }
     };
-    
+
     public interface ResultCallback {
         void filteringComplete(RowFilter<TicketTableModel, Integer> rowFilter);
     }
 
-    private final static class BitSetRowFilter extends
-            RowFilter<TicketTableModel, Integer> {
+    private final static class BitSetRowFilter extends RowFilter<TicketTableModel, Integer> {
         BitSet m_Include;
 
         private BitSetRowFilter(BitSet include) {
@@ -65,35 +64,34 @@ public class TableRowFilterComputer {
         }
 
         @Override
-        public boolean include(
-                Entry<? extends TicketTableModel, ? extends Integer> entry) {
+        public boolean include(Entry<? extends TicketTableModel, ? extends Integer> entry) {
             return m_Include.get(entry.getIdentifier());
         }
     }
 
     private static final class FilterBatchWorker implements Callable<Void> {
-        
+
         public interface BatchCallback {
             void batchComplete(int firstRow, BitSet bits);
         }
-    
+
         private final int m_FirstRowNumber;
         private final List<Ticket> m_Tickets;
         private final SearchTerm[] m_SearchTerms;
         private final BatchCallback m_BatchCallback;
-    
-        public FilterBatchWorker(int firstRowNumber, List<Ticket> tickets,
-            SearchTerm[] searchTerms, BatchCallback callback) {
+
+        public FilterBatchWorker(int firstRowNumber, List<Ticket> tickets, SearchTerm[] searchTerms,
+                BatchCallback callback) {
             m_FirstRowNumber = firstRowNumber;
             m_Tickets = new ArrayList<Ticket>(tickets);
             m_SearchTerms = searchTerms;
             m_BatchCallback = callback;
         }
-    
+
         @Override
         public Void call() {
             BitSet bits = new BitSet(m_Tickets.size());
-            
+
             // The time-consuming bit:
             int it = 0;
             for (Ticket ticket : m_Tickets) {
@@ -105,11 +103,11 @@ public class TableRowFilterComputer {
             m_BatchCallback.batchComplete(m_FirstRowNumber, bits);
             return null;
         }
-    
+
         public boolean include(Ticket ticket) {
 
             NEXT: for (SearchTerm term : m_SearchTerms) {
-                
+
                 // Look at ALL ticket fields (not just those shown as columns).
                 // TODO: (perf) keep global list of fields so that we can expand them
                 // outside the "per-ticket" loop. (Just once per search term.)
@@ -125,16 +123,16 @@ public class TableRowFilterComputer {
                         continue NEXT;
                     }
                 }
-                
+
                 // Also search the special 'number' pseudo-field
-                if ((term.field == null || "#".equals(term.field)) &&
-                    term.pattern.matcher(Integer.toString(ticket.getNumber())).find()) {
+                if ((term.field == null || "#".equals(term.field))
+                        && term.pattern.matcher(Integer.toString(ticket.getNumber())).find()) {
                     if (term.exclude) {
                         return false;
                     }
                     continue;
                 }
-    
+
                 // Pattern not found in any field? Fail.
                 if (!term.exclude) {
                     return false;
@@ -142,7 +140,7 @@ public class TableRowFilterComputer {
             }
             return true;
         }
-    
+
         private Collection<String> expandFields(Ticket ticket, String fieldAbbreviation) {
             Collection<String> fields = ticket.getFieldNames();
             if (fieldAbbreviation == null) {
@@ -151,8 +149,8 @@ public class TableRowFilterComputer {
             List<String> result = new ArrayList<String>(fields.size());
             for (String field : fields) {
                 if (field.length() >= fieldAbbreviation.length()
-                    && field.substring(0, fieldAbbreviation.length()).equalsIgnoreCase(
-                        fieldAbbreviation)) {
+                        && field.substring(0, fieldAbbreviation.length())
+                                .equalsIgnoreCase(fieldAbbreviation)) {
                     result.add(field);
                 }
             }
@@ -160,13 +158,12 @@ public class TableRowFilterComputer {
         }
     }
 
-    private static final class BatchCompletionHandler implements
-            FilterBatchWorker.BatchCallback {
-        
+    private static final class BatchCompletionHandler implements FilterBatchWorker.BatchCallback {
+
         /** Store a future for each batch, purely to be able to cancel them. */
         private final List<Future<Void>> m_Futures = new ArrayList<Future<Void>>();
-    
-        //@GuardedBy("m_Lock")
+
+        // @GuardedBy("m_Lock")
         private final BitSet m_RowBitSet = new BitSet();
         private final Object m_Lock = new Object();
 
@@ -174,45 +171,47 @@ public class TableRowFilterComputer {
          * The number of tasks in progress that have not "reported back" as completed.
          */
         private AtomicInteger m_InProgress;
-        
+
         private AtomicReference<ResultCallback> m_Callback;
 
         private final AtomicLong m_CreationTime = new AtomicLong(System.nanoTime());
-        
+
         /**
-         * @param callback Called after 'batchCount' batches have been processed.
-         * @param batchCount The number of batches this handler will process.
-         *              NB: <code>addBatch</code> must be called this many times.
+         * @param callback
+         *            Called after 'batchCount' batches have been processed.
+         * @param batchCount
+         *            The number of batches this handler will process. NB: <code>addBatch</code>
+         *            must be called this many times.
          */
         public BatchCompletionHandler(ResultCallback callback, int batchCount) {
             m_Callback = new AtomicReference<ResultCallback>(callback);
             m_InProgress = new AtomicInteger(batchCount);
         }
-        
+
         public void addBatch(Future<Void> future) {
             m_Futures.add(future);
         }
 
         public void cancel() {
-            
+
             // Make sure that we won't publish our result, even if tasks don't
             // cancel promptly and still manage to call back.
             if (0 != m_InProgress.getAndSet(Integer.MAX_VALUE)) {
                 System.out.format("Canceled after: %.2f ms\n",
-                    (System.nanoTime() - m_CreationTime.get()) / 1000000f);
+                        (System.nanoTime() - m_CreationTime.get()) / 1000000f);
             }
-            
+
             for (Future<Void> future : m_Futures) {
                 future.cancel(true);
             }
         }
-    
-        /** Called-back by the batch worker, running on a pooled thread.*/
+
+        /** Called-back by the batch worker, running on a pooled thread. */
         @Override
         public void batchComplete(int firstRow, BitSet bits) {
-            
+
             BitSetRowFilter toPublish = null;
-            
+
             // Update the 'master' BitSet m_RowBitSet
             synchronized (m_Lock) {
                 int bit = -1;
@@ -224,13 +223,13 @@ public class TableRowFilterComputer {
                     toPublish = new BitSetRowFilter(m_RowBitSet);
                 }
             }
-            
+
             if (toPublish != null) {
                 publish(toPublish);
             }
         }
-    
-        /** NB: Running on a pooled thread.*/
+
+        /** NB: Running on a pooled thread. */
         private void publish(final BitSetRowFilter result) {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
@@ -238,16 +237,16 @@ public class TableRowFilterComputer {
                 }
             });
             System.out.format("Filter Time: %.2f ms ...  ",
-                (System.nanoTime() - m_CreationTime.get()) / 1000000f);
+                    (System.nanoTime() - m_CreationTime.get()) / 1000000f);
         }
     }
 
     private ThreadPoolExecutor m_Executor;
     private BatchCompletionHandler m_BatchCompletionHandler;
-    
+
     public TableRowFilterComputer() {
         int threads = Runtime.getRuntime().availableProcessors();
-        
+
         // If we have a high number of processor cores, keep a few cores free for
         // the GUI (or other apps) to use, to ensure maximum responsiveness. Chances are
         // that high-core CPUs are hyper-threaded, so using many more than 1/2 may have
@@ -266,25 +265,24 @@ public class TableRowFilterComputer {
         }
         if (m_Executor == null) {
             m_Executor = new ThreadPoolExecutor(threads, threads, 60L, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<Runnable>(), THREAD_FACTORY,
-                new ThreadPoolExecutor.DiscardPolicy());
+                    new LinkedBlockingQueue<Runnable>(), THREAD_FACTORY,
+                    new ThreadPoolExecutor.DiscardPolicy());
         }
     }
-    
+
     public void shutdown() {
         m_Executor.shutdownNow();
     }
 
     static final SearchTerm[] EMPTY_SEARCH_TERMS = new SearchTerm[0];
 
-    public void computeFilter(Ticket[] tickets,
-            SearchTerm[] searchTerms, ResultCallback callback) {
-        
+    public void computeFilter(Ticket[] tickets, SearchTerm[] searchTerms, ResultCallback callback) {
+
         assert SwingUtilities.isEventDispatchThread();
-        
+
         // Can use this line while debugging, for performance testing and tuning.
         // startExecutor(6);
-        
+
         // Corner case.
         if (searchTerms == null || searchTerms.length == 0) {
             callback.filteringComplete(null);
@@ -294,28 +292,28 @@ public class TableRowFilterComputer {
             m_BatchCompletionHandler.cancel();
         }
         List<Integer> batchSizes = computeBatchSizes(tickets.length);
-        m_BatchCompletionHandler =
-            new BatchCompletionHandler(callback, batchSizes.size());
+        m_BatchCompletionHandler = new BatchCompletionHandler(callback, batchSizes.size());
         queueWorkBatches(tickets, searchTerms, batchSizes);
     }
 
     /**
-     * @param tickets NB: Must be sorted by ID, and all IDs must be unique!
+     * @param tickets
+     *            NB: Must be sorted by ID, and all IDs must be unique!
      */
     private void queueWorkBatches(Ticket[] tickets, SearchTerm[] searchTerms,
             List<Integer> batchSizes) {
-        
+
         List<Ticket> batch = new ArrayList<Ticket>(MAX_BATCH_SIZE);
         int firstRowInBatch = 0;
         int it = 0;
         for (int size : batchSizes) {
-            for (int i = firstRowInBatch, end = firstRowInBatch+size; i != end; ++i) {
+            for (int i = firstRowInBatch, end = firstRowInBatch + size; i != end; ++i) {
                 batch.add(tickets[it++]);
             }
-            
+
             // Queue the worker task (which can start immediately)
-            FilterBatchWorker worker = new FilterBatchWorker(
-                firstRowInBatch, batch, searchTerms, m_BatchCompletionHandler);
+            FilterBatchWorker worker = new FilterBatchWorker(firstRowInBatch, batch, searchTerms,
+                    m_BatchCompletionHandler);
             m_BatchCompletionHandler.addBatch(m_Executor.submit(worker));
             batch.clear();
             firstRowInBatch += size;
@@ -324,9 +322,9 @@ public class TableRowFilterComputer {
     }
 
     private List<Integer> computeBatchSizes(final int rowCount) {
-        
+
         int remaining = rowCount;
-        
+
         // For what it's worth: start small, so that we can kick off background threads
         // quickly (low-latency) while we're feeding the queue.
         int size = 4;

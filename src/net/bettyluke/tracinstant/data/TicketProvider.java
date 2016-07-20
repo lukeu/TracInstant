@@ -19,9 +19,8 @@ package net.bettyluke.tracinstant.data;
 
 import java.util.List;
 
-
 public interface TicketProvider {
-    
+
     /** Gets the tickets, in the order they were collected. */
     public List<Ticket> getTickets();
 }

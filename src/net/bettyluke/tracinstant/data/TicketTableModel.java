@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant.data;
 
 import java.util.ArrayList;
@@ -37,34 +37,34 @@ import javax.swing.table.AbstractTableModel;
 public class TicketTableModel extends AbstractTableModel {
 
     // TODO: Remove "title" at the parsing level? e.g. for memory and search speed?
-    private final Set<String> excludedFields =
-        new TreeSet<String>(Arrays.asList("description", "link", "title", "changetime"));
+    private final Set<String> excludedFields = new TreeSet<String>(
+            Arrays.asList("description", "link", "title", "changetime"));
 
     private static final int TICKET_NUMBER_COLUMN = 0;
 
     /** Tickets by row. */
     private Ticket[] tickets = new Ticket[0];
-    
+
     /** All fields found in any of the tickets. */
     private SortedSet<String> knownFields = new TreeSet<String>();
-    
+
     private SortedSet<String> userFields = new TreeSet<String>();
-    
+
     /** Columns currently in use. */
     private String[] shownColumns = new String[0];
-    
+
     public SortedSet<String> getUserFields() {
         return Collections.unmodifiableSortedSet(userFields);
     }
-    
+
     public SortedSet<String> getAllFields() {
         return Collections.unmodifiableSortedSet(knownFields);
     }
-    
+
     public Set<String> getExcludedFields() {
         return Collections.unmodifiableSet(excludedFields);
     }
-    
+
     public List<Ticket> getTicketsWithAnyField(Collection<String> fields) {
         List<Ticket> result = new ArrayList<Ticket>(tickets.length);
         for (Ticket t : tickets) {
@@ -81,29 +81,29 @@ public class TicketTableModel extends AbstractTableModel {
         }
         return result;
     }
-    
+
     public void mergeTicketsAsHidden(Collection<Ticket> newTickets) {
         mergeTicketFieldsInto(newTickets, excludedFields);
         mergeTickets(newTickets);
     }
-    
+
     public void mergeTickets(Collection<Ticket> newTickets) {
         if (newTickets.isEmpty()) {
             return;
         }
-        
+
         int oldRowCount = getRowCount();
-        
+
         // Create a temporary map for sorting and lookup by ID
         Map<Integer, Ticket> ticketMap = getTicketsAsMap();
         for (Ticket newTicket : newTickets) {
             mergeIntoMap(ticketMap, newTicket);
         }
-        
+
         // Update class members.
         tickets = ticketMap.values().toArray(new Ticket[ticketMap.size()]);
         mergeTicketFieldsInto(newTickets, knownFields);
-        
+
         String[] oldColumns = shownColumns;
         shownColumns = determineUsedColumns();
         if (!Arrays.equals(oldColumns, shownColumns)) {
@@ -134,13 +134,13 @@ public class TicketTableModel extends AbstractTableModel {
             existing.setFieldsFromTicket(t);
         }
     }
-    
+
     private void mergeTicketFieldsInto(Collection<Ticket> newTickets, Set<String> set) {
         for (Ticket ticket : newTickets) {
             set.addAll(ticket.getFieldNames());
         }
     }
-    
+
     private String[] determineUsedColumns() {
         // TODO: Stub! Make individually selectable. (A custom column model?)
         Set<String> fields = new TreeSet<String>(knownFields);
@@ -148,7 +148,7 @@ public class TicketTableModel extends AbstractTableModel {
         fields.add("#");
         return fields.toArray(new String[fields.size()]);
     }
-    
+
     @Override
     public int getRowCount() {
         return tickets.length;
@@ -158,12 +158,12 @@ public class TicketTableModel extends AbstractTableModel {
     public int getColumnCount() {
         return shownColumns.length;
     }
-    
+
     @Override
     public String getColumnName(int column) {
         return shownColumns[column];
     }
-    
+
     @Override
     public Class<?> getColumnClass(int columnIndex) {
         if (columnIndex == TICKET_NUMBER_COLUMN) {
@@ -202,7 +202,7 @@ public class TicketTableModel extends AbstractTableModel {
         }
         return null;
     }
-    
+
     public void clear() {
         userFields.clear();
         knownFields.clear();
@@ -214,11 +214,10 @@ public class TicketTableModel extends AbstractTableModel {
 
     public void addUserField(String fieldName) {
         userFields.add(fieldName);
-        
+
     }
 
     public void removeUserField(String fieldName) {
         userFields.remove(fieldName);
     }
 }
-

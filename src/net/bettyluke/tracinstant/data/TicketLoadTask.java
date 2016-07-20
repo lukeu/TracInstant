@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-        
+
 package net.bettyluke.tracinstant.data;
 
 import java.util.Collections;
@@ -58,7 +58,7 @@ public abstract class TicketLoadTask extends SwingWorker<Void, Update> {
             this.summaryMessage = null;
             this.ticketProvider = null;
         }
-        
+
         @Override
         public int hashCode() {
             return ObjectUtils.hash(detailMessage, summaryMessage, ticketProvider);
@@ -72,24 +72,23 @@ public abstract class TicketLoadTask extends SwingWorker<Void, Update> {
             if (!(obj instanceof Update)) {
                 return false;
             }
-            Update other  = (Update) obj;
+            Update other = (Update) obj;
             return ObjectUtils.equals(ticketProvider, other.ticketProvider)
-                && ObjectUtils.equals(summaryMessage, other.summaryMessage) 
-                && ObjectUtils.equals(detailMessage, other.detailMessage);
+                    && ObjectUtils.equals(summaryMessage, other.summaryMessage)
+                    && ObjectUtils.equals(detailMessage, other.detailMessage);
         }
     }
-    
+
     private Update statusUpdate = null;
-    
+
     protected Runnable doneCallback = null;
-    
+
     protected final TicketTableModel tableModel;
-    
-    
+
     public TicketLoadTask(TicketTableModel tableModel) {
         this.tableModel = tableModel;
     }
-    
+
     @Override
     protected void process(List<Update> chunks) {
         if (isCancelled()) {
@@ -104,7 +103,7 @@ public abstract class TicketLoadTask extends SwingWorker<Void, Update> {
             firePropertyChange("status", oldStatus, statusUpdate);
         }
     }
-    
+
     @Override
     protected void done() {
         super.done();

@@ -39,7 +39,7 @@ public class SiteData {
     private final TicketTableModel m_TableModel = new TicketTableModel();
     private String dateTimeFormatString = null;
     private DateFormat dateTimeFormat = null;
-    
+
     public SiteData() {
         setDateFormat(TracInstantProperties.get().getValue("SiteDateFormat"));
     }
@@ -47,21 +47,21 @@ public class SiteData {
     public void saveState() {
         SortedSet<String> userFields = m_TableModel.getUserFields();
         saveTicketData(makeUserFieldsFileName(), userFields);
-        
+
         if (dateTimeFormatString != null) {
             TracInstantProperties.get().putString("SiteDateFormat", dateTimeFormatString);
         }
-        
+
         if (TracInstantProperties.getUseCache()) {
             SortedSet<String> fields = new TreeSet<String>(m_TableModel.getAllFields());
             fields.removeAll(m_TableModel.getExcludedFields());
             fields.removeAll(userFields);
             saveTicketData(TABULAR_CACHE_FILE, fields);
-            
+
             fields = new TreeSet<String>(m_TableModel.getExcludedFields());
             fields.removeAll(userFields);
             saveTicketData(HIDDEN_FIELDS_CACHE_FILE, fields);
-        }        
+        }
     }
 
     public void loadUserData() {
@@ -91,7 +91,7 @@ public class SiteData {
         return m_TableModel;
     }
 
-    // NB: Gets called from a worker thread as well as foreground thread. 
+    // NB: Gets called from a worker thread as well as foreground thread.
     // TODO: Separate loading/building out from data structures. Move into a TicketLoader
     // class to sequence/coordinate loading all the various bits (see main TODO document).
     static TicketProvider loadTicketData(String fileName) throws InterruptedException {
@@ -180,10 +180,9 @@ public class SiteData {
 
     public void setDateFormat(String dateFormat) {
         dateTimeFormatString = dateFormat;
-        dateTimeFormat = dateFormat == null ? null : 
-            new SimpleDateFormat(dateFormat + " HH:mm:ss");
+        dateTimeFormat = dateFormat == null ? null : new SimpleDateFormat(dateFormat + " HH:mm:ss");
     }
-    
+
     public DateFormat getDateFormat() {
         return dateTimeFormat;
     }
