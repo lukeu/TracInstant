@@ -229,7 +229,9 @@ public class TracInstantFrame extends JFrame {
     private class UpdateTicketsOnWindowActivated extends WindowAdapter {
         @Override
         public void windowActivated(WindowEvent e) {
-            slurpAction.promptIfNecessaryAndSlurpIncremental();
+            if (!slurpAction.promptIfNecessaryAndSlurpIncremental()) {
+                removeWindowListener(m_OnActivationRefresher);
+            }
         }
     }
 
