@@ -18,6 +18,7 @@
 package net.bettyluke.tracinstant.ui;
 
 import java.awt.Dialog.ModalityType;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -26,9 +27,12 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import net.bettyluke.util.swing.monitor.EdtMonitor;
 import net.bettyluke.util.swing.monitor.EdtMonitorPanel;
+import net.bettyluke.util.swing.monitor.MemoryBar;
 
 public class ShowPerformanceMonitorAction extends AbstractAction {
 
@@ -45,9 +49,13 @@ public class ShowPerformanceMonitorAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         EdtMonitorPanel panel = new EdtMonitorPanel(getMonitor().getDataModel());
 
+        JPanel memory = MemoryBar.createPanelWithGcButton();
+        memory.add(BorderLayout.WEST, new JLabel("Memory: "));
+
         JDialog dialog = new JDialog(dialogParent, "Performance monitor", ModalityType.MODELESS);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.add(panel);
+        dialog.add(BorderLayout.SOUTH, memory);
         dialog.setSize(new Dimension(640, 480));
         dialog.setLocationRelativeTo(dialogParent);
         dialog.setVisible(true);
