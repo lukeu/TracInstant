@@ -2,6 +2,9 @@ package net.bettyluke.tracinstant.data;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.GeneralSecurityException;
@@ -63,7 +66,10 @@ public final class AuthenticatedHttpRequester {
         }
     }
 
-    private AuthenticatedHttpRequester() {}
+    private AuthenticatedHttpRequester() {
+        // First set the default cookie manager.
+        CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+    }
 
     public static InputStream getInputStream(SiteSettings settings, URL url) throws IOException {
         URLConnection uc = url.openConnection();
