@@ -39,7 +39,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import net.bettyluke.tracinstant.prefs.SiteSettings;
-import net.bettyluke.util.FileUtils;
 import net.bettyluke.util.XML10FilterReader;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -261,9 +260,7 @@ public class SlurpTask extends TicketLoadTask {
     }
 
     private int slurpXmlFormat(URL url) throws IOException, SAXException {
-        InputStream in = null;
-        try {
-            in = authenticateAndGetStream(url);
+        try (InputStream in = authenticateAndGetStream(url)) {
 
             // Parse, filtering-out duff chars. Note one proposal of converting the
             // header to the more lenient XML 1.1 <?xml version="1.1"?> still failed
@@ -275,20 +272,14 @@ public class SlurpTask extends TicketLoadTask {
             int count = xmlData.getTickets().size();
             xmlData = null;
             return count;
-        } finally {
-            FileUtils.close(in);
         }
     }
 
     private TicketProvider slurpTabDelimited(URL url)
             throws MalformedURLException, IOException, InterruptedException {
-        InputStream in = null;
-        try {
-            in = authenticateAndGetStream(url);
+        try (InputStream in = authenticateAndGetStream(url)) {
             return TracTabTicketParser.parse(
                 new InputStreamReader(new BufferedInputStream(in), "UTF-8"));
-        } finally {
-            FileUtils.close(in);
         }
     }
 

@@ -29,7 +29,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
-import net.bettyluke.util.FileUtils;
 
 public class SiteData {
 
@@ -95,17 +94,15 @@ public class SiteData {
     // TODO: Separate loading/building out from data structures. Move into a TicketLoader
     // class to sequence/coordinate loading all the various bits (see main TODO document).
     static TicketProvider loadTicketData(String fileName) throws InterruptedException {
-        FileReader reader = null;
         try {
             File file = getAppFileForReading(fileName);
             if (file != null) {
-                reader = new FileReader(file);
-                return TracTabTicketParser.parse(reader);
+                try (FileReader reader = new FileReader(file)) {
+                    return TracTabTicketParser.parse(reader);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            FileUtils.close(reader);
         }
         return null;
     }

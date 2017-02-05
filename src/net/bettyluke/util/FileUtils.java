@@ -19,7 +19,6 @@ package net.bettyluke.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -49,16 +48,6 @@ public class FileUtils {
             output.write(buf, 0, nRead);
         }
         output.flush();
-    }
-
-    public static void close(Closeable cl) {
-        try {
-            if (cl != null) {
-                cl.close();
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
     }
 
     public static String copyInputStreamToString(InputStream is, String charset)

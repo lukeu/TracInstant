@@ -148,25 +148,17 @@ public class AppProperties {
             throw new IOException("Could not create file: " + outFile);
         }
 
-        FileOutputStream out = null;
-        try {
-            out = new FileOutputStream(outFile);
+        try (FileOutputStream out = new FileOutputStream(outFile)) {
             m_Props.store(out, m_AppName + " Properties");
-        } finally {
-            FileUtils.close(out);
         }
     }
 
     public void loadProperties() {
-        FileInputStream in = null;
-        try {
-            in = new FileInputStream(getPropertiesFilePath());
+        try (FileInputStream in = new FileInputStream(getPropertiesFilePath())) {
             m_Props.load(in);
         } catch (IOException ex) {
             System.out.println("Could not load preferences, defaults in use.\n  Reason: "
                 + ex.getMessage());
-        } finally {
-            FileUtils.close(in);
         }
     }
 

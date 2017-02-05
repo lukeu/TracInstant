@@ -42,7 +42,6 @@ import net.bettyluke.tracinstant.download.Downloadable.FileDownloadable;
 import net.bettyluke.tracinstant.download.Downloadable.TracDownloadable;
 import net.bettyluke.tracinstant.prefs.SiteSettings;
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
-import net.bettyluke.util.FileUtils;
 
 public class AttachmentCounter {
 
@@ -250,11 +249,8 @@ public class AttachmentCounter {
         }
 
         private void scanTracAttachementPage(int ticketNum, URL url) throws IOException {
-            InputStream in = null;
-            BufferedReader reader = null;
-            try {
-                in = AuthenticatedHttpRequester.getInputStream(SiteSettings.getInstance(), url);
-                reader = new BufferedReader(new InputStreamReader(in));
+            try (InputStream in = getAuthenticatedInputStream(url);
+                 BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     Matcher m = ATTACHMENT_LINK.matcher(line);
@@ -262,10 +258,11 @@ public class AttachmentCounter {
                         publish(new TracDownloadable(ticketNum, m.group(1), 0));
                     }
                 }
-            } finally {
-                FileUtils.close(in);
-                FileUtils.close(reader);
             }
+        }
+
+        private InputStream getAuthenticatedInputStream(URL url) throws IOException {
+            return AuthenticatedHttpRequester.getInputStream(SiteSettings.getInstance(), url);
         }
 
         @Override
