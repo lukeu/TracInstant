@@ -2,11 +2,14 @@ Fields/Column customisation:
  - Option to show/hide fields in the table
  - Option to show additional fields in the HTML Preview
  - Allow customising the fields slurped from the server (e.g. used by plugins)
+ - Move to String[] (instead of TreeMap) to store ticket fields. (Memory and speed.)
+   (Will have to recreate all tickets whenever new fields are discovered - infrequent.)
 
 Table:
  - Support copying text (e.g. to paste into Excel)
  - Sort Priority & Severity naturally (not alphabetically)
  - Configurable colour coding (e.g. priority, severity, milestone etc...)
+ - Tooltips for truncated fields
 
 Search combo:
  - Render typed alias/shorthand words in blue
@@ -16,9 +19,15 @@ Search combo:
     - Make extra sure the combo doesn't lose the search text. E.g. after pressing DOWN
       it should select the first item. But then after pressing UP or ESC the focus
       should return to the editor with the original text retained.
+ - Allow '|' in field label?
  - Consider GlazedLists? (Can it integrates with all the customisations?)
 
+Authentication
+ - Stop 'Connect' dialog showing when network connection interrupted. (Very annoying.)
+ - Offer to save site password
+
 Download panel:
+ - Search "additional attachments" folders recursively
  - Show size of file & percentage downloaded
 
 Tools:
@@ -38,6 +47,9 @@ BUGS:
  - When saving a search containing an alias, should expand the alias in the saved result.
 
 Code Tidying:
+ - Switch to Gradle?
+     - Introduce Guava (Immutable collections!)?
+     - Proguard (to strip out unused library code?)
  - Create new 'TicketLoader' to more-cleanly manage the 4 loading-tasks, and their cancelling.
  - PropertyChangeListener -> TicketLoaderListener? so the loader listens
    on its multiple tasks, and the frame only listens on one object.
