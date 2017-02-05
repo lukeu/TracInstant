@@ -36,9 +36,10 @@ import javax.swing.table.AbstractTableModel;
  */
 public class TicketTableModel extends AbstractTableModel {
 
+    // NOTE: "changetime" and "Modified" are aliases, depending on the Trac server version
     // TODO: Remove "title" at the parsing level? e.g. for memory and search speed?
     private final Set<String> excludedFields = new TreeSet<String>(
-            Arrays.asList("description", "link", "title", "changetime"));
+            Arrays.asList("description", "link", "title", "changetime", "Modified"));
 
     private static final int TICKET_NUMBER_COLUMN = 0;
 

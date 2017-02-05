@@ -86,6 +86,35 @@ public class Ticket {
     }
 
     public String getValue(String fieldName) {
-        return m_Fields.get(fieldName);
+        String result = m_Fields.get(fieldName);
+        if (result == null) {
+            result = tryAliases(fieldName);
+        }
+        return result;
+    }
+
+    /**
+     * Backwards compatibility support for Trac 1.0 -> 1.2.  Trac v1.2 itself seems to construct
+     * queries using the traditional 'changetime' but then reports the results using 'Modified'.
+     * (It feels a bit sloppy to implement this here, but at least it seems to fix it centrally.)
+     */
+    private String tryAliases(String fieldName) {
+        for (String alias : getAliases(fieldName)) {
+            String result = m_Fields.get(alias);
+            if (result != null) {
+                return result;
+            }
+        }
+        return null;
+    }
+
+    private Collection<String> getAliases(String fieldName) {
+        if ("changetime".equals(fieldName)) {
+            return Collections.singleton("Modified");
+        }
+        if ("Modified".equals(fieldName)) {
+            return Collections.singleton("changetime");
+        }
+        return Collections.emptySet();
     }
 }
