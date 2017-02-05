@@ -43,13 +43,11 @@ public class TableRowFilterComputer {
 
     private static final int MAX_BATCH_SIZE = 100;
     private static final AtomicInteger s_ThreadCreationCount = new AtomicInteger();
-    private static final ThreadFactory THREAD_FACTORY = new ThreadFactory() {
-        public Thread newThread(Runnable r) {
-            String name = "ComputeFilter-" + s_ThreadCreationCount.incrementAndGet();
-            Thread thread = new Thread(null, r, name, 64000);
-            thread.setPriority(Thread.NORM_PRIORITY - 1);
-            return thread;
-        }
+    private static final ThreadFactory THREAD_FACTORY = r -> {
+        String name = "ComputeFilter-" + s_ThreadCreationCount.incrementAndGet();
+        Thread thread = new Thread(null, r, name, 64000);
+        thread.setPriority(Thread.NORM_PRIORITY - 1);
+        return thread;
     };
 
     public interface ResultCallback {
@@ -231,11 +229,7 @@ public class TableRowFilterComputer {
 
         /** NB: Running on a pooled thread. */
         private void publish(final BitSetRowFilter result) {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    m_Callback.get().filteringComplete(result);
-                }
-            });
+            SwingUtilities.invokeLater(() -> m_Callback.get().filteringComplete(result));
             System.out.format("Filter Time: %.2f ms ...  ",
                     (System.nanoTime() - m_CreationTime.get()) / 1000000f);
         }

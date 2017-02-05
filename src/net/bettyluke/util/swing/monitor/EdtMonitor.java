@@ -128,15 +128,13 @@ public final class EdtMonitor {
      */
     private final EdtMonitorModel viewModel = new EdtMonitorModel();
 
-    private Runnable updateViewModelRunner = new Runnable() {
-        public void run() {
-            int oldCount = viewModel.updateIndex;
-            synchronized (lock) {
-                viewModel.updateIndex = updateCounter;
-                viewModel.setDataFrom(collectionModel);
-            }
-            viewModel.fireStatEvent(updateCounter - oldCount);
+    private Runnable updateViewModelRunner = () -> {
+        int oldCount = viewModel.updateIndex;
+        synchronized (lock) {
+            viewModel.updateIndex = updateCounter;
+            viewModel.setDataFrom(collectionModel);
         }
+        viewModel.fireStatEvent(updateCounter - oldCount);
     };
 
     private MonitoringEventQueue queue;

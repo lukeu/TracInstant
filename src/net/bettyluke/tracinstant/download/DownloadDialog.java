@@ -44,8 +44,6 @@ import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
@@ -249,11 +247,7 @@ public class DownloadDialog extends JDialog {
     }
 
     private void addBehaviour() {
-        downloadModel.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                updateControls();
-            }
-        });
+        downloadModel.addChangeListener(e -> updateControls());
 
         final JTextComponent ed = browsePanel.getLocationEditor();
         ed.getDocument().addDocumentListener(new DocumentListener() {

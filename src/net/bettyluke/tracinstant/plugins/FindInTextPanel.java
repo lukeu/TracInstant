@@ -87,11 +87,9 @@ public class FindInTextPanel extends JPanel {
         private boolean pending = false;
 
         public DocChangeListener(final Runnable runnable) {
-            wrappedRunner = new Runnable() {
-                public void run() {
-                    runnable.run();
-                    pending = false;
-                }
+            wrappedRunner = () -> {
+                runnable.run();
+                pending = false;
             };
         }
 
@@ -142,11 +140,9 @@ public class FindInTextPanel extends JPanel {
         add(new JLabel("Paste text to scan for ticket numbers:"), BorderLayout.NORTH);
         add(createSplit(new JScrollPane(sourceTextEditor), grid));
 
-        sourceTextEditor.getDocument().addDocumentListener(new DocChangeListener(new Runnable() {
-            public void run() {
-                ticketsInText = scanText(sourceTextEditor.getText());
-                updateOutputFields();
-            }
+        sourceTextEditor.getDocument().addDocumentListener(new DocChangeListener(() -> {
+            ticketsInText = scanText(sourceTextEditor.getText());
+            updateOutputFields();
         }));
     }
 

@@ -21,7 +21,6 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -111,23 +110,13 @@ public class MenuCascader {
         Item[] sorted = items.toArray(new Item[0]);
 
         // Sort by number of hits. Note: this uses a stable sort.
-        Arrays.sort(sorted, new Comparator<Item>() {
-            @Override
-            public int compare(Item o1, Item o2) {
-                return -(o1.getHits() - o2.getHits());
-            }
-        });
+        Arrays.sort(sorted, (o1, o2) -> -(o1.getHits() - o2.getHits()));
 
         // Trim to length.
         sorted = Arrays.copyOf(sorted, count);
 
         // Resort alphabetically.
-        Arrays.sort(sorted, new Comparator<Item>() {
-            @Override
-            public int compare(Item o1, Item o2) {
-                return o1.getName().compareToIgnoreCase(o2.getName());
-            }
-        });
+        Arrays.sort(sorted, (o1, o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
 
         return Arrays.asList(sorted);
     }

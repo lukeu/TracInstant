@@ -43,11 +43,7 @@ import net.bettyluke.tracinstant.ui.TracInstantFrame;
 public final class TracInstantApp {
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new TracInstantApp().startOnEDT();
-            }
-        });
+        SwingUtilities.invokeLater(() -> new TracInstantApp().startOnEDT());
     }
 
     public TracInstantApp() {
@@ -84,11 +80,7 @@ public final class TracInstantApp {
         if (site.isOkToUseCachedTickets()) {
             TicketLoadTask loadTask = new CachedTicketLoadTask(site.getTableModel());
             frame.monitorTask(loadTask);
-            loadTask.executeWithNotification(new Runnable() {
-                public void run() {
-                    loadServerTickets(frame, site);
-                }
-            });
+            loadTask.executeWithNotification(() -> loadServerTickets(frame, site));
         } else {
 
             // Proceed with next step immediately.

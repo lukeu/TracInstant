@@ -25,7 +25,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -61,13 +60,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
-import javax.swing.RowFilter;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.ToolTipManager;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
@@ -86,7 +82,6 @@ import net.bettyluke.tracinstant.plugins.DummyPlugin;
 import net.bettyluke.tracinstant.plugins.TicketUpdater;
 import net.bettyluke.tracinstant.plugins.ToolPlugin;
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
-import net.bettyluke.tracinstant.ui.TableRowFilterComputer.ResultCallback;
 import net.bettyluke.util.DesktopUtils;
 import net.bettyluke.util.FileUtils;
 
@@ -192,11 +187,7 @@ public class TracInstantFrame extends JFrame {
     }
 
     private final class TicketSelectionListener implements ListSelectionListener {
-        private final Timer m_Timer = new Timer(60, new ActionListener() {
-            public void actionPerformed(ActionEvent e2) {
-                updateViews();
-            }
-        });
+        private final Timer m_Timer = new Timer(60, e2 -> updateViews());
 
         public TicketSelectionListener() {
             m_Timer.setRepeats(false);
@@ -346,15 +337,13 @@ public class TracInstantFrame extends JFrame {
     private JButton createNewTicketButton() {
         String text = "New&nbsp;ticket";
         String tooltip = "Create a new Trac ticket using an external web browser";
-        ActionListener action = new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String baseUrl = TracInstantProperties.getURL();
-                if (baseUrl != null) {
-                    try {
-                        DesktopUtils.browseTo(new URL(baseUrl + "/newticket"));
-                    } catch (MalformedURLException ex) {
-                        ex.printStackTrace();
-                    }
+        ActionListener action = e -> {
+            String baseUrl = TracInstantProperties.getURL();
+            if (baseUrl != null) {
+                try {
+                    DesktopUtils.browseTo(new URL(baseUrl + "/newticket"));
+                } catch (MalformedURLException ex) {
+                    ex.printStackTrace();
                 }
             }
         };
@@ -390,11 +379,7 @@ public class TracInstantFrame extends JFrame {
             }
 
             private void updateRowFilterLater() {
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        updateRowFilter();
-                    }
-                });
+                SwingUtilities.invokeLater(() -> updateRowFilter());
             }
         });
 
@@ -445,12 +430,9 @@ public class TracInstantFrame extends JFrame {
     private JComboBox createPluginCombo() {
         JComboBox combo = new JComboBox();
         combo.addItem(new DummyPlugin("None"));
-        combo.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    switchPlugin((ToolPlugin) e.getItem());
-                }
+        combo.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                switchPlugin((ToolPlugin) e.getItem());
             }
         });
         GuiUtilities.makeMaxASmidgeWider(combo, GAP);
@@ -521,13 +503,9 @@ public class TracInstantFrame extends JFrame {
 
     private DownloadModel createDownloadModel() {
         DownloadModel result = new DownloadModel();
-        result.addChangeListener(new ChangeListener() {
-
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                m_DownloadsNumber.setIcon(m_Downloads.isBusy() ? BUSY_IMAGE : null);
-                m_DownloadsNumber.setText(m_Downloads.getDownloadSummary());
-            }
+        result.addChangeListener(e -> {
+            m_DownloadsNumber.setIcon(m_Downloads.isBusy() ? BUSY_IMAGE : null);
+            m_DownloadsNumber.setText(m_Downloads.getDownloadSummary());
         });
         return result;
     }
@@ -671,16 +649,14 @@ public class TracInstantFrame extends JFrame {
         m_SearchTerms = SearchTerm.parseSearchString(m_FilterCombo.getExpandedText());
 
         Ticket[] tickets = m_Table.getModel().getTickets();
-        m_FilterComputor.computeFilter(tickets, m_SearchTerms, new ResultCallback() {
-            public void filteringComplete(RowFilter<TicketTableModel, Integer> rowFilter) {
-                long t0 = System.nanoTime();
+        m_FilterComputor.computeFilter(tickets, m_SearchTerms, rowFilter -> {
+            long t0 = System.nanoTime();
 
-                m_RowFilterJustUpdated = true;
-                m_Table.getRowSorter().setRowFilter(rowFilter);
-                updateMatches();
+            m_RowFilterJustUpdated = true;
+            m_Table.getRowSorter().setRowFilter(rowFilter);
+            updateMatches();
 
-                System.out.format("Sort rows: %.2f ms\n", (System.nanoTime() - t0) / 1000000f);
-            }
+            System.out.format("Sort rows: %.2f ms\n", (System.nanoTime() - t0) / 1000000f);
         });
     }
 

@@ -20,7 +20,6 @@ package net.bettyluke.tracinstant.ui;
 import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
 import java.util.List;
 
 import javax.swing.Box;
@@ -118,17 +117,11 @@ public class TracUrlSelectionPanel extends JPanel {
         add(instantRestart);
         add(Box.createVerticalStrut(16));
 
-        addHierarchyListener(new HierarchyListener() {
-            public void hierarchyChanged(HierarchyEvent e) {
-                if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0 && isShowing()) {
+        addHierarchyListener(e -> {
+            if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0 && isShowing()) {
 
-                    // Hack: supersede JOptionPane's similar button focus placement.
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            prepareForDisplay();
-                        }
-                    });
-                }
+                // Hack: supersede JOptionPane's similar button focus placement.
+                SwingUtilities.invokeLater(() -> prepareForDisplay());
             }
         });
     }

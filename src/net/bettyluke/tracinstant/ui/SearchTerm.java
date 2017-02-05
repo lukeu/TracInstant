@@ -19,7 +19,6 @@ package net.bettyluke.tracinstant.ui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -74,13 +73,10 @@ final class SearchTerm {
         // Do what we can for filtering speed - apply a partial sorting
         // to make terms with specific fields come first.
         SearchTerm[] result = terms.toArray(new SearchTerm[0]);
-        Arrays.sort(result, new Comparator<SearchTerm>() {
-            @Override
-            public int compare(SearchTerm t1, SearchTerm t2) {
-                int len1 = t1.field == null ? 0 : t1.field.length();
-                int len2 = t2.field == null ? 0 : t2.field.length();
-                return len2 - len1;
-            }
+        Arrays.sort(result, (t1, t2) -> {
+            int len1 = t1.field == null ? 0 : t1.field.length();
+            int len2 = t2.field == null ? 0 : t2.field.length();
+            return len2 - len1;
         });
 
         return result;

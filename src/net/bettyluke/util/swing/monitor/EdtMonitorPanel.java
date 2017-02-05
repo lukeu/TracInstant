@@ -27,8 +27,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 public class EdtMonitorPanel extends JPanel {
 
@@ -68,13 +66,11 @@ public class EdtMonitorPanel extends JPanel {
 
     private void listenForSelectionChanges() {
         plot.getColumnModel().getSelectionModel().addListSelectionListener(
-                new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                if (!plot.isUpdateInProgress()) {
-                    updateTextArea();
-                }
-            }
-        });
+                e -> {
+                    if (!plot.isUpdateInProgress()) {
+                        updateTextArea();
+                    }
+                });
     }
 
     private void updateTextArea() {

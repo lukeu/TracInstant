@@ -49,8 +49,6 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -126,11 +124,7 @@ public class SearchComboEditor extends JTextField {
         @Override
         public void showAt(int x, int y) {
             super.showAt(x, y);
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    desc.requestFocusInWindow();
-                }
-            });
+            SwingUtilities.invokeLater(() -> desc.requestFocusInWindow());
         }
 
         private AbstractAction createDoneAction() {
@@ -307,11 +301,7 @@ public class SearchComboEditor extends JTextField {
                 BorderFactory.createEmptyBorder(0, extraLeft, 0, extraRight))));
 
         starModel = new DefaultButtonModel();
-        starModel.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                repaint();
-            }
-        });
+        starModel.addChangeListener(e -> repaint());
 
         getDocument().addDocumentListener(new DocumentListener() {
             public void removeUpdate(DocumentEvent e) {

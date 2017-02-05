@@ -86,11 +86,7 @@ public class TicketTable extends JTable {
                 }
 
                 public void columnAdded(TableColumnModelEvent e) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            recallColumnLayout();
-                        }
-                    });
+                    SwingUtilities.invokeLater(() -> recallColumnLayout());
                 }
             });
         }

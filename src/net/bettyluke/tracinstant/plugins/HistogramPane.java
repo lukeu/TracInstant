@@ -8,8 +8,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -206,11 +204,7 @@ public class HistogramPane {
 
     private JComboBox createFieldSelection() {
         JComboBox combo = new JComboBox(DEFAULT_FIELDS);
-        combo.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                updateHistogram();
-            }
-        });
+        combo.addItemListener(e -> updateHistogram());
         return combo;
     }
 

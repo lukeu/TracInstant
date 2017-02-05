@@ -14,7 +14,6 @@ import java.security.cert.X509Certificate;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
@@ -47,12 +46,7 @@ public final class AuthenticatedHttpRequester {
             }
         };
 
-        HostnameVerifier trustAllHostnames = new HostnameVerifier() {
-            @Override
-            public boolean verify(String hostname, SSLSession session) {
-                return true; // Just allow them all.
-            }
-        };
+        HostnameVerifier trustAllHostnames = (hostname, session) -> true;
 
         try {
             System.setProperty("jsse.enableSNIExtension", "false");

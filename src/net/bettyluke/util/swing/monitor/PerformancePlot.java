@@ -21,7 +21,6 @@ import java.awt.Color;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
 
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -71,14 +70,12 @@ public class PerformancePlot extends JTable {
          * been closed/disposed.
          */
         public void autoAttachListeners() {
-            plot.addHierarchyListener(new HierarchyListener() {
-                public void hierarchyChanged(HierarchyEvent e) {
-                    if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
-                        if (plot.isShowing()) {
-                            attachListener();
-                        } else {
-                            detachListener();
-                        }
+            plot.addHierarchyListener(e -> {
+                if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
+                    if (plot.isShowing()) {
+                        attachListener();
+                    } else {
+                        detachListener();
                     }
                 }
             });
