@@ -1,16 +1,16 @@
 /*
  * Copyright 2011 Luke Usherwood.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 2.1 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -91,13 +91,13 @@ public class AttachmentCounter {
      * Asynchronously scan the attachments folder for sub-directories matching
      * {@link #NAME_MATCHER}. Downloads will not be available until this scanning is
      * performed and is complete.
-     * 
+     *
      * @return An object that can be used to determine the success of scanning, or
      * cancel the background task.
      */
     public static Future<Map<Integer,File>> scanAttachmentsFolderAsynchronously(
             final String topFolder) {
-        
+
         SwingWorker<Map<Integer, File>, Void> scanner =
                 new SwingWorker<Map<Integer,File>, Void>() {
 
@@ -112,10 +112,10 @@ public class AttachmentCounter {
                 if (topFolder.trim().isEmpty()) {
                     return Collections.emptyMap();
                 }
-                
+
                 Map<Integer,File> results =
                     Collections.synchronizedMap(new TreeMap<Integer,File>());
-                
+
                 File bugDir = new File(topFolder);
 
                 // Unfortunately there doesn't seem to be an easy way to interrupt this

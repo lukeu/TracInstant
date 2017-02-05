@@ -9,9 +9,9 @@ import javax.swing.DefaultComboBoxModel;
 import net.bettyluke.tracinstant.data.SavedSearch;
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
 
-/** 
- * ComboBoxModel that does little other than try to enforce type safety 
- * (SavedSearch instead of Object) a little, and saves/loads the data from App Prefs. 
+/**
+ * ComboBoxModel that does little other than try to enforce type safety
+ * (SavedSearch instead of Object) a little, and saves/loads the data from App Prefs.
  */
 public class SearchComboBoxModel extends DefaultComboBoxModel {
 

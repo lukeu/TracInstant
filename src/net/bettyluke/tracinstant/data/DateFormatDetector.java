@@ -1,16 +1,16 @@
 /*
  * Copyright 2011 Luke Usherwood.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 2.1 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -52,26 +52,26 @@ public class DateFormatDetector {
         "yy-MM-dd",
         "yy-MMM-dd",
         "yy-MMMMM-dd",
-        
+
         // Text months with comma
         "MMM-dd,-yyyy",
         "MMMMM-dd,-yyyy",
         "MMM-dd,-yy",
         "MMMMM-dd,-yy",
-        
+
         // Text months Including days
         "EEE, dd-MMM-yyyy",
         "EEE, dd-MMMMM-yyyy",
         "EEEE, dd-MMM-yyyy",
         "EEEE, dd-MMMMM-yyyy"
     );
-    
+
     private static final Pattern TIME_PATTERN = Pattern.compile(
         "[ tT]*\\d{1,2}:\\d{1,2}(:\\d{1,2})?");
 
-    
+
     private static class Attempt {
-        private static final Date LONG_AGO = 
+        private static final Date LONG_AGO =
             new Date(-TimeUnit.MILLISECONDS.convert(365 * 200, TimeUnit.DAYS));
 
         public Attempt(String dateString) {
@@ -90,8 +90,8 @@ public class DateFormatDetector {
     private final List<Attempt> possibleFormats;
 
     /**
-     * Will decrement with each check after only a single 'possibleFormat' remains. 
-     * When it reaches zero we will terminate with success. 
+     * Will decrement with each check after only a single 'possibleFormat' remains.
+     * When it reaches zero we will terminate with success.
      */
     private int confirmationsRemaining = 10;
 
@@ -162,11 +162,11 @@ public class DateFormatDetector {
         return possibleFormats.isEmpty() ? null : possibleFormats.get(0).string;
     }
 
-    /** 
-     * This heuristic uses two tests: 
+    /**
+     * This heuristic uses two tests:
      *  1) the non-lenient DateFormat must successfully parse the date, and
-     *  2) the parsed date must be greater than the previous date parsed by the same 
-     *     DateFormat instance. 
+     *  2) the parsed date must be greater than the previous date parsed by the same
+     *     DateFormat instance.
      * Any DateFormat not meeting these tests is removed.
      */
     private void eliminateFormats(String dateString) {
@@ -188,15 +188,15 @@ public class DateFormatDetector {
         }
     }
 
-    /** 
-     * Sample date strings with 4-digit years will be accepted by formats using either 
-     * 'yyyy' or 'yy'; similarly and "June" will match both MMM and MMMMM formats. 
+    /**
+     * Sample date strings with 4-digit years will be accepted by formats using either
+     * 'yyyy' or 'yy'; similarly and "June" will match both MMM and MMMMM formats.
      * <p>
-     * This is heuristic that parse and reformats a given date-string, and compares the 
-     * result with the original. Spaces and leading-zeros are dropped for the comparison.    
+     * This is heuristic that parse and reformats a given date-string, and compares the
+     * result with the original. Spaces and leading-zeros are dropped for the comparison.
      */
     private void eliminateIncorrectFieldLengths(String dateString) {
-        Iterator<Attempt> it = possibleFormats.iterator();            
+        Iterator<Attempt> it = possibleFormats.iterator();
         while(it.hasNext()) {
             Attempt a = it.next();
             try {
@@ -247,14 +247,14 @@ public class DateFormatDetector {
                 "5 August 99"
             },
             new String[] {
-                "Fri, 26 Oct 2007 12:56:12 GMT", 
+                "Fri, 26 Oct 2007 12:56:12 GMT",
                 "Fri, 16 Nov 2007 22:40:34 GMT"
             },
             new String[] {
                 "Friday, 26 Oct 2007 12:56:12 GMT"
             },
             new String[] {
-                "2012-04-10T09:37:31+01:00",    
+                "2012-04-10T09:37:31+01:00",
             }
         };
         for (String[] test : TESTS) {
@@ -262,7 +262,7 @@ public class DateFormatDetector {
             if (detected == null) {
                 System.err.println("No matching format for: " + Arrays.toString(test));
             } else {
-                System.out.println(detected + " -> " + 
+                System.out.println(detected + " -> " +
                     new SimpleDateFormat(detected).format(new Date()));
             }
         }

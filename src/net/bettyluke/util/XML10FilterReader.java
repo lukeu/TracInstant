@@ -12,15 +12,15 @@ import java.io.Reader;
  * <p>
  * @see <a href=
  *      "http://info.tsachev.org/2009/05/skipping-invalid-xml-character-with.html"
- *      > Website, the source of the source</a> 
- * 
- * @author tsachev 
+ *      > Website, the source of the source</a>
+ *
+ * @author tsachev
  */
 public class XML10FilterReader extends FilterReader {
 
     /**
      * Creates filter reader which skips invalid xml characters.
-     * 
+     *
      * @param in
      *            original reader
      */
@@ -34,7 +34,7 @@ public class XML10FilterReader extends FilterReader {
      * To skip invalid characters this method shifts only valid chars to left and returns
      * decreased value of the original read method. So after last valid character there
      * will be some unused chars in the buffer.
-     * 
+     *
      * @return Number of read valid characters or <code>-1</code> if end of the underling
      *         reader was reached.
      */

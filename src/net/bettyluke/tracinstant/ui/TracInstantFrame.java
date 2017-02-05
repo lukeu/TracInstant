@@ -1,16 +1,16 @@
 /*
  * Copyright 2011 Luke Usherwood.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 2.1 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -95,7 +95,7 @@ public class TracInstantFrame extends JFrame {
     private static final String FRAME_STATE_PROPERTY = "MainFrame";
 
     private static final Icon BUSY_IMAGE = StatusWidget.BUSY_IMAGE;
-    
+
     private static final InputStream TIP =
         TracInstantFrame.class.getResourceAsStream("res/SearchTip.html");
 
@@ -323,13 +323,13 @@ public class TracInstantFrame extends JFrame {
         m_DownloadsNumber = new JLabel("", null, SwingConstants.LEFT);
         m_DownloadsNumber.setHorizontalTextPosition(SwingConstants.LEFT);
         m_Downloads = createDownloadModel();
-        
+
         m_StatusPanel = createStatusPanel(
             m_DownloadsNumber, new JButton(m_DownloadAction),
             Box.createHorizontalGlue(),
             m_SlurpStatus.getComponent(),
             new JButton(slurpAction));
-        
+
         m_MainArea = createMainSplitArea(m_Table, m_DescriptionPane, m_StatusPanel);
         m_ToolWindowSplit = createToolSplit();
 
@@ -610,10 +610,10 @@ public class TracInstantFrame extends JFrame {
     protected void removeSelectedTicketsFromTable() {
         Ticket[] tickets = m_Table.getSelectedTickets();
         String oldSearch = m_FilterCombo.getEditorText().trim();
-        String newSearch = isLastTermADeletion(oldSearch) ? 
-            expandDeletionTerm(oldSearch, tickets) : 
+        String newSearch = isLastTermADeletion(oldSearch) ?
+            expandDeletionTerm(oldSearch, tickets) :
             appendDeletionTerm(oldSearch, tickets);
-            
+
         // Attempt to retain selection even after deleting rows (and regenerating table)
         int oldRow = m_Table.getSelectionModel().getMaxSelectionIndex();
         if (oldRow < m_Table.getRowCount() - 1) {
@@ -628,10 +628,10 @@ public class TracInstantFrame extends JFrame {
 
     private static final Pattern DELETE_PATTERN = Pattern.compile(
         "\\-\\#\\:\\^\\(\\d+(\\|\\d+)*\\)\\$");
-    
+
     private boolean isLastTermADeletion(String search) {
         String[] split = search.split("\\s");
-        return split.length != 0 && 
+        return split.length != 0 &&
             DELETE_PATTERN.matcher(split[split.length - 1]).matches();
     }
 

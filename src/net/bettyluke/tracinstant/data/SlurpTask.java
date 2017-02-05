@@ -1,16 +1,16 @@
 /*
  * Copyright 2011 Luke Usherwood.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 2.1 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -64,11 +64,11 @@ public class SlurpTask extends TicketLoadTask {
         STATUS_EXCLUSION_PLACEHOLDER +
         "&order=id" +
         "&max=" + RESULTS_PER_PAGE;
-        
+
 
     // Note: ordering by changetime is required by the heuristics in DateFormatDetector
     private static final String MODIFIED_TIME_QUERY =
-        "query?format=tab" + STATUS_EXCLUSION_PLACEHOLDER + 
+        "query?format=tab" + STATUS_EXCLUSION_PLACEHOLDER +
         "&col=id&col=changetime&order=changetime";
 
     private final SiteData site;
@@ -167,7 +167,7 @@ public class SlurpTask extends TicketLoadTask {
     }
 
     private boolean isTicketModified(Collection<Ticket> tickets) {
-        String mostRecentlyModifiedTime = 
+        String mostRecentlyModifiedTime =
             getMostRecentlyModifiedTime(site, tableModel.getTickets());
         if (mostRecentlyModifiedTime == null) {
             return true;
@@ -198,7 +198,7 @@ public class SlurpTask extends TicketLoadTask {
     private String makeModifiedFilter() {
         try {
             if (sinceDateTime != null && site.getDateFormat() != null) {
-                String reformatted = 
+                String reformatted =
                     urlDateFormat.format(site.getDateFormat().parse(sinceDateTime));
                 return "&changetime=" + URLEncoder.encode(reformatted, "UTF-8") + "..";
             }
@@ -222,7 +222,7 @@ public class SlurpTask extends TicketLoadTask {
         int page = 1;
         while (found < expectedCount) {
             URL url = new URL(basicDescriptionURL + pageSuffix);
-            publish(new Update("Downloading ticket descriptions (" + 
+            publish(new Update("Downloading ticket descriptions (" +
             (found*100/expectedCount) + "%)...", "Querying: " + url));
             int foundNew = slurpXmlFormat(url);
             found += foundNew;

@@ -1,16 +1,16 @@
 /*
  * Copyright 2011 Luke Usherwood.
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 2.1 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -70,12 +70,12 @@ public class TracTabTicketParser {
         }
     }
 
-    /** 
-     * Ensures all strings are cached, It is anticipated that many strings will appear 
+    /**
+     * Ensures all strings are cached, It is anticipated that many strings will appear
      * multiple times, so we try not to duplicate them in memory.
      * <p>
-     * It's like String.intern() but we are in control of the cache.  
-     */ 
+     * It's like String.intern() but we are in control of the cache.
+     */
     private String[] cacheStrings(String[] strings) {
         for (int j = 0; j < strings.length; j++) {
             String orig = strings[j];
