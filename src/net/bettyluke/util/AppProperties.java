@@ -44,8 +44,8 @@ public class AppProperties {
      */
     public String getString(String[] keys, String fallback) {
         String result = null;
-        for (int n = 0; n < keys.length; n++) {
-            result = getValue(keys[n]);
+        for (String key : keys) {
+            result = getValue(key);
             if (result != null) {
                 break;
             }
@@ -103,8 +103,8 @@ public class AppProperties {
      */
     public File getFilePath(String keys[], File fallback) {
         File result = null;
-        for (int n = 0; n < keys.length; n++) {
-            result = getFilePath(keys[n], fallback);
+        for (String key : keys) {
+            result = getFilePath(key, fallback);
             if (result != null) {
                 break;
             }
@@ -128,8 +128,8 @@ public class AppProperties {
      */
     public File getExistingFilePath(String keys[]) {
         File result = null;
-        for (int n = 0; n < keys.length; n++) {
-            result = getExistingFilePath(keys[n]);
+        for (String key : keys) {
+            result = getExistingFilePath(key);
             if (result != null) {
                 break;
             }

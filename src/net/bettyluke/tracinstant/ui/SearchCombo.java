@@ -186,12 +186,12 @@ public class SearchCombo extends JComboBox {
         // Perhaps this class should just be returning data, rather than processing it,
         // but it seems a little easier to do this here.
         final String[] words = getEditorText().split("\\s");
-        for (int i = 0; i < words.length; i++) {
+        for (String word : words) {
             result.append(space);
             space = " ";
-            SavedSearch ss = map.get(words[i]);
+            SavedSearch ss = map.get(word);
             if (ss == null) {
-                result.append(words[i]);
+                result.append(word);
             } else {
                 result.append(ss.searchText);
             }

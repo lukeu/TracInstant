@@ -179,8 +179,8 @@ class PeriodStatistics {
                 TimeUnit.NANOSECONDS.toMillis(statsMap.get(Category.LONG).nanos)));
         if (stack != null) {
             result.append("\nAn example call-stack during the busy period:\n");
-            for (int i=0; i < stack.length; i++) {
-                result.append("\tat " + stack[i] + "\n");
+            for (StackTraceElement element : stack) {
+                result.append("\tat " + element + "\n");
             }
         }
         return result.toString();
