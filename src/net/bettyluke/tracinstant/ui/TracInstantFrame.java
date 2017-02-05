@@ -398,6 +398,7 @@ public class TracInstantFrame extends JFrame {
         ancestor.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(
                 KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK), "Select Filter");
         ancestor.getActionMap().put("Select Filter", new AbstractAction("Select Filter") {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 result.requestFocusInWindow();
                 result.getEditorComponent().selectAll();

@@ -41,6 +41,7 @@ public class ShowPerformanceMonitorAction extends AbstractAction {
 
     private EdtMonitor monitor = null;
 
+    @Override
     public void actionPerformed(ActionEvent e) {
         EdtMonitorPanel panel = new EdtMonitorPanel(getMonitor().getDataModel());
 

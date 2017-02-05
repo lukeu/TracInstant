@@ -40,6 +40,7 @@ class PercentageTimeTableRenderer extends JLabel implements TableCellRenderer {
     private PeriodStatistics bin;
     private boolean highlight;
 
+    @Override
     public Component getTableCellRendererComponent(JTable table, Object value,
             boolean isSelected, boolean hasFocus, int row, int column) {
         bin = (PeriodStatistics) value;

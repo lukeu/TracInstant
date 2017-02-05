@@ -73,18 +73,23 @@ public class TicketTable extends JTable {
             });
 
             tableHeader.getColumnModel().addColumnModelListener(new TableColumnModelListener() {
+                @Override
                 public void columnSelectionChanged(ListSelectionEvent e) {
                 }
 
+                @Override
                 public void columnRemoved(TableColumnModelEvent e) {
                 }
 
+                @Override
                 public void columnMoved(TableColumnModelEvent e) {
                 }
 
+                @Override
                 public void columnMarginChanged(ChangeEvent e) {
                 }
 
+                @Override
                 public void columnAdded(TableColumnModelEvent e) {
                     SwingUtilities.invokeLater(() -> recallColumnLayout());
                 }

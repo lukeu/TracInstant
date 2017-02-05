@@ -118,10 +118,12 @@ public class CalloutOverlay {
 
     private final class MyMouseListener implements MouseListener, MouseMotionListener {
 
+        @Override
         public void mouseClicked(MouseEvent e) {
             redispatchToCallout(e);
         }
 
+        @Override
         public void mousePressed(MouseEvent e) {
             if (!redispatchToCallout(e)) {
                 if (dismissListener != null) {
@@ -132,22 +134,27 @@ public class CalloutOverlay {
             }
         }
 
+        @Override
         public void mouseReleased(MouseEvent e) {
             redispatchToCallout(e);
         }
 
+        @Override
         public void mouseEntered(MouseEvent e) {
             redispatchToCallout(e);
         }
 
+        @Override
         public void mouseExited(MouseEvent e) {
             redispatchToCallout(e);
         }
 
+        @Override
         public void mouseDragged(MouseEvent e) {
             redispatchToCallout(e);
         }
 
+        @Override
         public void mouseMoved(MouseEvent e) {
             redispatchToCallout(e);
         }

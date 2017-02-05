@@ -46,6 +46,7 @@ public class HtmlDescriptionPane extends JEditorPane {
             m_TicketModel = ticketModel;
         }
 
+        @Override
         public void hyperlinkUpdate(HyperlinkEvent evt) {
             JEditorPane pane = (JEditorPane) evt.getSource();
             EventType type = evt.getEventType();

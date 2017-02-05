@@ -38,6 +38,7 @@ public class StatusWidget {
             original = icon;
         }
 
+        @Override
         public void paintIcon(Component c, Graphics g, int x, int y) {
             Graphics2D gfx = (Graphics2D) g.create();
             gfx.scale(0.5, 0.5);

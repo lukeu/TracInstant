@@ -128,6 +128,7 @@ public class SearchComboEditor extends JTextField {
 
         private AbstractAction createDoneAction() {
             return new AbstractAction("Done") {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     applyChanges();
                 }
@@ -136,6 +137,7 @@ public class SearchComboEditor extends JTextField {
 
         private Action createCancelAction() {
             return new AbstractAction("Cancel") {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     dismiss();
                 }
@@ -144,6 +146,7 @@ public class SearchComboEditor extends JTextField {
 
         private Action createRemoveSearchAction() {
             return new AbstractAction("Remove saved search") {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     clearSavedSearch();
                     dismiss();

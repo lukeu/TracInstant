@@ -48,6 +48,7 @@ public class SlurpAction extends AbstractAction {
     private SlurpTask task = null;
 
     private final Runnable onTaskEnded = new Runnable() {
+        @Override
         public void run() {
             SlurpTask t = task;
             task = null;

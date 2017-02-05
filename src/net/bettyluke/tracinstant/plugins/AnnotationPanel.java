@@ -69,10 +69,12 @@ public class AnnotationPanel extends JPanel {
         JTextArea result = new JTextArea();
         result.setBackground(new Color(255, 255, 230));
         result.addFocusListener(new FocusListener() {
+            @Override
             public void focusLost(FocusEvent e) {
                 storeAnnotationInTicket();
             }
 
+            @Override
             public void focusGained(FocusEvent e) {
             }
         });

@@ -68,14 +68,17 @@ public class DownloadDialog extends JDialog {
         public TargetTableModel(ListModelView listModel) {
             this.listModel = listModel;
             listModel.addListDataListener(new ListDataListener() {
+                @Override
                 public void intervalRemoved(ListDataEvent e) {
                     fireTableRowsDeleted(e.getIndex0(), e.getIndex1());
                 }
 
+                @Override
                 public void intervalAdded(ListDataEvent e) {
                     fireTableRowsInserted(e.getIndex0(), e.getIndex1());
                 }
 
+                @Override
                 public void contentsChanged(ListDataEvent e) {
                     fireTableRowsUpdated(e.getIndex0(), e.getIndex1());
                 }

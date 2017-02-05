@@ -87,6 +87,7 @@ public class PerformancePlot extends JTable {
         public void detachListener() {
             plot.getModel().dataModel.removeStatListener(this);
         }
+        @Override
         public void statsUpdate(int updateCount) {
             plot.setUpdateInProgress(true);
             try {

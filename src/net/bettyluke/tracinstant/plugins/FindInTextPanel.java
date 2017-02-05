@@ -93,14 +93,17 @@ public class FindInTextPanel extends JPanel {
             };
         }
 
+        @Override
         public void removeUpdate(DocumentEvent e) {
             maybeRun();
         }
 
+        @Override
         public void insertUpdate(DocumentEvent e) {
             maybeRun();
         }
 
+        @Override
         public void changedUpdate(DocumentEvent e) {
             maybeRun();
         }

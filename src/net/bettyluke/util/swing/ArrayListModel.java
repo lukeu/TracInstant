@@ -20,8 +20,10 @@ public final class ArrayListModel<T> extends AbstractListModel {
         data = array;
     }
 
+    @Override
     public int getSize() { return data.length; }
 
+    @Override
     @SuppressWarnings("unchecked")
     public T getElementAt(int index) { return (T) data[index]; }
 }

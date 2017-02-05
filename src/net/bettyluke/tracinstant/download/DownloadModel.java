@@ -37,6 +37,7 @@ public class DownloadModel {
 
         int oldSize = 0;
 
+        @Override
         public int getSize() {
             return targets.size();
         }
@@ -116,6 +117,7 @@ public class DownloadModel {
         Runnable doneRunner = new Runnable() {
             int countdown = 2;
 
+            @Override
             public void run() {
                 if (--countdown == 0) {
                     System.out.println("Downloader DONE");
@@ -264,15 +266,18 @@ public class DownloadModel {
         }
 
         AttachmentCounter.restartCounting(tickets, new CountCallback() {
+            @Override
             public void restart() {
                 targets.clear();
                 setState(State.COUNTING);
             }
 
+            @Override
             public void downloadsFound(List<? extends Downloadable> attachments) {
                 addAll(attachments);
             }
 
+            @Override
             public void done() {
                 setState(State.IDLE);
             }
