@@ -17,7 +17,7 @@ public class SearchComboBoxModel extends DefaultComboBoxModel {
 
     private static final int MAX_SAVED_SEARCHES = 50;
 
-    private TreeMap<Integer, SavedSearch> hiddenElements = new TreeMap<Integer, SavedSearch>();
+    private TreeMap<Integer, SavedSearch> hiddenElements = new TreeMap<>();
 
     public SearchComboBoxModel() {
         loadSavedSearches();

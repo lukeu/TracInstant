@@ -97,7 +97,7 @@ public class TicketTable extends JTable {
 
         protected void memoriseColumnLayout() {
             TableColumnModel cm = tableHeader.getColumnModel();
-            List<String> headerWidths = new ArrayList<String>();
+            List<String> headerWidths = new ArrayList<>();
             for (int i = 0; i < cm.getColumnCount(); ++i) {
                 headerWidths.add(
                     cm.getColumn(i).getHeaderValue() + "=" +
@@ -109,7 +109,7 @@ public class TicketTable extends JTable {
         protected void recallColumnLayout() {
             List<String> stored = TracInstantProperties.getStringList(
                 COLUMNS_KEY, COLUMNS_DEFAULT);
-            Map<String, Integer> widths = new LinkedHashMap<String, Integer>(stored.size());
+            Map<String, Integer> widths = new LinkedHashMap<>(stored.size());
             try {
                 for (String column : stored) {
                     String[] s = column.split("\\=");
@@ -158,7 +158,7 @@ public class TicketTable extends JTable {
     public TicketTable(TicketTableModel model, SearchCombo searchCombo) {
         super(model);
         this.searchCombo = searchCombo;
-        setRowSorter(new TableRowSorter<TicketTableModel>(model));
+        setRowSorter(new TableRowSorter<>(model));
         addColumnContextMenu();
         ColumnWidthMemoriser cwm = new ColumnWidthMemoriser(getTableHeader());
         cwm.attach();
@@ -183,7 +183,7 @@ public class TicketTable extends JTable {
     private JPopupMenu createColumnFilterMenu(int viewColumn) {
         String colName = getColumnName(viewColumn);
 
-        Map<String, Integer> map = new TreeMap<String, Integer>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, Integer> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (int r = 0, end = getRowCount(); r < end; ++r) {
             Object value = getValueAt(r, viewColumn);
             String[] strs = value.toString().split("[\\s\\,]+");
@@ -193,7 +193,7 @@ public class TicketTable extends JTable {
             }
         }
 
-        List<Item> items = new ArrayList<Item>();
+        List<Item> items = new ArrayList<>();
         for (Entry<String, Integer> s : map.entrySet()) {
             items.add(new FilterColumnAction(colName, s.getKey(), s.getValue()));
         }

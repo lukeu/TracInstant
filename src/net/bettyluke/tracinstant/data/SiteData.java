@@ -53,12 +53,12 @@ public class SiteData {
         }
 
         if (TracInstantProperties.getUseCache()) {
-            SortedSet<String> fields = new TreeSet<String>(m_TableModel.getAllFields());
+            SortedSet<String> fields = new TreeSet<>(m_TableModel.getAllFields());
             fields.removeAll(m_TableModel.getExcludedFields());
             fields.removeAll(userFields);
             saveTicketData(TABULAR_CACHE_FILE, fields);
 
-            fields = new TreeSet<String>(m_TableModel.getExcludedFields());
+            fields = new TreeSet<>(m_TableModel.getExcludedFields());
             fields.removeAll(userFields);
             saveTicketData(HIDDEN_FIELDS_CACHE_FILE, fields);
         }

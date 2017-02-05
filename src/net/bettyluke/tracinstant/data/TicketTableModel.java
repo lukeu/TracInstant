@@ -38,7 +38,7 @@ public class TicketTableModel extends AbstractTableModel {
 
     // NOTE: "changetime" and "Modified" are aliases, depending on the Trac server version
     // TODO: Remove "title" at the parsing level? e.g. for memory and search speed?
-    private final Set<String> excludedFields = new TreeSet<String>(
+    private final Set<String> excludedFields = new TreeSet<>(
             Arrays.asList("description", "link", "title", "changetime", "Modified"));
 
     private static final int TICKET_NUMBER_COLUMN = 0;
@@ -47,9 +47,9 @@ public class TicketTableModel extends AbstractTableModel {
     private Ticket[] tickets = new Ticket[0];
 
     /** All fields found in any of the tickets. */
-    private SortedSet<String> knownFields = new TreeSet<String>();
+    private SortedSet<String> knownFields = new TreeSet<>();
 
-    private SortedSet<String> userFields = new TreeSet<String>();
+    private SortedSet<String> userFields = new TreeSet<>();
 
     /** Columns currently in use. */
     private String[] shownColumns = new String[0];
@@ -67,7 +67,7 @@ public class TicketTableModel extends AbstractTableModel {
     }
 
     public List<Ticket> getTicketsWithAnyField(Collection<String> fields) {
-        List<Ticket> result = new ArrayList<Ticket>(tickets.length);
+        List<Ticket> result = new ArrayList<>(tickets.length);
         for (Ticket t : tickets) {
             Ticket copy = new Ticket(t.getNumber());
             for (String f : fields) {
@@ -119,7 +119,7 @@ public class TicketTableModel extends AbstractTableModel {
     }
 
     private Map<Integer, Ticket> getTicketsAsMap() {
-        Map<Integer, Ticket> ticketMap = new TreeMap<Integer, Ticket>();
+        Map<Integer, Ticket> ticketMap = new TreeMap<>();
         for (Ticket ticket : tickets) {
             ticketMap.put(ticket.getNumber(), ticket);
         }
@@ -144,7 +144,7 @@ public class TicketTableModel extends AbstractTableModel {
 
     private String[] determineUsedColumns() {
         // TODO: Stub! Make individually selectable. (A custom column model?)
-        Set<String> fields = new TreeSet<String>(knownFields);
+        Set<String> fields = new TreeSet<>(knownFields);
         fields.removeAll(excludedFields);
         fields.add("#");
         return fields.toArray(new String[0]);

@@ -229,7 +229,7 @@ public class HistogramPane {
     }
 
     private Map<String, Bar> getBars(String field) {
-        Map<String, Bar> results = new TreeMap<String, Bar>(String.CASE_INSENSITIVE_ORDER);
+        Map<String, Bar> results = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         for (Ticket ticket : ticketsInView) {
             String value = ticket.getValue(field);
             if (value != null) {

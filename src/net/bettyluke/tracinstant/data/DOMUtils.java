@@ -82,15 +82,15 @@ public class DOMUtils {
     }
 
     public static Iterable<Node> iterateChildNodes(Element elem) {
-        return new ChildIterator<Node>(Node.class, elem);
+        return new ChildIterator<>(Node.class, elem);
     }
 
     public static Iterable<Element> iterateChildElements(Element elem) {
-        return new ChildIterator<Element>(Element.class, elem);
+        return new ChildIterator<>(Element.class, elem);
     }
 
     public static Element findFirstChildElement(Element elem) {
-        ChildIterator<Element> iter = new ChildIterator<Element>(Element.class, elem);
+        ChildIterator<Element> iter = new ChildIterator<>(Element.class, elem);
         return iter.hasNext() ? iter.next() : null;
     }
 

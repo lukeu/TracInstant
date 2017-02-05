@@ -25,7 +25,7 @@ import java.util.TreeMap;
 
 public class Ticket {
 
-    private Map<String, String> m_Fields = new TreeMap<String, String>();
+    private Map<String, String> m_Fields = new TreeMap<>();
 
     private final int m_Number;
 

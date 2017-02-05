@@ -25,7 +25,7 @@ import java.util.Map;
 /** Just a few heading-like fields, plus ticket data. */
 public class TracXmlResult implements TicketProvider {
 
-    private Map<Integer, Ticket> m_Tickets = new LinkedHashMap<Integer, Ticket>();
+    private Map<Integer, Ticket> m_Tickets = new LinkedHashMap<>();
     private String m_Title = null;
     private String m_Link = null;
     private String m_Description = null;
@@ -38,7 +38,7 @@ public class TracXmlResult implements TicketProvider {
     public List<Ticket> getTickets() {
 
         // The Ticket objects are still mutable. Never mind.
-        return new ArrayList<Ticket>(m_Tickets.values());
+        return new ArrayList<>(m_Tickets.values());
     }
 
     @Override

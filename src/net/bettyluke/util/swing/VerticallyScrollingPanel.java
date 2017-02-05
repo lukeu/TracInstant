@@ -12,7 +12,7 @@ public class VerticallyScrollingPanel<T extends Component & Scrollable> extends 
         implements Scrollable {
 
     public static <T extends Component & Scrollable> VerticallyScrollingPanel<T> create(T d) {
-        return new VerticallyScrollingPanel<T>(d);
+        return new VerticallyScrollingPanel<>(d);
     }
 
     private VerticallyScrollingPanel(T delegate) {

@@ -119,7 +119,7 @@ public class FindInTextPanel extends JPanel {
     private Set<Integer> ticketsInText = Collections.emptySet();
     private JTextComponent foundTicketNumbersArea = createTextArea();
     private JTextComponent filteredTicketNumbersArea = createTextArea();
-    private final Set<Integer> filter = new TreeSet<Integer>();
+    private final Set<Integer> filter = new TreeSet<>();
 
     private static JTextComponent createTextArea() {
         JTextComponent ta = new JTextArea();
@@ -156,7 +156,7 @@ public class FindInTextPanel extends JPanel {
             foundTicketNumbersArea.setText(newFoundText);
         }
 
-        Set<Integer> intersection = new TreeSet<Integer>(ticketsInText);
+        Set<Integer> intersection = new TreeSet<>(ticketsInText);
         intersection.retainAll(filter);
         String newFilteredText = formatOutlookQuery(intersection);
         if (!newFilteredText.equals(filteredTicketNumbersArea.getText())) {
@@ -192,7 +192,7 @@ public class FindInTextPanel extends JPanel {
     }
 
     protected final Set<Integer> scanText(String text) {
-        Set<Integer> result = new TreeSet<Integer>();
+        Set<Integer> result = new TreeSet<>();
         Matcher m = TICKET_PATTERN.matcher(text);
         while (m.find()) {
             try {

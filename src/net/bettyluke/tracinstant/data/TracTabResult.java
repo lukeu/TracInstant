@@ -26,7 +26,7 @@ import java.util.Map;
 public class TracTabResult implements TicketProvider {
 
     private final String[] m_Headings;
-    private Map<Integer, Ticket> m_Tickets = new LinkedHashMap<Integer, Ticket>();
+    private Map<Integer, Ticket> m_Tickets = new LinkedHashMap<>();
 
     public TracTabResult(String[] headings) {
         if (headings == null) {
@@ -65,6 +65,6 @@ public class TracTabResult implements TicketProvider {
 
     @Override
     public List<Ticket> getTickets() {
-        return new ArrayList<Ticket>(m_Tickets.values());
+        return new ArrayList<>(m_Tickets.values());
     }
 }

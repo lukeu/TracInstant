@@ -156,7 +156,7 @@ public class SlurpTask extends TicketLoadTask {
     }
 
     private List<String> extractModificationDates(Collection<Ticket> tickets) {
-        List<String> result = new ArrayList<String>(tickets.size());
+        List<String> result = new ArrayList<>(tickets.size());
         for (Ticket ticket : tickets) {
             String time = ticket.getValue("changetime");
             if (time != null) {

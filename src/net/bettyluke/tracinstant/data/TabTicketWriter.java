@@ -35,7 +35,7 @@ public class TabTicketWriter {
 
     public static void write(Writer writer, Set<String> fieldsSet, List<Ticket> tickets) {
 
-        List<String> fields = new ArrayList<String>();
+        List<String> fields = new ArrayList<>();
         fields.add("id");
         fields.addAll(fieldsSet);
 

@@ -69,7 +69,7 @@ class PeriodStatistics {
     public StackTraceElement[] stack;
 
     private static EnumMap<Category, CategoryStats> initStatsMap() {
-        EnumMap<Category, CategoryStats> map = new EnumMap<Category, CategoryStats>(Category.class);
+        EnumMap<Category, CategoryStats> map = new EnumMap<>(Category.class);
         for (Category cat : Category.values()) {
             map.put(cat, new CategoryStats());
         }
@@ -77,7 +77,7 @@ class PeriodStatistics {
     }
 
     private static EnumMap<Category, CategoryStats> copy(Map<Category, CategoryStats> other) {
-        EnumMap<Category, CategoryStats> map = new EnumMap<Category, CategoryStats>(Category.class);
+        EnumMap<Category, CategoryStats> map = new EnumMap<>(Category.class);
         for (Entry<Category, CategoryStats> entry : other.entrySet()) {
             map.put(entry.getKey(), new CategoryStats(entry.getValue()));
         }

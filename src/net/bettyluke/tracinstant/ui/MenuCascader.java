@@ -143,9 +143,9 @@ public class MenuCascader {
         m_LastName = "";
 
         // Destroy a copy of the list, not the passed argument.
-        items = new LinkedList<Item>(items);
+        items = new LinkedList<>(items);
 
-        List<Item> batch = new ArrayList<Item>();
+        List<Item> batch = new ArrayList<>();
         int depth = 1;
         while (!items.isEmpty()) {
             String firstName = items.get(0).getName();
@@ -247,7 +247,7 @@ public class MenuCascader {
     }
 
     private List<JMenuItem> createMenuItems(List<Item> items) {
-        List<JMenuItem> menuItems = new ArrayList<JMenuItem>(items.size());
+        List<JMenuItem> menuItems = new ArrayList<>(items.size());
         for (Item item : items) {
             JMenuItem mi = new JMenuItem(item);
             menuItems.add(mi);

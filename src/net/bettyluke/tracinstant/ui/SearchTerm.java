@@ -57,7 +57,7 @@ final class SearchTerm {
         if (searchText.trim().isEmpty()) {
             return TableRowFilterComputer.EMPTY_SEARCH_TERMS;
         }
-        List<SearchTerm> terms = new ArrayList<SearchTerm>();
+        List<SearchTerm> terms = new ArrayList<>();
         final String[] words = searchText.split("\\s");
 
         try {

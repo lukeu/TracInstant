@@ -31,7 +31,7 @@ import net.bettyluke.util.FileUtils;
 
 public class AttachmentDownloader extends SwingWorker<Void, Result> {
 
-    private final List<Target> downloadQueue = new ArrayList<Target>();
+    private final List<Target> downloadQueue = new ArrayList<>();
     private DownloadModel model;
     private Runnable allDoneCallback;
 

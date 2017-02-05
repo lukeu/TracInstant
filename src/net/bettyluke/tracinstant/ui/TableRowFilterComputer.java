@@ -83,7 +83,7 @@ public class TableRowFilterComputer {
         public FilterBatchWorker(int firstRowNumber, List<Ticket> tickets, SearchTerm[] searchTerms,
                 BatchCallback callback) {
             m_FirstRowNumber = firstRowNumber;
-            m_Tickets = new ArrayList<Ticket>(tickets);
+            m_Tickets = new ArrayList<>(tickets);
             m_SearchTerms = searchTerms;
             m_BatchCallback = callback;
         }
@@ -146,7 +146,7 @@ public class TableRowFilterComputer {
             if (fieldAbbreviation == null) {
                 return fields;
             }
-            List<String> result = new ArrayList<String>(fields.size());
+            List<String> result = new ArrayList<>(fields.size());
             for (String field : fields) {
                 if (field.length() >= fieldAbbreviation.length()
                         && field.substring(0, fieldAbbreviation.length())
@@ -161,7 +161,7 @@ public class TableRowFilterComputer {
     private static final class BatchCompletionHandler implements FilterBatchWorker.BatchCallback {
 
         /** Store a future for each batch, purely to be able to cancel them. */
-        private final List<Future<Void>> m_Futures = new ArrayList<Future<Void>>();
+        private final List<Future<Void>> m_Futures = new ArrayList<>();
 
         // @GuardedBy("m_Lock")
         private final BitSet m_RowBitSet = new BitSet();
@@ -184,7 +184,7 @@ public class TableRowFilterComputer {
          *            must be called this many times.
          */
         public BatchCompletionHandler(ResultCallback callback, int batchCount) {
-            m_Callback = new AtomicReference<ResultCallback>(callback);
+            m_Callback = new AtomicReference<>(callback);
             m_InProgress = new AtomicInteger(batchCount);
         }
 
@@ -303,7 +303,7 @@ public class TableRowFilterComputer {
     private void queueWorkBatches(Ticket[] tickets, SearchTerm[] searchTerms,
             List<Integer> batchSizes) {
 
-        List<Ticket> batch = new ArrayList<Ticket>(MAX_BATCH_SIZE);
+        List<Ticket> batch = new ArrayList<>(MAX_BATCH_SIZE);
         int firstRowInBatch = 0;
         int it = 0;
         for (int size : batchSizes) {
@@ -329,7 +329,7 @@ public class TableRowFilterComputer {
         // quickly (low-latency) while we're feeding the queue.
         int size = 4;
 
-        List<Integer> result = new ArrayList<Integer>();
+        List<Integer> result = new ArrayList<>();
         while (remaining > 0) {
             size = Math.min(2 * size, Math.min(MAX_BATCH_SIZE, remaining));
             remaining -= size;

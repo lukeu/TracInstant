@@ -102,7 +102,7 @@ public class DateFormatDetector {
     private DateFormatDetector(List<String> dateTimeStringsAscending) {
         this.dateStringsAscending = stripTime(trimIfLarge(dateTimeStringsAscending));
 
-        possibleFormats = new ArrayList<Attempt>(PERMUTATIONS.size() * 4);
+        possibleFormats = new ArrayList<>(PERMUTATIONS.size() * 4);
         for (String dateString : PERMUTATIONS) {
             possibleFormats.add(new Attempt(dateString));
             possibleFormats.add(new Attempt(dateString.replaceAll("\\-", "/")));
@@ -117,7 +117,7 @@ public class DateFormatDetector {
         }
 
         // Use the start and end of the given list.
-        List<String> result = new ArrayList<String>(MAX_SAMPLES_TO_CONSIDER);
+        List<String> result = new ArrayList<>(MAX_SAMPLES_TO_CONSIDER);
         for (int i = 0; i < MAX_SAMPLES_TO_CONSIDER / 2; i++) {
             result.add(ss.get(i));
         }
@@ -128,7 +128,7 @@ public class DateFormatDetector {
     }
 
     private static List<String> stripTime(List<String> dateTimesAscending) {
-        List<String> result = new ArrayList<String>(dateTimesAscending.size());
+        List<String> result = new ArrayList<>(dateTimesAscending.size());
         for (String s : dateTimesAscending) {
             result.add(stripTime(s));
         }

@@ -77,7 +77,7 @@ public class DownloadModel {
     private final EventListenerList listenerList = new EventListenerList();
     private final ChangeEvent changeEvent = new ChangeEvent(this);
 
-    private final List<Target> targets = new ArrayList<Target>();
+    private final List<Target> targets = new ArrayList<>();
     private final ListModelView listModel = new ListModelView();
 
     private File bugsFolder;

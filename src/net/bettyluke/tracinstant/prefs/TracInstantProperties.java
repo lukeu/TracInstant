@@ -34,8 +34,7 @@ public final class TracInstantProperties {
 
     private TracInstantProperties() {}
 
-    private static final AtomicReference<AppProperties> s_SharedInstance =
-            new AtomicReference<AppProperties>();
+    private static final AtomicReference<AppProperties> s_SharedInstance = new AtomicReference<>();
 
     public static void initialise(String companyName, String appName) {
         s_SharedInstance.set(new AppProperties(companyName, appName));
@@ -110,7 +109,7 @@ public final class TracInstantProperties {
     }
 
     public static List<String> getStringList(String key, String defaultStringList) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         String strList = get().getValue(key);
         if (strList == null) {
             strList = defaultStringList;
@@ -169,7 +168,7 @@ public final class TracInstantProperties {
             str = str.substring(bracket + 1, str.length() - 1);
         }
         String[] pairs = str.split(",");
-        Map<String, String> result = new HashMap<String, String>(pairs.length);
+        Map<String, String> result = new HashMap<>(pairs.length);
         for (String pair : pairs) {
             String[] keyValue = pair.split("=");
             if (keyValue.length != 2) {

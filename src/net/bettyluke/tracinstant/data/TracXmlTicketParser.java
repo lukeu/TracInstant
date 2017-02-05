@@ -38,7 +38,7 @@ import org.xml.sax.SAXException;
 /** Parses the XML export from Trac, in particular to populate the HTML description. */
 public class TracXmlTicketParser {
 
-    private static final Set<String> TICKET_FIELDS = new TreeSet<String>(
+    private static final Set<String> TICKET_FIELDS = new TreeSet<>(
         Arrays.asList(new String[] { "title", "description"}));
 
     private static final Pattern TICKET_URL_NUMBER_FINDER =

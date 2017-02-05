@@ -170,7 +170,7 @@ public class SearchCombo extends JComboBox {
     /** Get the text, with all saved shorthands expanded. */
     public String getExpandedText() {
 
-        TreeMap<String, SavedSearch> map = new TreeMap<String, SavedSearch>(
+        TreeMap<String, SavedSearch> map = new TreeMap<>(
                 String.CASE_INSENSITIVE_ORDER);
         int num = getModel().getSize();
         for (int i = 0; i < num; i++) {

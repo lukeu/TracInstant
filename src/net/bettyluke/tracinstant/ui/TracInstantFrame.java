@@ -269,7 +269,7 @@ public class TracInstantFrame extends JFrame {
      */
     private Ticket[] m_DisplayedTickets = new Ticket[0];
 
-    private Map<ToolPlugin, JComponent> m_Plugins = new HashMap<ToolPlugin, JComponent>();
+    private Map<ToolPlugin, JComponent> m_Plugins = new HashMap<>();
     private ToolPlugin m_ActivePlugin = null;
 
     private final SlurpAction slurpAction;

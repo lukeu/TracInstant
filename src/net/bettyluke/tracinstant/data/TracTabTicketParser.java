@@ -29,7 +29,7 @@ public class TracTabTicketParser {
 
     private final BufferedReader reader;
 
-    private Map<String, String> stringCache = new HashMap<String, String>();
+    private Map<String, String> stringCache = new HashMap<>();
 
     public static TicketProvider parse(Reader reader) throws IOException, InterruptedException {
         TracTabTicketParser parser = new TracTabTicketParser(reader);
