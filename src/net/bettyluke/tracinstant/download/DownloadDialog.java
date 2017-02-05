@@ -44,8 +44,6 @@ import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.table.AbstractTableModel;
@@ -55,6 +53,7 @@ import net.bettyluke.tracinstant.download.DownloadModel.ListModelView;
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
 import net.bettyluke.tracinstant.ui.BrowsePanel;
 import net.bettyluke.tracinstant.ui.TracInstantFrame;
+import net.bettyluke.util.DocUtils;
 
 // TODO: Enforce single-instance creation - since this is the only anticipated usage
 // we are lazy and don't disconnect listeners.
@@ -249,24 +248,14 @@ public class DownloadDialog extends JDialog {
     private void addBehaviour() {
         downloadModel.addChangeListener(e -> updateControls());
 
-        final JTextComponent ed = browsePanel.getLocationEditor();
-        ed.getDocument().addDocumentListener(new DocumentListener() {
-            public void removeUpdate(DocumentEvent e) {
-                update();
-            }
+        JTextComponent ed = browsePanel.getLocationEditor();
+        ed.getDocument().addDocumentListener(
+                DocUtils.newOnAnyEventListener(
+                        () -> updateBugsFolder(ed.getText())));
+    }
 
-            public void insertUpdate(DocumentEvent e) {
-                update();
-            }
-
-            public void changedUpdate(DocumentEvent e) {
-                update();
-            }
-
-            private void update() {
-                downloadModel.setBugsFolder(new File(ed.getText()));
-            }
-        });
+    private void updateBugsFolder(String filename) {
+        downloadModel.setBugsFolder(new File(filename));
     }
 
     protected void updateControls() {

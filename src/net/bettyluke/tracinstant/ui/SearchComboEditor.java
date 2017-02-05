@@ -49,11 +49,10 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import net.bettyluke.swing.SwingUtils;
 import net.bettyluke.tracinstant.data.SavedSearch;
+import net.bettyluke.util.DocUtils;
 
 public class SearchComboEditor extends JTextField {
 
@@ -303,30 +302,7 @@ public class SearchComboEditor extends JTextField {
         starModel = new DefaultButtonModel();
         starModel.addChangeListener(e -> repaint());
 
-        getDocument().addDocumentListener(new DocumentListener() {
-            public void removeUpdate(DocumentEvent e) {
-                updateStar();
-            }
-
-            public void insertUpdate(DocumentEvent e) {
-                updateStar();
-            }
-
-            public void changedUpdate(DocumentEvent e) {
-                updateStar();
-            }
-        });
-//        comboModel.addListDataListener(new ListDataListener() {
-//            public void intervalRemoved(ListDataEvent e) {
-//                updateStar();
-//            }
-//            public void intervalAdded(ListDataEvent e) {
-//                updateStar();
-//            }
-//            public void contentsChanged(ListDataEvent e) {
-//                updateStar();
-//            }
-//        });
+        getDocument().addDocumentListener(DocUtils.newOnAnyEventListener(this::updateStar));
 
         Listener ml = new Listener();
         addMouseListener(ml);

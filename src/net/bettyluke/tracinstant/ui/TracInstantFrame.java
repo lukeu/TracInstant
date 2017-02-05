@@ -64,8 +64,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.ToolTipManager;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.JTextComponent;
@@ -83,6 +81,7 @@ import net.bettyluke.tracinstant.plugins.TicketUpdater;
 import net.bettyluke.tracinstant.plugins.ToolPlugin;
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
 import net.bettyluke.util.DesktopUtils;
+import net.bettyluke.util.DocUtils;
 import net.bettyluke.util.FileUtils;
 
 public class TracInstantFrame extends JFrame {
@@ -365,23 +364,9 @@ public class TracInstantFrame extends JFrame {
         addFilterAccelerator(result);
 
         JTextComponent editorComp = result.getEditorComponent();
-        editorComp.getDocument().addDocumentListener(new DocumentListener() {
-            public void insertUpdate(DocumentEvent e) {
-                updateRowFilterLater();
-            }
-
-            public void removeUpdate(DocumentEvent e) {
-                updateRowFilterLater();
-            }
-
-            public void changedUpdate(DocumentEvent e) {
-                updateRowFilterLater();
-            }
-
-            private void updateRowFilterLater() {
-                SwingUtilities.invokeLater(() -> updateRowFilter());
-            }
-        });
+        editorComp.getDocument().addDocumentListener(
+                DocUtils.newOnAnyEventListener(() ->
+                        SwingUtilities.invokeLater(() -> updateRowFilter())));
 
         editorComp.addKeyListener(new KeyAdapter() {
             @Override
