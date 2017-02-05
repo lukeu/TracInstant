@@ -19,11 +19,11 @@ package net.bettyluke.tracinstant.data;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import javax.swing.SwingWorker;
 
 import net.bettyluke.tracinstant.data.TicketLoadTask.Update;
-import net.bettyluke.util.ObjectUtils;
 
 public abstract class TicketLoadTask extends SwingWorker<Void, Update> {
 
@@ -61,7 +61,7 @@ public abstract class TicketLoadTask extends SwingWorker<Void, Update> {
 
         @Override
         public int hashCode() {
-            return ObjectUtils.hash(detailMessage, summaryMessage, ticketProvider);
+            return Objects.hash(detailMessage, summaryMessage, ticketProvider);
         }
 
         @Override
@@ -73,9 +73,9 @@ public abstract class TicketLoadTask extends SwingWorker<Void, Update> {
                 return false;
             }
             Update other = (Update) obj;
-            return ObjectUtils.equals(ticketProvider, other.ticketProvider)
-                    && ObjectUtils.equals(summaryMessage, other.summaryMessage)
-                    && ObjectUtils.equals(detailMessage, other.detailMessage);
+            return Objects.equals(ticketProvider, other.ticketProvider)
+                    && Objects.equals(summaryMessage, other.summaryMessage)
+                    && Objects.equals(detailMessage, other.detailMessage);
         }
     }
 
@@ -97,7 +97,7 @@ public abstract class TicketLoadTask extends SwingWorker<Void, Update> {
         for (Update newUpdate : chunks) {
             Update oldStatus = statusUpdate;
             statusUpdate = newUpdate;
-            if (ObjectUtils.equals(oldStatus, statusUpdate)) {
+            if (Objects.equals(oldStatus, statusUpdate)) {
                 continue;
             }
             firePropertyChange("status", oldStatus, statusUpdate);
