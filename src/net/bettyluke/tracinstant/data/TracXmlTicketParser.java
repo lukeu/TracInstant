@@ -52,11 +52,7 @@ public class TracXmlTicketParser {
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document dom = builder.parse(src);
             return readRSS(dom);
-        } catch (DOMException exc) {
-            exc.printStackTrace();
-        } catch (FactoryConfigurationError exc) {
-            exc.printStackTrace();
-        } catch (ParserConfigurationException exc) {
+        } catch (DOMException | FactoryConfigurationError | ParserConfigurationException exc) {
             exc.printStackTrace();
         }
         throw new IOException("DOM error");

@@ -148,8 +148,7 @@ public final class TracInstantProperties {
             r.width = Integer.valueOf(map.get("width"));
             r.height = Integer.valueOf(map.get("height"));
             return r;
-        } catch (ParseFailed ex) {
-        } catch (NumberFormatException ex) {
+        } catch (ParseFailed | NumberFormatException ex) {
         }
         return defaultValue;
     }

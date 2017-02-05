@@ -151,8 +151,7 @@ public class AttachmentCounter {
                     // Not exactly atomic... oh well.
                     s_AttachmentDirListing.clear();
                     s_AttachmentDirListing.putAll(get());
-                } catch (InterruptedException e) {
-                } catch (ExecutionException e) {
+                } catch (InterruptedException | ExecutionException e) {
                 }
             }
         };

@@ -202,9 +202,7 @@ public class SlurpTask extends TicketLoadTask {
                     urlDateFormat.format(site.getDateFormat().parse(sinceDateTime));
                 return "&changetime=" + URLEncoder.encode(reformatted, "UTF-8") + "..";
             }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
+        } catch (UnsupportedEncodingException | ParseException e) {
             e.printStackTrace();
         }
         return "";
@@ -246,9 +244,7 @@ public class SlurpTask extends TicketLoadTask {
 
             // Don't mask the interrupt state from higher-up the call stack.
             Thread.currentThread().interrupt();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
+        } catch (ExecutionException | TimeoutException e) {
             e.printStackTrace();
         }
     }

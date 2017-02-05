@@ -33,11 +33,7 @@ public final class DesktopUtils {
             // even if we use the various "is supported" checks provided
             // by Desktop.
             Desktop.getDesktop().browse(url.toURI());
-        } catch (UnsupportedOperationException ex) {
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } catch (URISyntaxException ex) {
+        } catch (UnsupportedOperationException | IOException | URISyntaxException ex) {
             ex.printStackTrace();
         }
     }
