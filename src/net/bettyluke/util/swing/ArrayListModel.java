@@ -9,7 +9,7 @@ public final class ArrayListModel<T> extends AbstractListModel {
     private final Object[] data;
 
     public static <T> ArrayListModel<T> of(Collection<T> coll) {
-        return new ArrayListModel<T>(coll.toArray(new Object[coll.size()]));
+        return new ArrayListModel<T>(coll.toArray());
     }
 
     public static <T> ArrayListModel<T> of(T[] array) {

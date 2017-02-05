@@ -73,7 +73,7 @@ final class SearchTerm {
 
         // Do what we can for filtering speed - apply a partial sorting
         // to make terms with specific fields come first.
-        SearchTerm[] result = terms.toArray(new SearchTerm[terms.size()]);
+        SearchTerm[] result = terms.toArray(new SearchTerm[0]);
         Arrays.sort(result, new Comparator<SearchTerm>() {
             @Override
             public int compare(SearchTerm t1, SearchTerm t2) {

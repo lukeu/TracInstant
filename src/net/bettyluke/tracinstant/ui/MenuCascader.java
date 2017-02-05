@@ -108,7 +108,7 @@ public class MenuCascader {
     }
 
     private List<Item> getTopHits(List<Item> items, int count) {
-        Item[] sorted = items.toArray(new Item[items.size()]);
+        Item[] sorted = items.toArray(new Item[0]);
 
         // Sort by number of hits. Note: this uses a stable sort.
         Arrays.sort(sorted, new Comparator<Item>() {

@@ -102,7 +102,7 @@ public class TicketTableModel extends AbstractTableModel {
         }
 
         // Update class members.
-        tickets = ticketMap.values().toArray(new Ticket[ticketMap.size()]);
+        tickets = ticketMap.values().toArray(new Ticket[0]);
         mergeTicketFieldsInto(newTickets, knownFields);
 
         String[] oldColumns = shownColumns;
@@ -147,7 +147,7 @@ public class TicketTableModel extends AbstractTableModel {
         Set<String> fields = new TreeSet<String>(knownFields);
         fields.removeAll(excludedFields);
         fields.add("#");
-        return fields.toArray(new String[fields.size()]);
+        return fields.toArray(new String[0]);
     }
 
     @Override

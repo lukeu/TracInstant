@@ -40,7 +40,7 @@ public class TabTicketWriter {
         fields.addAll(fieldsSet);
 
         CSVWriter csvWriter = new CSVWriter(writer, '\t');
-        csvWriter.writeNext(fields.toArray(new String[fields.size()]));
+        csvWriter.writeNext(fields.toArray(new String[0]));
         for (Ticket subTicket : tickets) {
             String[] values = new String[fields.size()];
 
