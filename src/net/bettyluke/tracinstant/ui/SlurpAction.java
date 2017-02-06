@@ -162,9 +162,13 @@ public class SlurpAction extends AbstractAction {
         }
         Ticket[] tickets = site.getTableModel().getTickets();
         String lastChanged = SlurpTask.getMostRecentlyModifiedTime(site, tickets);
-        System.out.println("Last changed ticket:" + lastChanged);
 
-        slurp(lastChanged);
+        // Disable incremental updates if the change-time detection fails. (Don't flood the server
+        // with full-download requests each time the application comes into view.)
+        if (lastChanged != null) {
+            System.out.println("Last changed ticket:" + lastChanged);
+            slurp(lastChanged);
+        }
     }
 
     /**

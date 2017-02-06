@@ -73,6 +73,8 @@ public class SlurpTask extends TicketLoadTask {
 
     private final SiteData site;
     private final SiteSettings siteSettings;
+
+    /** Nullable: null means fetch-all */
     private final String sinceDateTime;
 
     /** An externally-executed scan of the attachmentFolder, we monitor its completion. */
