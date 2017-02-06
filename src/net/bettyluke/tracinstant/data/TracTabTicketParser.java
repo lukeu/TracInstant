@@ -20,16 +20,12 @@ package net.bettyluke.tracinstant.data;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.HashMap;
-import java.util.Map;
 
 import au.com.bytecode.opencsv.CSVReader;
 
 public class TracTabTicketParser {
 
     private final BufferedReader reader;
-
-    private Map<String, String> stringCache = new HashMap<>();
 
     public static TicketProvider parse(Reader reader) throws IOException, InterruptedException {
         TracTabTicketParser parser = new TracTabTicketParser(reader);
@@ -62,32 +58,11 @@ public class TracTabTicketParser {
                 if (Thread.currentThread().isInterrupted()) {
                     throw new InterruptedException();
                 }
-                result.addTicketFromFields(cacheStrings(fields));
+                result.addTicketFromFields(fields);
             }
             return result;
         } finally {
             csvReader.close();
         }
-    }
-
-    /**
-     * Ensures all strings are cached, It is anticipated that many strings will appear
-     * multiple times, so we try not to duplicate them in memory.
-     * <p>
-     * It's like String.intern() but we are in control of the cache.
-     */
-    private String[] cacheStrings(String[] strings) {
-        for (int j = 0; j < strings.length; j++) {
-            String orig = strings[j];
-            String cached = stringCache.get(strings[j]);
-            if (cached == null) {
-
-                // Intentionally create unique strings.
-                cached = new String(orig);
-                stringCache.put(cached, cached);
-            }
-            strings[j] = cached;
-        }
-        return strings;
     }
 }

@@ -45,7 +45,7 @@ public class Ticket {
         }
 
         for (Entry<String, String> field : ticket.m_Fields.entrySet()) {
-            m_Fields.put(field.getKey(), field.getValue());
+            m_Fields.put(field.getKey(), field.getValue()); // String from Ticket already interned
         }
     }
 
@@ -62,7 +62,7 @@ public class Ticket {
         if (value == null) {
             m_Fields.remove(fieldName);
         } else {
-            m_Fields.put(fieldName, value);
+            m_Fields.put(fieldName, maybeIntern(value));
         }
     }
 
@@ -78,7 +78,11 @@ public class Ticket {
                     " is already set. Data will be merged.");
             value = existing + "\n" + value;
         }
-        m_Fields.put(fieldName, value);
+        m_Fields.put(fieldName, maybeIntern(value));
+    }
+
+    private static String maybeIntern(String value) {
+        return value.length() < 200 ? value.intern() : value;
     }
 
     public Collection<String> getFieldNames() {

@@ -105,7 +105,7 @@ public class TracXmlTicketParser {
             if (TICKET_FIELDS.contains(tag)) {
 
                 // For now, we just set the Ticket's field name to the XML tag
-                ticket.putField(tag, new String(child.getTextContent()));
+                ticket.putField(tag, child.getTextContent());
             }
         }
         return ticket;
