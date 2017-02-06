@@ -18,8 +18,6 @@
 package net.bettyluke.tracinstant.ui;
 
 import java.awt.event.ActionEvent;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import javax.swing.AbstractAction;
@@ -47,30 +45,7 @@ public class SlurpAction extends AbstractAction {
     /** The slurp task, held so it can be cancelled. */
     private SlurpTask task = null;
 
-    private final Runnable onTaskEnded = new Runnable() {
-        @Override
-        public void run() {
-            SlurpTask t = task;
-            task = null;
-            try {
-                t.get();
-            } catch (CancellationException e) {
-                // Ignore
-            } catch (InterruptedException e) {
-                // Ignore
-            } catch (ExecutionException e) {
-                promptToRetry(t);
-            }
-        }
-
-        private void promptToRetry(SlurpTask t) {
-            if (t.isIncremental()) {
-                promptAndSlurpIncremental();
-            } else {
-                promptAndSlurpAll();
-            }
-        }
-    };
+    private final Runnable taskClearer = () -> { task = null; };
 
     public SlurpAction(TracInstantFrame frame, SiteData site) {
         super("Connect to...");
@@ -80,52 +55,9 @@ public class SlurpAction extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        promptAndSlurpAll();
-    }
-
-    /** @return Whether slurping was initiated. */
-    public boolean promptAndSlurpAll() {
         if (promptForTracSettings()) {
-            site.reset();
-            slurpAll();
-            site.loadUserData();
-            return true;
+            resetAndSlurpAll();
         }
-        return false;
-    }
-
-    /** @return Whether slurping was initiated. */
-    public boolean promptAndSlurpIncremental() {
-        if (promptForTracSettings()) {
-            slurpIncremental();
-            site.loadUserData();
-            return true;
-        }
-        return false;
-    }
-
-    /** @return Whether slurping was initiated. */
-    public boolean promptIfNecessaryAndSlurpIncremental() {
-        if (!isNecessaryToPrompt() || promptForTracSettings()) {
-            slurpIncremental();
-            site.loadUserData();
-            return true;
-        }
-        return false;
-    }
-
-    private boolean isNecessaryToPrompt() {
-        if (task != null) {
-            return false;
-        }
-        SiteSettings settings = SiteSettings.getInstance();
-        if (settings.getURL().isEmpty()) {
-            return true;
-        }
-        if (!settings.getUsername().isEmpty() && settings.getPassword().isEmpty()) {
-            return true;
-        }
-        return false;
     }
 
     public boolean promptForTracSettings() {
@@ -144,32 +76,41 @@ public class SlurpAction extends AbstractAction {
         return false;
     }
 
-    private void slurpAll() {
+    private void resetAndSlurpAll() {
+        site.reset();
+        slurpAll();
+    }
+
+    public void slurpAll() {
         cancel();
+        site.loadUserData();
         slurp(null);
     }
 
-    private void slurpIncremental() {
+    public String slurpIncremental() {
         if (task != null) {
 
             // TODO: Should we instead queue up a single incremental update(?)
             System.out.println("Incremental update aborted due to running tasks");
-            return;
+            return null;
         }
+
         if (site.getDateFormat() == null) {
-            System.err.println("Incremental update disabled: unknown server DateFormat");
-            slurpAll();
-            return;
+            return "Incremental update disabled: unknown server DateFormat";
         }
+
         Ticket[] tickets = site.getTableModel().getTickets();
         String lastChanged = SlurpTask.getMostRecentlyModifiedTime(site, tickets);
 
         // Disable incremental updates if the change-time detection fails. (Don't flood the server
         // with full-download requests each time the application comes into view.)
-        if (lastChanged != null) {
-            System.out.println("Last changed ticket:" + lastChanged);
-            slurp(lastChanged);
+        if (lastChanged == null) {
+            return "Incremental update disabled: change timestamps not found";
         }
+
+        System.out.println("Last changed ticket:" + lastChanged);
+        slurp(lastChanged);
+        return null;
     }
 
     /**
@@ -191,6 +132,6 @@ public class SlurpAction extends AbstractAction {
                 settings.getAttachmentsDir());
         task = new SlurpTask(site, settings, lastChanged, attachmentScanFuture);
         frame.monitorTask(task);
-        task.executeWithNotification(onTaskEnded);
+        task.executeWithNotification(taskClearer);
     }
 }

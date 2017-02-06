@@ -27,8 +27,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import net.bettyluke.tracinstant.ui.SlurpAction;
-
 import net.bettyluke.tracinstant.data.CachedTicketLoadTask;
 import net.bettyluke.tracinstant.data.SiteData;
 import net.bettyluke.tracinstant.data.Ticket;
@@ -38,6 +36,7 @@ import net.bettyluke.tracinstant.plugins.FindInTextPanel;
 import net.bettyluke.tracinstant.plugins.HistogramPane;
 import net.bettyluke.tracinstant.prefs.SiteSettings;
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
+import net.bettyluke.tracinstant.ui.SlurpAction;
 import net.bettyluke.tracinstant.ui.TracInstantFrame;
 
 public final class TracInstantApp {
@@ -96,11 +95,14 @@ public final class TracInstantApp {
         Authenticator.setDefault(SITE_AUTHENTICATOR);
         Ticket[] tickets = site.getTableModel().getTickets();
         if (tickets.length == 0) {
-            if (!slurper.promptAndSlurpAll()) {
+            if (frame.getSlurpAction().promptForTracSettings()) {
+                frame.getSlurpAction().slurpAll();
+            } else {
                 frame.dispose();
             }
         } else {
-            slurper.promptIfNecessaryAndSlurpIncremental();
+            site.loadUserData();
+            frame.getSlurpAction().slurpIncremental();
         }
     }
 
