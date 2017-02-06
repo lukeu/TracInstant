@@ -36,7 +36,9 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -134,7 +136,18 @@ public class TracInstantFrame extends JFrame {
                     e.printStackTrace();
                     Thread.interrupted();
                 } catch (ExecutionException e) {
-                    m_SlurpStatus.showError("Download failed", e.getMessage());
+                    Throwable why = e.getCause();
+                    Runnable doSlurp = () -> slurpAction.slurpIncremental();
+                    if (why instanceof ConnectException) {
+                        m_SlurpStatus.showRetryError(
+                                "Disconnected (click to retry)", e.getMessage(), doSlurp);
+                    } else if (why instanceof ProtocolException) {
+                        m_SlurpStatus.showError(
+                                "Not connected: Incorrect Password?", e.getMessage());
+                    } else {
+                        m_SlurpStatus.showRetryError(
+                                "Not connected - hover for details", e.getMessage(), doSlurp);
+                    }
                     e.printStackTrace();
                 }
 

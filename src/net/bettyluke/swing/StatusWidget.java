@@ -18,15 +18,20 @@
 package net.bettyluke.swing;
 
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Arrays;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 public class StatusWidget {
@@ -65,6 +70,8 @@ public class StatusWidget {
 
     private JLabel label = new JLabel();
 
+    private boolean isErrorDisplayed;
+
     public StatusWidget() {
         label.setVisible(false);
         label.setHorizontalTextPosition(SwingConstants.LEFT);
@@ -77,17 +84,39 @@ public class StatusWidget {
     public void hide() {
         label.setToolTipText(null);
         label.setIcon(null);
+        clearActions();
         label.setVisible(false);
+    }
+
+    public void clearActions() {
+        isErrorDisplayed = false;
+        label.setCursor(null);
+        Arrays.stream(label.getMouseListeners()).forEach(label::removeMouseListener);
     }
 
     public void showBusy(String labelText, String toolTipText) {
         label.setText(labelText);
         label.setToolTipText(toolTipText);
         label.setIcon(BUSY_IMAGE);
+        clearActions();
         label.setVisible(true);
+        label.repaint();
+    }
+
+    public void showRetryError(String labelText, String toolTipText, Runnable task) {
+        showError(labelText, toolTipText);
+        label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        label.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                SwingUtilities.invokeLater(task);
+            }
+        });
     }
 
     public void showError(String labelText, String toolTipText) {
+        clearActions();
+        isErrorDisplayed = true;
         label.setText(labelText);
         label.setToolTipText(toolTipText);
         label.setIcon(new HalfSizeIcon(UIManager.getIcon("OptionPane.errorIcon")));
@@ -95,9 +124,15 @@ public class StatusWidget {
     }
 
     public void showWarning(String labelText, String toolTipText) {
-        label.setText(labelText);
-        label.setToolTipText(toolTipText);
-        label.setIcon(new HalfSizeIcon(UIManager.getIcon("OptionPane.warningIcon")));
-        label.setVisible(true);
+
+        // DIRTY HACK!! Avoid overriding an error with a warning.
+        // TODO: Implement proper 'model / view' for the status. Perhaps in SiteData?
+        if (!isErrorDisplayed) {
+            clearActions();
+            label.setText(labelText);
+            label.setToolTipText(toolTipText);
+            label.setIcon(new HalfSizeIcon(UIManager.getIcon("OptionPane.warningIcon")));
+            label.setVisible(true);
+        }
     }
 }
