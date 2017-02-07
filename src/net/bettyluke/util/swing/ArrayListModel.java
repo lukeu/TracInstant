@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import javax.swing.AbstractListModel;
 
-public final class ArrayListModel<T> extends AbstractListModel {
+public final class ArrayListModel<T> extends AbstractListModel<T> {
     private final Object[] data;
 
     public static <T> ArrayListModel<T> of(Collection<T> coll) {

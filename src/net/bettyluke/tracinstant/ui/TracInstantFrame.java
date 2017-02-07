@@ -230,7 +230,7 @@ public class TracInstantFrame extends JFrame {
     private final JSplitPane m_ToolWindowSplit;
 
     private final SearchCombo m_FilterCombo;
-    private final JComboBox m_PluginCombo;
+    private final JComboBox<ToolPlugin> m_PluginCombo;
     private final JLabel m_Matches;
     private final StatusWidget m_SlurpStatus = new StatusWidget();
 
@@ -406,15 +406,15 @@ public class TracInstantFrame extends JFrame {
         });
     }
 
-    private JLabel createLabel(String name, char mnemonic, JComboBox boundComponent) {
+    private JLabel createLabel(String name, char mnemonic, JComboBox<?> boundComponent) {
         JLabel result = new JLabel(name);
         result.setDisplayedMnemonic(mnemonic);
         result.setLabelFor(boundComponent);
         return result;
     }
 
-    private JComboBox createPluginCombo() {
-        JComboBox combo = new JComboBox();
+    private JComboBox<ToolPlugin> createPluginCombo() {
+        JComboBox<ToolPlugin> combo = new JComboBox<>();
         combo.addItem(new DummyPlugin("None"));
         combo.addItemListener(e -> {
             if (e.getStateChange() == ItemEvent.SELECTED) {

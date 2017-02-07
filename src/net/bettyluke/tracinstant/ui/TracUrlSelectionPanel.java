@@ -40,16 +40,16 @@ import net.bettyluke.tracinstant.prefs.TracInstantProperties;
 
 public class TracUrlSelectionPanel extends JPanel {
 
-    private final JComboBox url = createCombo();
+    private final JComboBox<String> url = createCombo();
     private final JTextField username = new JTextField();
     private final JPasswordField password = new JPasswordField();
-    private final JComboBox attachmentsDir = createCombo();
+    private final JComboBox<String> attachmentsDir = createCombo();
     private final JCheckBox fetchActiveTickets = new JCheckBox("Fetch only active tickets");
     private final JCheckBox instantRestart = new JCheckBox(
             "Instant restart (store downloaded data locally)");
 
-    private static JComboBox createCombo() {
-        JComboBox combo = new JComboBox();
+    private static JComboBox<String> createCombo() {
+        JComboBox<String> combo = new JComboBox<>();
         combo.setPreferredSize(new Dimension(400, combo.getPreferredSize().height));
         combo.setEditable(true);
         return combo;

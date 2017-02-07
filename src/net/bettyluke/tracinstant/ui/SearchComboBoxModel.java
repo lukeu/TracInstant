@@ -13,7 +13,7 @@ import net.bettyluke.tracinstant.prefs.TracInstantProperties;
  * ComboBoxModel that does little other than try to enforce type safety
  * (SavedSearch instead of Object) a little, and saves/loads the data from App Prefs.
  */
-public class SearchComboBoxModel extends DefaultComboBoxModel {
+public class SearchComboBoxModel extends DefaultComboBoxModel<SavedSearch> {
 
     private static final int MAX_SAVED_SEARCHES = 50;
 
@@ -54,26 +54,20 @@ public class SearchComboBoxModel extends DefaultComboBoxModel {
     }
 
     @Override
-    public void addElement(Object obj) {
-        if (!(obj instanceof SavedSearch)) {
-            throw new IllegalArgumentException("Expected a SavedSearch, but got: " + obj);
-        }
+    public void addElement(SavedSearch ss) {
         clearPrefixFilter();
-        super.addElement(obj);
+        super.addElement(ss);
     }
 
     @Override
-    public void insertElementAt(Object obj, int index) {
-        if (!(obj instanceof SavedSearch)) {
-            throw new IllegalArgumentException("Expected a SavedSearch, but got: " + obj);
-        }
+    public void insertElementAt(SavedSearch ss, int index) {
         clearPrefixFilter();
-        super.insertElementAt(obj, index);
+        super.insertElementAt(ss, index);
     }
 
     @Override
     public SavedSearch getElementAt(int index) {
-        return (SavedSearch) super.getElementAt(index);
+        return super.getElementAt(index);
     }
 
     public void updateSearch(SavedSearch ss) {

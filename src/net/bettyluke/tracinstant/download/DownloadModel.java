@@ -33,7 +33,7 @@ import net.bettyluke.tracinstant.download.Downloadable.TracDownloadable;
 
 public class DownloadModel {
 
-    public final class ListModelView extends AbstractListModel {
+    public final class ListModelView extends AbstractListModel<Target> {
 
         int oldSize = 0;
 

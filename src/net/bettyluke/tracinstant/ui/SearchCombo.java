@@ -43,7 +43,7 @@ import net.bettyluke.tracinstant.prefs.TracInstantProperties;
  * NB: Most of the customisation is in SearchComboEditor. This class mainly ties a few parts
  * together.
  */
-public class SearchCombo extends JComboBox {
+public class SearchCombo extends JComboBox<SavedSearch> {
 
     private final class DropDownRenderer extends DefaultListCellRenderer {
 
@@ -77,7 +77,7 @@ public class SearchCombo extends JComboBox {
         }
 
         @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index,
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index,
                 boolean isSelected, boolean cellHasFocus) {
             SavedSearch ss = (SavedSearch) value;
 

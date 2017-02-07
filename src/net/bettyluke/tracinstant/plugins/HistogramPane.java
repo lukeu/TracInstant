@@ -87,18 +87,18 @@ public class HistogramPane {
         }
     }
 
-    private final JComboBox fieldSelector;
+    private final JComboBox<String> fieldSelector;
     private final JPanel mainPanel;
     private final JPanel histogram;
     private Ticket[] ticketsInView = new Ticket[0];
     private Ticket[] selectedTickets = new Ticket[0];
     private RenderInfo renderInfo = null;
-    private JList labels;
-    private JList histi;
+    private JList<Bar> labels;
+    private JList<Bar> histi;
 
     private static final class LabelRenderer extends DefaultListCellRenderer {
         @Override
-        public Component getListCellRendererComponent(JList list, final Object value, int index,
+        public Component getListCellRendererComponent(JList<?> list, final Object value, int index,
                 boolean isSelected, boolean cellHasFocus) {
             Component comp = super.getListCellRendererComponent(
                     list, value, index, isSelected, cellHasFocus);
@@ -126,7 +126,7 @@ public class HistogramPane {
         Bar bar = null;
 
         @Override
-        public Component getListCellRendererComponent(JList list, final Object value, int index,
+        public Component getListCellRendererComponent(JList<?> list, final Object value, int index,
                 boolean isSelected, boolean cellHasFocus) {
             bar = (Bar) value;
             return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
@@ -188,10 +188,10 @@ public class HistogramPane {
 
     public HistogramPane() {
         fieldSelector = createFieldSelection();
-        labels = new JList();
+        labels = new JList<>();
         labels.setCellRenderer(new LabelRenderer());
 
-        histi = new JList();
+        histi = new JList<>();
         histi.setCellRenderer(new BarRenderer());
 
         histogram = VerticallyScrollingPanel.create(histi);
@@ -202,8 +202,8 @@ public class HistogramPane {
         mainPanel = createMainPanel(fieldSelector, scroll);
     }
 
-    private JComboBox createFieldSelection() {
-        JComboBox combo = new JComboBox(DEFAULT_FIELDS);
+    private JComboBox<String> createFieldSelection() {
+        JComboBox<String> combo = new JComboBox<>(DEFAULT_FIELDS);
         combo.addItemListener(e -> updateHistogram());
         return combo;
     }
