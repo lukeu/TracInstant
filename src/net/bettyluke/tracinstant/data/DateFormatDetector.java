@@ -67,7 +67,7 @@ public class DateFormatDetector {
     );
 
     private static final Pattern TIME_PATTERN = Pattern.compile(
-        "[ tT]*\\d{1,2}:\\d{1,2}(:\\d{1,2})?");
+        "[\\,\\;]?[ tT]*\\d{1,2}:\\d{1,2}(:\\d{1,2})?");
 
 
     private static class Attempt {
