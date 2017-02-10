@@ -25,11 +25,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CancellationException;
@@ -85,7 +84,7 @@ public class SlurpTask extends TicketLoadTask {
      * The format used only to form part of url requests. Trac appears to support this
      * format irrespective of user/server date settings.
      */
-    DateFormat urlDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    DateTimeFormatter urlDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     private Exception fault = null;
 
@@ -190,14 +189,15 @@ public class SlurpTask extends TicketLoadTask {
     }
 
     private String makeModifiedFilter() {
-        try {
-            if (sinceDateTime != null && site.getDateFormat() != null) {
+        if (sinceDateTime != null && site.isDateFormatSet()) {
+            try {
                 String reformatted =
-                    urlDateFormat.format(site.getDateFormat().parse(sinceDateTime));
+                        urlDateFormat.format(
+                                site.parseDateTime(sinceDateTime));
                 return "&changetime=" + URLEncoder.encode(reformatted, "UTF-8") + "..";
+            } catch (UnsupportedEncodingException | DateTimeParseException e) {
+                e.printStackTrace();
             }
-        } catch (UnsupportedEncodingException | ParseException e) {
-            e.printStackTrace();
         }
         return "";
     }
@@ -278,35 +278,32 @@ public class SlurpTask extends TicketLoadTask {
         }
     }
 
+    /**
+     * @return null if no date-format is known, or if no (parseable) times were found.
+     */
     public static String getMostRecentlyModifiedTime(SiteData site, Ticket[] tickets) {
-        DateFormat dateFormat = site.getDateFormat();
-
-        if (dateFormat == null) {
+        if (!site.isDateFormatSet()) {
             // Force an entire re-fetch.
             System.err.println("Unknown server DateFormat");
             return null;
         }
 
-        Date latest = null;
+        LocalDateTime latest = null;
         String latestString = null;
         for (Ticket ticket : tickets) {
             String changeTime = ticket.getValue("changetime");
+            System.out.println(changeTime);
             if (changeTime != null) {
                 try {
-                    Date date = dateFormat.parse(changeTime);
-                    if (latest == null || date.after(latest)) {
+                    LocalDateTime date = site.parseDateTime(changeTime);
+                    if (latest == null || date.isAfter(latest)) {
                         latest = date;
                         latestString = changeTime;
                     }
                     continue;
-                } catch (ParseException e) {
+                } catch (DateTimeParseException e) {
+                    System.err.println("Date format not parseable: " + changeTime);
                 }
-            }
-
-            // HACK! FAIL upon mis-formatted fields, causing an entire re-fetch.
-            if (changeTime != null && !changeTime.trim().isEmpty()) {
-                System.err.println("Unrecognised modified time: " + changeTime);
-                return null;
             }
         }
         return latestString;

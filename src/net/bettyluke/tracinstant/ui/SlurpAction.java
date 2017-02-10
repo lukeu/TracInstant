@@ -95,7 +95,7 @@ public class SlurpAction extends AbstractAction {
             return null;
         }
 
-        if (site.getDateFormat() == null) {
+        if (!site.isDateFormatSet()) {
             return "Incremental update disabled: unknown server DateFormat";
         }
 

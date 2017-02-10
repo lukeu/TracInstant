@@ -70,6 +70,7 @@ public class DateFormatDetector {
         "[\\,\\;]?[ tT]*\\d{1,2}:\\d{1,2}(:\\d{1,2})?");
 
 
+    // TODO: Switch DateFormat -> DateTimeFormatter for consistency
     private static class Attempt {
         private static final Date LONG_AGO =
             new Date(-TimeUnit.MILLISECONDS.convert(365 * 200, TimeUnit.DAYS));

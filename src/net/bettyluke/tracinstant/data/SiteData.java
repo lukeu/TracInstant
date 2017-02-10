@@ -21,8 +21,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -37,7 +39,8 @@ public class SiteData {
 
     private final TicketTableModel m_TableModel = new TicketTableModel();
     private String dateTimeFormatString = null;
-    private DateFormat dateTimeFormat = null;
+    private DateTimeFormatter dateTimeFormat12 = null;
+    private DateTimeFormatter dateTimeFormat24 = null;
 
     public SiteData() {
         setDateFormat(TracInstantProperties.get().getValue("SiteDateFormat"));
@@ -177,10 +180,81 @@ public class SiteData {
 
     public void setDateFormat(String dateFormat) {
         dateTimeFormatString = dateFormat;
-        dateTimeFormat = dateFormat == null ? null : new SimpleDateFormat(dateFormat + " HH:mm:ss");
+        dateTimeFormat12 = dateFormat == null ? null :
+            newDateTimeFormatter(dateFormat, "[','][';'][' '][['t']h:m[:s][ ]a]");
+        dateTimeFormat24 = dateFormat == null ? null :
+            newDateTimeFormatter(dateFormat, "[','][';'][' '][['t']HH:mm[:ss]]");
     }
 
-    public DateFormat getDateFormat() {
-        return dateTimeFormat;
+    private static DateTimeFormatter newDateTimeFormatter(String dateFormat, String timeFormat) {
+        return new DateTimeFormatterBuilder()
+                .parseLenient()
+                .parseCaseInsensitive()
+                .appendPattern(dateFormat)
+                .appendPattern(timeFormat)
+                .toFormatter();
+    }
+
+    public boolean isDateFormatSet() {
+        return dateTimeFormat12 != null;
+    }
+
+    public LocalDateTime parseDateTime(String str) throws DateTimeParseException {
+        try {
+            return dateTimeFormat12.parse(str, LocalDateTime::from);
+        } catch (DateTimeParseException ex) {
+        }
+        return dateTimeFormat24.parse(str, LocalDateTime::from);
+    }
+
+    public static void main(String[] args) {
+        TracInstantProperties.initialise("bettyluke.net", "TracInstantTests");
+
+        SiteData site = new SiteData();
+        site.setDateFormat("MMM dd, yyyy");
+
+        // Yeah, yeah, it's all yearning for unit tests. Problem with this particular project is
+        // I'm always just dipping in & in too much of a hurry to go speed up my life like that!
+        // TODO: Will do "Soon" ;-)
+        String[] dateStrings = new String[] {
+                "Jan 11, 2017, 1:30:37 PM",
+                "Jan 11, 2017",
+                "Jan 11, 2017 ",
+                "Jan 11, 2017 12",     // Invalid
+                "Jan 11, 2017 12:",    // Invalid
+                "Jan 11, 2017 12:58",
+                "Jan 11, 2017 12:58:", // Invalid
+                "Jan 11, 2017 12:58:38",
+                "Jan 11, 2017 12:58:38 ",
+                "Jan 11, 2017 2:58",
+                "Jan 11, 2017 2:58:",  // Invalid
+                "Jan 11, 2017 2:58:38",
+                "Jan 11, 2017 20:58:38 ",
+                "Jan 11, 2017 12:58:38 PM",
+                "Jan 1, 2017, ",
+                "Jan 1, 2017, 12",     // Invalid
+                "Jan 1, 2017, 12:",    // Invalid
+                "1 1, 2017, 12:58",
+                "Jan 1, 17, 12:58:",   // Invalid
+                "Jan 1, 17, 12:58:38",
+                "Jan 1, 17, 12:58:38 ",
+                "Jan 1, 17, 12:58:38 PM",
+                "Jan 1, 17, 1:8:",     // Invalid
+                "Jan 1, 17, 1:8:8",
+                "Jan 1, 17, 20:08:08",
+                "Jan 1, 17, 20:8:8 PM",
+                "Jan 1, 17, 20:8:8 AM" // Invalid
+        };
+
+        for (String dateString : dateStrings) {
+            try {
+                System.out.print("date: " + dateString);
+                site.dateTimeFormat12.parse(dateString);
+                System.out.println(" parsed");
+                continue;
+            } catch (Exception e) {
+                System.out.println(" FAILED");
+            }
+        }
     }
 }
