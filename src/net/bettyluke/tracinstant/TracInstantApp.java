@@ -95,14 +95,20 @@ public final class TracInstantApp {
         Authenticator.setDefault(SITE_AUTHENTICATOR);
         Ticket[] tickets = site.getTableModel().getTickets();
         if (tickets.length == 0) {
-            if (frame.getSlurpAction().promptForTracSettings()) {
-                frame.getSlurpAction().slurpAll();
+            if (slurper.promptForTracSettings()) {
+                slurper.slurpAll();
             } else {
                 frame.dispose();
             }
         } else {
             site.loadUserData();
-            frame.getSlurpAction().slurpIncremental();
+            String error = slurper.slurpIncremental();
+            if (error != null) {
+
+                // Allow a one-time full slurp all to cover the possibility that we don't know the
+                // date format (after which incremental slurps will be disabled).
+                slurper.slurpAll();
+            }
         }
     }
 

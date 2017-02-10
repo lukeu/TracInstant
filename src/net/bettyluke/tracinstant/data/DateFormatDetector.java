@@ -139,7 +139,7 @@ public class DateFormatDetector {
         dateTime = dateTime.trim();
         Matcher m = TIME_PATTERN.matcher(dateTime);
         if (m.find()) {
-            return dateTime.substring(0, m.start());
+            return dateTime.substring(0, m.start()).trim();
         }
         return dateTime;
     }
@@ -223,37 +223,41 @@ public class DateFormatDetector {
 
     public static void main(String[] args) {
         final String[][] TESTS = new String[][] {
-            new String[] {
+            {
+                "Sep 5, 2002, 11:41:15 AM",
+                "Sep 5, 2002; 11:41:15 AM"
+            },
+            {
                 "03/12/03 10:01:16",
                 "22/04/04 11:20:38",
                 "21/09/04 13:22:50"
             },
-            new String[] {
+            {
                 "2003-08-24 22:51:08"
             },
-            new String[] {
+            {
                 "2002 2 22"
             },
-            new String[] {
+            {
                 "2002. 02. 2"
             },
-            new String[] {
+            {
                 "Sep 5, 2002"
             },
-            new String[] {
+            {
                 "November 5, 2002"
             },
-            new String[] {
+            {
                 "5 August 99"
             },
-            new String[] {
+            {
                 "Fri, 26 Oct 2007 12:56:12 GMT",
                 "Fri, 16 Nov 2007 22:40:34 GMT"
             },
-            new String[] {
+            {
                 "Friday, 26 Oct 2007 12:56:12 GMT"
             },
-            new String[] {
+            {
                 "2012-04-10T09:37:31+01:00",
             }
         };
