@@ -10,6 +10,7 @@ import java.net.URLConnection;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -70,14 +71,9 @@ public final class AuthenticatedHttpRequester {
 
         if (!settings.getUsername().isEmpty()) {
             String userpass = settings.getUsername() + ":" + settings.getPassword();
-            String basicAuth = "Basic " +
-                    javax.xml.bind.DatatypeConverter.printBase64Binary(userpass.getBytes());
-
-// Note: change to the following when moving to Java 8, as the above will stop working in Java 9.
-//                    Base64.getEncoder().encodeToString(userpass.getBytes());
+            String basicAuth = "Basic " + Base64.getEncoder().encodeToString(userpass.getBytes());
             uc.setRequestProperty ("Authorization", basicAuth);
         }
-
         return uc.getInputStream();
     }
 }
