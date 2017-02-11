@@ -28,15 +28,17 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import net.bettyluke.tracinstant.prefs.SiteSettings;
 import net.bettyluke.util.XML10FilterReader;
@@ -154,15 +156,8 @@ public class SlurpTask extends TicketLoadTask {
         return null;
     }
 
-    private List<String> extractModificationDates(Collection<Ticket> tickets) {
-        List<String> result = new ArrayList<>(tickets.size());
-        for (Ticket ticket : tickets) {
-            String time = ticket.getValue("changetime");
-            if (time != null) {
-                result.add(time);
-            }
-        }
-        return result;
+    private static List<String> extractModificationDates(Collection<Ticket> tickets) {
+        return streamChangeTimes(tickets).collect(Collectors.toList());
     }
 
     private boolean isTicketModified(Collection<Ticket> tickets) {
@@ -171,13 +166,13 @@ public class SlurpTask extends TicketLoadTask {
         if (mostRecentlyModifiedTime == null) {
             return true;
         }
-        for (Ticket t : tickets) {
-            String changetime = t.getValue("changetime");
-            if (changetime == null || !changetime.equals(mostRecentlyModifiedTime)) {
-                return true;
-            }
-        }
-        return false;
+        return streamChangeTimes(tickets).anyMatch(ct -> !ct.equals(mostRecentlyModifiedTime));
+    }
+
+    private static Stream<String> streamChangeTimes(Collection<Ticket> tickets) {
+        return tickets.stream()
+                .map(ticket -> ticket.getValue("changetime"))
+                .filter(Objects::nonNull);
     }
 
     private TicketProvider slurpChangetimes() throws IOException, InterruptedException {
