@@ -21,6 +21,7 @@ import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.event.HierarchyEvent;
 import java.util.List;
+import java.util.Objects;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -36,7 +37,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import net.bettyluke.tracinstant.prefs.SiteSettings;
-import net.bettyluke.tracinstant.prefs.TracInstantProperties;
 
 public class TracUrlSelectionPanel extends JPanel {
 
@@ -67,9 +67,6 @@ public class TracUrlSelectionPanel extends JPanel {
         if (opt != JOptionPane.OK_OPTION) {
             return null;
         }
-
-        // Record the selected button for text time.
-        TracInstantProperties.get().putInt("MasterQuery", opt);
 
         SiteSettings result = SiteSettings.getInstance();
         result.setUsername(username.getText().trim());
@@ -126,6 +123,16 @@ public class TracUrlSelectionPanel extends JPanel {
 
                 // Hack: supersede JOptionPane's similar button focus placement.
                 SwingUtilities.invokeLater(() -> prepareForDisplay());
+            }
+        });
+
+        listenToClearPasswordWhenUrlChanges(settings);
+    }
+
+    private void listenToClearPasswordWhenUrlChanges(SiteSettings settings) {
+        url.addActionListener(evt -> {
+            if (!Objects.equals(url.getSelectedItem(), settings.getURL())) {
+                password.setText("");
             }
         });
     }
