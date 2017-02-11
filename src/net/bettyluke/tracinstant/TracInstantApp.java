@@ -77,7 +77,7 @@ public final class TracInstantApp {
         frame.setVisible(true);
 
         if (site.isOkToUseCachedTickets()) {
-            TicketLoadTask loadTask = new CachedTicketLoadTask(site.getTableModel());
+            TicketLoadTask loadTask = new CachedTicketLoadTask(site);
             frame.monitorTask(loadTask);
             loadTask.executeWithNotification(() -> loadServerTickets(frame, site));
         } else {

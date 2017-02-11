@@ -41,6 +41,7 @@ public class SiteData {
     private String dateTimeFormatString = null;
     private DateTimeFormatter dateTimeFormat12 = null;
     private DateTimeFormatter dateTimeFormat24 = null;
+    private String lastModifiedTicketTime;
 
     public SiteData() {
         setDateFormat(TracInstantProperties.get().getValue("SiteDateFormat"));
@@ -143,6 +144,7 @@ public class SiteData {
     public void reset() {
         deleteCachedDataFiles();
         m_TableModel.clear();
+        lastModifiedTicketTime = null;
     }
 
     private void deleteCachedDataFiles() {
@@ -199,12 +201,47 @@ public class SiteData {
         return dateTimeFormat12 != null;
     }
 
+    /**
+     * @return null if no date-format is known, or if no (parseable) times were found.
+     */
+    public String getLastModifiedTicketTimeIfKnown() {
+        return lastModifiedTicketTime;
+    }
+
     public LocalDateTime parseDateTime(String str) throws DateTimeParseException {
         try {
             return dateTimeFormat12.parse(str, LocalDateTime::from);
         } catch (DateTimeParseException ex) {
         }
         return dateTimeFormat24.parse(str, LocalDateTime::from);
+    }
+
+    public void setLastModifiedTicketTime(List<String> dateTimeStrings) {
+        if (!isDateFormatSet()) {
+            return;
+        }
+
+        LocalDateTime latest = null;
+        String latestString = null;
+        for (String changeTime : dateTimeStrings) {
+            if (changeTime != null) {
+                try {
+                    LocalDateTime date = parseDateTime(changeTime);
+                    if (latest == null || date.isAfter(latest)) {
+                        latest = date;
+                        latestString = changeTime;
+                    }
+                } catch (DateTimeParseException e) {
+                    System.err.println("Date format not parseable: " + changeTime);
+                }
+            }
+        }
+
+        // HACK: not checking if greater, because in current usage it always will be
+        if (latestString != null) {
+            System.out.println("Last modified update: " + lastModifiedTicketTime + " -> " + latestString);
+            lastModifiedTicketTime = latestString;
+        }
     }
 
     public static void main(String[] args) {

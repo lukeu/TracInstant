@@ -18,14 +18,15 @@
 package net.bettyluke.tracinstant.data;
 
 import java.io.IOException;
+import java.util.List;
 
 public class CachedTicketLoadTask extends TicketLoadTask {
-    public CachedTicketLoadTask(TicketTableModel tableModel) {
-        super(tableModel);
+    public CachedTicketLoadTask(SiteData site) {
+        super(site);
     }
 
     @Override
-    protected Void doInBackground() throws IOException, InterruptedException {
+    protected List<String> doInBackground() throws IOException, InterruptedException {
         TicketProvider provider;
 
         publish(new Update("Loading from cache...", "Loading table data from local cache."));
@@ -36,7 +37,10 @@ public class CachedTicketLoadTask extends TicketLoadTask {
         provider = SiteData.loadTicketData(SiteData.HIDDEN_FIELDS_CACHE_FILE);
         publish(new Update(provider));
 
-        // All data was passed (and must be consumed) via the publish/process mechanism
-        return null;
+        List<String> modifiedDates = extractModificationDates(provider.getTickets());
+
+        // All data for external consumption has been passed out via the publish/process mechanism.
+        // Here we return just the timestamps to update the 'last-modified' record in SiteData.
+        return modifiedDates;
     }
 }

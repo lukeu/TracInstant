@@ -24,7 +24,6 @@ import javax.swing.AbstractAction;
 
 import net.bettyluke.tracinstant.data.SiteData;
 import net.bettyluke.tracinstant.data.SlurpTask;
-import net.bettyluke.tracinstant.data.Ticket;
 import net.bettyluke.tracinstant.download.AttachmentCounter;
 import net.bettyluke.tracinstant.prefs.SiteSettings;
 import net.bettyluke.tracinstant.prefs.TracInstantProperties;
@@ -99,8 +98,7 @@ public class SlurpAction extends AbstractAction {
             return "Incremental update disabled: unknown server DateFormat";
         }
 
-        Ticket[] tickets = site.getTableModel().getTickets();
-        String lastChanged = SlurpTask.getMostRecentlyModifiedTime(site, tickets);
+        String lastChanged = site.getLastModifiedTicketTimeIfKnown();
 
         // Disable incremental updates if the change-time detection fails. (Don't flood the server
         // with full-download requests each time the application comes into view.)

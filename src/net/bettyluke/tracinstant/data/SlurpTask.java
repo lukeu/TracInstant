@@ -25,19 +25,15 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import net.bettyluke.tracinstant.prefs.SiteSettings;
 import net.bettyluke.util.XML10FilterReader;
@@ -71,7 +67,6 @@ public class SlurpTask extends TicketLoadTask {
         "query?format=tab" + STATUS_EXCLUSION_PLACEHOLDER +
         "&col=id&col=changetime&order=changetime";
 
-    private final SiteData site;
     private final SiteSettings siteSettings;
 
     /** Nullable: null means fetch-all */
@@ -89,8 +84,7 @@ public class SlurpTask extends TicketLoadTask {
     private Exception fault = null;
 
     public SlurpTask(SiteData site, SiteSettings siteSettings, String since, Future<?> attachmentScanFuture) {
-        super(site.getTableModel());
-        this.site = site;
+        super(site);
         this.siteSettings = siteSettings;
         this.sinceDateTime = since;
         this.attachmentScanFuture = attachmentScanFuture;
@@ -105,39 +99,32 @@ public class SlurpTask extends TicketLoadTask {
     }
 
     @Override
-    protected Void doInBackground() throws Exception {
+    protected List<String> doInBackground() throws Exception {
         try {
-            doInternal();
+            return doInternal();
         } catch (Exception e) {
             fault = e;
             throw e;
         }
-        return null;
     }
 
-    protected Void doInternal() throws IOException, SAXException, InterruptedException {
+    protected List<String> doInternal() throws IOException, SAXException, InterruptedException {
 
         // Slurp timestamps prior to all other data.
         TicketProvider changetimeProvider = slurpChangetimes();
         List<Ticket> tickets = changetimeProvider.getTickets();
-        int fieldsFound = tickets.size();
+        List<String> dateTimeStrings = extractModificationDates(tickets);
 
         // Update DateFormat always when (and only when) doing a full slurp
         if (sinceDateTime == null) {
-            List<String> dateTimeStringsAscending = extractModificationDates(tickets);
-            String format = DateFormatDetector.detectFormat(dateTimeStringsAscending);
-            if (format != null) {
-                System.out.println("Auto-detected date format: " + format);
-            }
-            site.setDateFormat(format);
+            updateDateFormat(dateTimeStrings);
         }
 
         if (isTicketModified(tickets)) {
-
-            System.out.println("" + fieldsFound + " tickets require field updates");
+            System.out.println("" + tickets.size() + " tickets require field updates");
 
             slurpFields(FIELDS_QUERY);
-            slurpDescriptions(fieldsFound);
+            slurpDescriptions(tickets.size());
 
             // Finally publish timestamps AFTER slurping all other data.
             publish(new Update(changetimeProvider));
@@ -151,27 +138,25 @@ public class SlurpTask extends TicketLoadTask {
             awaitCompletionNoExceptions(attachmentScanFuture, 10, TimeUnit.SECONDS);
         }
 
-        // All data was passed (and must be consumed) via the publish/process mechanism
-        return null;
+        // All data for external consumption has been passed out via the publish/process mechanism.
+        // Here we return just the timestamps to update the 'last-modified' record in SiteData.
+        return dateTimeStrings;
     }
 
-    private static List<String> extractModificationDates(Collection<Ticket> tickets) {
-        return streamChangeTimes(tickets).collect(Collectors.toList());
+    private void updateDateFormat(List<String> dateTimeStrings) {
+        String format = DateFormatDetector.detectFormat(dateTimeStrings);
+        if (format != null) {
+            System.out.println("Auto-detected date format: " + format);
+        }
+        site.setDateFormat(format);
     }
 
     private boolean isTicketModified(Collection<Ticket> tickets) {
-        String mostRecentlyModifiedTime =
-            getMostRecentlyModifiedTime(site, tableModel.getTickets());
+        String mostRecentlyModifiedTime = site.getLastModifiedTicketTimeIfKnown();
         if (mostRecentlyModifiedTime == null) {
             return true;
         }
         return streamChangeTimes(tickets).anyMatch(ct -> !ct.equals(mostRecentlyModifiedTime));
-    }
-
-    private static Stream<String> streamChangeTimes(Collection<Ticket> tickets) {
-        return tickets.stream()
-                .map(ticket -> ticket.getValue("changetime"))
-                .filter(Objects::nonNull);
     }
 
     private TicketProvider slurpChangetimes() throws IOException, InterruptedException {
@@ -276,36 +261,5 @@ public class SlurpTask extends TicketLoadTask {
             return TracTabTicketParser.parse(
                 new InputStreamReader(new BufferedInputStream(in), "UTF-8"));
         }
-    }
-
-    /**
-     * @return null if no date-format is known, or if no (parseable) times were found.
-     */
-    public static String getMostRecentlyModifiedTime(SiteData site, Ticket[] tickets) {
-        if (!site.isDateFormatSet()) {
-            // Force an entire re-fetch.
-            System.err.println("Unknown server DateFormat");
-            return null;
-        }
-
-        LocalDateTime latest = null;
-        String latestString = null;
-        for (Ticket ticket : tickets) {
-            String changeTime = ticket.getValue("changetime");
-            System.out.println(changeTime);
-            if (changeTime != null) {
-                try {
-                    LocalDateTime date = site.parseDateTime(changeTime);
-                    if (latest == null || date.isAfter(latest)) {
-                        latest = date;
-                        latestString = changeTime;
-                    }
-                    continue;
-                } catch (DateTimeParseException e) {
-                    System.err.println("Date format not parseable: " + changeTime);
-                }
-            }
-        }
-        return latestString;
     }
 }

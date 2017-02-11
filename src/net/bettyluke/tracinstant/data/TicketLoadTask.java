@@ -17,15 +17,24 @@
 
 package net.bettyluke.tracinstant.data;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.swing.SwingWorker;
 
 import net.bettyluke.tracinstant.data.TicketLoadTask.Update;
 
-public abstract class TicketLoadTask extends SwingWorker<Void, Update> {
+/**
+ * @param <T> The result of <code>doInBackground</code> and <code>get</code> is a list of
+ *            ticket modification dates, as extracted from all tickets loaded. This will be
+ *            processed in the 'done' method so it is not required for client code to access them
+ */
+public abstract class TicketLoadTask extends SwingWorker<List<String>, Update> {
 
     /**
      * A mutually-exclusive structure (no 'union' in Java) to pass status updates and
@@ -83,10 +92,10 @@ public abstract class TicketLoadTask extends SwingWorker<Void, Update> {
 
     protected Runnable doneCallback = null;
 
-    protected final TicketTableModel tableModel;
+    protected final SiteData site;
 
-    public TicketLoadTask(TicketTableModel tableModel) {
-        this.tableModel = tableModel;
+    public TicketLoadTask(SiteData site) {
+        this.site = site;
     }
 
     @Override
@@ -108,6 +117,15 @@ public abstract class TicketLoadTask extends SwingWorker<Void, Update> {
     protected void done() {
         super.done();
 
+        try {
+            List<String> strings = get();
+            site.setLastModifiedTicketTime(strings);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
         /* A final null status message is used to indicate completion. */
         process(Collections.<Update>singletonList(new Update()));
 
@@ -120,5 +138,15 @@ public abstract class TicketLoadTask extends SwingWorker<Void, Update> {
     public void executeWithNotification(Runnable runnable) {
         doneCallback = runnable;
         execute();
+    }
+
+    protected static List<String> extractModificationDates(Collection<Ticket> tickets) {
+        return streamChangeTimes(tickets).collect(Collectors.toList());
+    }
+
+    protected static Stream<String> streamChangeTimes(Collection<Ticket> tickets) {
+        return tickets.stream()
+                .map(ticket -> ticket.getValue("changetime"))
+                .filter(Objects::nonNull);
     }
 }
