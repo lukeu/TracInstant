@@ -102,7 +102,7 @@ public class SlurpAction extends AbstractAction {
 
         // Disable incremental updates if the change-time detection fails. (Don't flood the server
         // with full-download requests each time the application comes into view.)
-        if (lastChanged == null) {
+        if (site.hasConnected() && lastChanged == null) {
             return "Incremental update disabled: change timestamps not found";
         }
 

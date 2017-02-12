@@ -42,6 +42,7 @@ public class SiteData {
     private DateTimeFormatter dateTimeFormat12 = null;
     private DateTimeFormatter dateTimeFormat24 = null;
     private String lastModifiedTicketTime;
+    private boolean hasConnected = false;
 
     public SiteData() {
         setDateFormat(TracInstantProperties.get().getValue("SiteDateFormat"));
@@ -145,6 +146,7 @@ public class SiteData {
         deleteCachedDataFiles();
         m_TableModel.clear();
         lastModifiedTicketTime = null;
+        hasConnected = false;
     }
 
     private void deleteCachedDataFiles() {
@@ -201,6 +203,11 @@ public class SiteData {
         return dateTimeFormat12 != null;
     }
 
+
+    public boolean hasConnected() {
+        return hasConnected;
+    }
+
     /**
      * @return null if no date-format is known, or if no (parseable) times were found.
      */
@@ -217,6 +224,7 @@ public class SiteData {
     }
 
     public void setLastModifiedTicketTime(List<String> dateTimeStrings) {
+        hasConnected = true;
         if (!isDateFormatSet()) {
             return;
         }

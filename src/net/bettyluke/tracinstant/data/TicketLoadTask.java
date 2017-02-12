@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -124,6 +125,8 @@ public abstract class TicketLoadTask extends SwingWorker<List<String>, Update> {
             Thread.currentThread().interrupt();
         } catch (ExecutionException e) {
             e.printStackTrace();
+        } catch (CancellationException e) {
+            System.out.println("Ticket load cancelled");
         }
 
         /* A final null status message is used to indicate completion. */
