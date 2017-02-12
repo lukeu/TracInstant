@@ -217,7 +217,7 @@ public class HistogramPane {
     }
 
     private void updateHistogram() {
-        String field = ((String) fieldSelector.getSelectedItem()).toLowerCase();
+        String field = ((String) fieldSelector.getSelectedItem());
         Collection<Bar> bars = getBars(field).values();
         populateView(bars);
     }

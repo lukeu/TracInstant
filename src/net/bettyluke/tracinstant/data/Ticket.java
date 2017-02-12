@@ -25,7 +25,7 @@ import java.util.TreeMap;
 
 public class Ticket {
 
-    private Map<String, String> m_Fields = new TreeMap<>();
+    private Map<String, String> m_Fields = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     private final int m_Number;
 
