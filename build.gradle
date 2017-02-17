@@ -1,11 +1,21 @@
-// Apply the java plugin to add support for Java
-apply plugin: 'java'
+apply plugin: 'application' // Adds the 'run' task. (Implicitly applies plugin 'java')
+
+sourceCompatibility = 1.8
 
 // Where to obtain the project's dependencies from
 repositories {
     // Alternatively: mavenCentral()
     jcenter()
 }
+
+mainClassName = "net.bettyluke.tracinstant.TracInstantApp"
+applicationDefaultJvmArgs = [
+    "-Xms8M",
+    "-Xmx300M",
+    "-Dsun.java2d.d3d=false",
+    "-Xverify:none",
+    "-XX:StringTableSize=60013"
+]
 
 // Defines the dependencies for production and test code
 dependencies {
