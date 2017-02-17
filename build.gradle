@@ -1,0 +1,20 @@
+// Apply the java plugin to add support for Java
+apply plugin: 'java'
+
+// Where to obtain the project's dependencies from
+repositories {
+    // Alternatively: mavenCentral()
+    jcenter()
+}
+
+// Defines the dependencies for production and test code
+dependencies {
+
+	compile 'au.com.bytecode:opencsv:2.4'
+
+	// TODO: Would surely help code quality. Find out how to compact with proguard or something.
+	// compile 'com.google.guava', version: '21.0'
+
+    // TODO: add first unit test! :o)
+    // testCompile 'junit:junit:4.12'
+}

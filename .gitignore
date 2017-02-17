@@ -1,3 +1,3 @@
-build/
-dist/
-/bin
+/.gradle/
+/bin/
+/build/
