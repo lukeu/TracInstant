@@ -22,7 +22,7 @@ import javax.swing.event.DocumentListener;
 
 public final class DocUtils {
     private DocUtils() {}
-    
+
     // A new listener is created to help the user think about whether it needs to be removed again
     // (to avoid memory leaks) even though this may not always be necessary.
     public static DocumentListener newOnAnyEventListener(Runnable runner) {
