@@ -18,6 +18,7 @@
 package net.bettyluke.tracinstant.download;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,28 +82,28 @@ public class DownloadModel {
     private final List<Target> targets = new ArrayList<>();
     private final ListModelView listModel = new ListModelView();
 
-    private File bugsFolder;
+    private Path bugsDir;
 
     private State state = State.IDLE;
 
     private AttachmentDownloader tracDownloader = null;
     private AttachmentDownloader fileDownloader = null;
 
-    public File getBugsFolder() {
-        return bugsFolder;
+    public Path getBugsFolder() {
+        return bugsDir;
     }
 
     public void setBugsFolder(File bugsFolder) {
-        this.bugsFolder = bugsFolder;
+        this.bugsDir = bugsFolder.toPath();
         for (Target target : targets) {
-            target.setTopFolder(bugsFolder);
+            target.setTopFolder(this.bugsDir);
         }
         fireStateChanged();
     }
 
     public void addAll(List<? extends Downloadable> attachments) {
         for (Downloadable att : attachments) {
-            targets.add(new Target(bugsFolder, att));
+            targets.add(new Target(bugsDir, att));
         }
         fireStateChanged();
     }
@@ -323,5 +324,12 @@ public class DownloadModel {
             }
         }
         return count;
+    }
+
+    public Path getAbsolutePath(Target target) {
+
+        // TODO: Temporary, while refactoring
+        Downloadable source = target.getSource();
+        return bugsDir.resolve("" + source.getTicketNumber()).resolve(source.getFileName());
     }
 }

@@ -65,7 +65,7 @@ public class AttachmentDownloader extends SwingWorker<Void, Result> {
                 return null;
             }
             publish(new Result(target, State.STARTED));
-            File outFile = target.getTargetFile();
+            File outFile = model.getAbsolutePath(target).toFile();
             outFile.getParentFile().mkdirs();
             try {
                 FileUtils.copyAndClose(

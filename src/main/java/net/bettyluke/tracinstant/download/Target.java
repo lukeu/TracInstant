@@ -18,36 +18,35 @@
 package net.bettyluke.tracinstant.download;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Target {
     public enum State {
         IDLE, STARTED, ENDED, ERROR
     }
 
-    private final Downloadable source; // TODO: Consider refactoring out, once the rest is working.
+    private final Downloadable source;
     private boolean alreadyExists;
-    private File targetFile;
     private State state = State.IDLE;
     private long bytesDownloaded = 0;
     private String errorMessage = null;
     private boolean selected = true;
-    private File topFolder;
 
-    public Target(File topFolder, Downloadable source) {
+    public Target(Path localDir, Downloadable source) {
         this.source = source;
-        this.topFolder = topFolder;
-        updateTargetFile();
+        if (localDir != null) {
+            updateTargetFile(localDir);
+        }
     }
 
-    private void updateTargetFile() {
-        File folder = new File(topFolder, Integer.toString(source.getTicketNumber()));
-        targetFile = new File(folder, source.getFileName());
-        alreadyExists = targetFile.exists();
+    public void setTopFolder(Path localDir) {
+        updateTargetFile(localDir);
     }
 
-    public void setTopFolder(File topFolder) {
-        this.topFolder = topFolder;
-        updateTargetFile();
+    private void updateTargetFile(Path localDir) {
+        Path ticketDir = localDir.resolve(Integer.toString(source.getTicketNumber()));
+        alreadyExists = Files.exists(ticketDir.resolve(source.getFileName()));
     }
 
     public boolean isOverwriting() {
@@ -56,10 +55,6 @@ public class Target {
 
     public Downloadable getSource() {
         return source;
-    }
-
-    public File getTargetFile() {
-        return targetFile;
     }
 
     public State getState() {

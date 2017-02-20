@@ -28,6 +28,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -98,7 +100,7 @@ public class DownloadDialog extends JDialog {
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             Target target = listModel.getElementAt(rowIndex);
-            File file = target.getTargetFile();
+            Path file = downloadModel.getAbsolutePath(target);
             if ("".equals(COLUMNS[columnIndex])) {
                 return target.isSelected();
             } else if ("File".equals(COLUMNS[columnIndex])) {
@@ -289,7 +291,7 @@ public class DownloadDialog extends JDialog {
         if (toOverwrite > 0) {
             s += " " + toOverwrite + " will be overwritten!";
         }
-        if (!downloadModel.getBugsFolder().exists()) {
+        if (!Files.exists(downloadModel.getBugsFolder())) {
             s += " The download folder will be created.";
         }
         return s;
@@ -312,7 +314,7 @@ public class DownloadDialog extends JDialog {
     }
 
     private BrowsePanel createBrowsePanel() {
-        return new BrowsePanel(downloadModel.getBugsFolder());
+        return new BrowsePanel(downloadModel.getBugsFolder().toFile());
     }
 
     private JComponent createTablePanel() {
@@ -369,7 +371,7 @@ public class DownloadDialog extends JDialog {
     }
 
     protected void browseToTargetFolder(Object oTarget) {
-        File file = ((Target) oTarget).getTargetFile();
+        File file = downloadModel.getAbsolutePath((Target) oTarget).toFile();
         while (file != null) {
             if (file.isDirectory()) {
                 try {
