@@ -24,6 +24,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -49,10 +51,13 @@ public class AttachmentCounter {
     private static final Pattern ATTACHMENT_LINK =
         Pattern.compile("href=\\\"(/attachment/ticket/[^\\\"]+)\\\"");
 
-
-    /** A master list, collected once, of all AttachmentDirectory sub-directories. */
-    private static Map<Integer, File> s_AttachmentDirListing = Collections
-            .synchronizedMap(new TreeMap<Integer, File>());
+    /**
+     * All matching directories found under the top attachment directory. This is cached after each
+     * incremental slurp to reduce a bit of work during UI events, like table selection changes.
+     * (i.e. don't bother searching in directories that don't exist.)
+     */
+    private static Map<Integer, Path> s_AttachmentSubDirs =
+            Collections.synchronizedMap(new TreeMap<Integer, Path>());
 
     /**
      * The most recently executed AttachmentCounter. Thread-safety: always accessed
@@ -94,32 +99,31 @@ public class AttachmentCounter {
      * @return An object that can be used to determine the success of scanning, or
      * cancel the background task.
      */
-    public static Future<Map<Integer,File>> scanAttachmentsFolderAsynchronously(
-            final String topFolder) {
+    public static Future<Map<Integer, Path>> scanAttachmentsFolderAsynchronously(String topFolder) {
 
-        SwingWorker<Map<Integer, File>, Void> scanner =
-                new SwingWorker<Map<Integer,File>, Void>() {
+        SwingWorker<Map<Integer, Path>, Void> scanner = new SwingWorker<Map<Integer,Path>, Void>() {
 
             @Override
-            protected Map<Integer, File> doInBackground() throws Exception {
+            protected Map<Integer, Path> doInBackground() throws Exception {
                 return scanAttachmentsFolder();
             }
 
-            private Map<Integer, File> scanAttachmentsFolder() {
+            private Map<Integer, Path> scanAttachmentsFolder() {
                 long t0 = System.nanoTime();
 
                 if (topFolder.trim().isEmpty()) {
                     return Collections.emptyMap();
                 }
 
-                Map<Integer,File> results =
-                    Collections.synchronizedMap(new TreeMap<Integer,File>());
+                Map<Integer, Path> results =
+                        Collections.synchronizedMap(new TreeMap<Integer, Path>());
 
-                File bugDir = new File(topFolder);
+                Path bugDir = Paths.get(topFolder);
+                assert bugDir.isAbsolute();
 
                 // Unfortunately there doesn't seem to be an easy way to interrupt this
                 // potentially-long command. (It is slow on certain network drives.)
-                String[] listing = bugDir.list();
+                String[] listing = bugDir.toFile().list();
 
                 if (listing == null) {
                     System.err.println("Failed to list directory: " + bugDir);
@@ -130,7 +134,7 @@ public class AttachmentCounter {
                     Matcher m = NAME_MATCHER.matcher(name);
                     if (m.matches()) {
                         String id = m.group(1);
-                        File subDir = new File(bugDir, name);
+                        Path subDir = bugDir.resolve(name);
                         try {
                             results.put(Integer.valueOf(id), subDir);
                         } catch (NumberFormatException ex) {
@@ -152,8 +156,8 @@ public class AttachmentCounter {
                 }
                 try {
                     // Not exactly atomic... oh well.
-                    s_AttachmentDirListing.clear();
-                    s_AttachmentDirListing.putAll(get());
+                    s_AttachmentSubDirs.clear();
+                    s_AttachmentSubDirs.putAll(get());
                 } catch (InterruptedException | ExecutionException e) {
                 }
             }
@@ -192,11 +196,11 @@ public class AttachmentCounter {
                 if (Thread.interrupted()) {
                     throw new InterruptedException();
                 }
-                File bugDir = s_AttachmentDirListing.get(ticket.getNumber());
+                Path bugDir = s_AttachmentSubDirs.get(ticket.getNumber());
                 if (bugDir == null) {
                     continue;
                 }
-                File[] files = bugDir.listFiles();
+                File[] files = bugDir.toFile().listFiles();
                 if (files != null) {
                     for (File f : files) {
                         if (f.isFile()) {
