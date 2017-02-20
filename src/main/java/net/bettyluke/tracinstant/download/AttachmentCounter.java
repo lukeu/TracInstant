@@ -131,7 +131,11 @@ public class AttachmentCounter {
                     if (m.matches()) {
                         String id = m.group(1);
                         File subDir = new File(bugDir, name);
-                        results.put(Integer.valueOf(id), subDir);
+                        try {
+                            results.put(Integer.valueOf(id), subDir);
+                        } catch (NumberFormatException ex) {
+                            // Ignore. Perhaps a 'big number'.
+                        }
                     }
                 }
 
