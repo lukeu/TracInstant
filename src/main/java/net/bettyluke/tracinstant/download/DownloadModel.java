@@ -327,9 +327,7 @@ public class DownloadModel {
     }
 
     public Path getAbsolutePath(Target target) {
-
-        // TODO: Temporary, while refactoring
         Downloadable source = target.getSource();
-        return bugsDir.resolve("" + source.getTicketNumber()).resolve(source.getFileName());
+        return bugsDir.resolve("" + source.getTicketNumber()).resolve(source.getRelativePath());
     }
 }

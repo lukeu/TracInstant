@@ -18,22 +18,25 @@
 package net.bettyluke.tracinstant.download;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.function.BiPredicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -48,9 +51,12 @@ import net.bettyluke.tracinstant.prefs.TracInstantProperties;
 public class AttachmentCounter {
 
     private static final Pattern NAME_MATCHER = Pattern.compile("^(\\d+).*");
-    private static final Pattern ATTACHMENT_LINK =
-        Pattern.compile("href=\\\"(/attachment/ticket/[^\\\"]+)\\\"");
+    private static final int MAX_SEARCH_DEPTH = 4;
+    private static final BiPredicate<Path, BasicFileAttributes> IS_FILE_PREDICATE =
+            (p, attrs) -> !attrs.isDirectory() && !attrs.isSymbolicLink();
 
+    private static final Pattern ATTACHMENT_LINK =
+            Pattern.compile("href=\\\"(/attachment/ticket/[^\\\"]+)\\\"");
     /**
      * All matching directories found under the top attachment directory. This is cached after each
      * incremental slurp to reduce a bit of work during UI events, like table selection changes.
@@ -189,27 +195,32 @@ public class AttachmentCounter {
 
         @Override
         protected Void doInBackground() throws InterruptedException {
-
-            // Until Java 7 comes out, I'm going to turn a blind eye to trying to
-            // enumerate or copy deeply - only files directly in the folder sorry.
             for (Ticket ticket : m_Tickets) {
                 if (Thread.interrupted()) {
                     throw new InterruptedException();
                 }
-                Path bugDir = s_AttachmentSubDirs.get(ticket.getNumber());
-                if (bugDir == null) {
+                Path ticketDir = s_AttachmentSubDirs.get(ticket.getNumber());
+                if (ticketDir == null) {
                     continue;
                 }
-                File[] files = bugDir.toFile().listFiles();
-                if (files != null) {
-                    for (File f : files) {
-                        if (f.isFile()) {
-                            publish(new FileDownloadable(ticket.getNumber(), f));
-                        }
-                    }
+                try (Stream<Path> paths = streamRelativeFiles(ticketDir)) {
+                    FileDownloadable[] downloadable = paths
+                            .map(p -> new FileDownloadable(ticket.getNumber(), ticketDir, p))
+                            .toArray(FileDownloadable[]::new);
+                    publish(downloadable);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
             return null;
+        }
+
+        private Stream<Path> streamRelativeFiles(Path bugDir) throws IOException {
+
+            // No idea why attribs.isRegularFile() returns false on Windows Network (UNC) paths...
+            return Files
+                    .find(bugDir, MAX_SEARCH_DEPTH, IS_FILE_PREDICATE)
+                    .map(p -> bugDir.relativize(p));
         }
 
         @Override

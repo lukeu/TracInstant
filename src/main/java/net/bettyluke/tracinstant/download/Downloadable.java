@@ -17,7 +17,6 @@
 
 package net.bettyluke.tracinstant.download;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,6 +24,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import net.bettyluke.tracinstant.data.AuthenticatedHttpRequester;
 import net.bettyluke.tracinstant.prefs.SiteSettings;
@@ -38,7 +40,7 @@ public abstract class Downloadable {
 
     public abstract InputStream createInputStream() throws IOException;
 
-    public abstract String getFileName();
+    public abstract Path getRelativePath();
 
     public abstract long size();
 
@@ -52,35 +54,46 @@ public abstract class Downloadable {
 
     public static final class FileDownloadable extends Downloadable {
 
-        private final File m_File;
+        private final Path ticketDir;
+        private final Path relativePath;
 
-        public FileDownloadable(int ticketNumber, File f) {
+        /**
+         * @param ticketDir Subdirectory of the
+         */
+        public FileDownloadable(int ticketNumber, Path ticketDir, Path path) {
             super(ticketNumber);
-            m_File = f;
-        }
 
-        public File getFile() {
-            return m_File;
+            // NB: unsafe assertion due to race conditions where the file/dir could be deleted.
+            // Don't include in release checks!
+            assert ticketDir.isAbsolute() && Files.isDirectory(ticketDir);
+            assert !path.isAbsolute() && !Files.isDirectory(ticketDir.resolve(path));
+
+            this.ticketDir = ticketDir;
+            relativePath = path;
         }
 
         @Override
         public String getDescription() {
-            return m_File.getAbsolutePath();
+            return "" + relativePath;
         }
 
         @Override
         public InputStream createInputStream() throws IOException {
-            return new FileInputStream(m_File);
+            return new FileInputStream(getAbsolutePath().toFile());
         }
 
         @Override
-        public String getFileName() {
-            return m_File.getName();
+        public Path getRelativePath() {
+            return relativePath;
         }
 
         @Override
         public long size() {
-            return m_File.length();
+            return getAbsolutePath().toFile().length();
+        }
+
+        private Path getAbsolutePath() {
+            return ticketDir.resolve(relativePath);
         }
     }
 
@@ -111,8 +124,8 @@ public abstract class Downloadable {
         }
 
         @Override
-        public String getFileName() {
-            return decode(m_URL.substring(m_URL.lastIndexOf('/') + 1));
+        public Path getRelativePath() {
+            return Paths.get(decode(m_URL.substring(m_URL.lastIndexOf('/') + 1)));
         }
 
         private String decode(String name) {

@@ -46,7 +46,7 @@ public class Target {
 
     private void updateTargetFile(Path localDir) {
         Path ticketDir = localDir.resolve(Integer.toString(source.getTicketNumber()));
-        alreadyExists = Files.exists(ticketDir.resolve(source.getFileName()));
+        alreadyExists = Files.exists(ticketDir.resolve(source.getRelativePath()));
     }
 
     public boolean isOverwriting() {
@@ -83,7 +83,7 @@ public class Target {
 
     @Override
     public String toString() {
-        return "" + source.getTicketNumber() + File.separator + source.getFileName();
+        return "" + source.getTicketNumber() + File.separator + source.getRelativePath();
     }
 
     public boolean isSelected() {
