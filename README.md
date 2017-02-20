@@ -1,11 +1,12 @@
-TracInstant - A tool to search, sort and preview Trac (http://trac.edgewall.org) tickets in real-time.
+**TracInstant** - _A desktop app to search, sort and preview [Trac](http://trac.edgewall.org) tickets in real-time._
 
 ## Quick start
 
-To build and run from source, simply execute: `gradlew run`
+Requires Java 8. To build and run from source, simply execute:
 
- * The only prerequisites is having Java >= 8 installed.
- * The [Gradle wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) automatically downloads Gradle (if necessary), the project dependencies, builds the .jar and launches it with default settings.
+    gradlew run
+
+> Tip: Installing Gradle is not necessary, as the included [gradle wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) will automatically download project dependencies, build the .jar and launch the app with default settings.
 
 ## Usage
 
@@ -23,8 +24,9 @@ To build an installation, execute: `gradlew installDist`. To launch it:
    2. Execute `build/install/TracInstant/bin/TracInstant(.bat)`
    3. You can e.g. create a Windows shortcut to this
 
-Alternatively you can import it into your favourite IDE to build and run.
- * For Eclipse, import the "existing Java Project". (Buildship shouldn't be necessary).
+Alternatively you can import it into your favourite IDE to build and run. For Eclipse:
+ * Buildship is required, to automatically download project dependencies. By going to [Help > Install New Software] you should find it within the standard "Annual Release" update site.
+ * Import the "existing Java Project".
  * See file `build.gradle` for some recommended JVM settings to put in the launch configuration.
 
 ## Contribute
