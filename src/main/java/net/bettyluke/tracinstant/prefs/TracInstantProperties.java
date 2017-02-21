@@ -80,6 +80,15 @@ public final class TracInstantProperties {
         return get().getBoolean(TRAC_REMEMBER_PASSWORD, false);
     }
 
+    /**
+     * Whether the application /supported/ remembering passwords at the time the properties file
+     * was written. This is just used to ease upgrade of people to the new version by performing
+     * a one-time prompt (rather than defaulting to a blank password and getting a server error.)
+     */
+    public static boolean hasPasswordSupport() {
+        return get().getValue(TRAC_REMEMBER_PASSWORD) != null;
+    }
+
     public static String getPassword() {
         String password = get().getString(TRAC_PWD, "");
         password = transform(password, Cipher.DECRYPT_MODE);

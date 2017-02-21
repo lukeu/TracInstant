@@ -52,6 +52,17 @@ public final class TracInstantApp {
     public void startOnEDT() {
         setLaF();
         final SiteData site = new SiteData();
+
+        // In truth this is a HACK that wipes out Trac 1.0 data for in-house users who have
+        // updated to Trac 1.2 around the same time that I'm adding password support. Users at
+        // other companies (which currently amount to a total around zero) will have to click the
+        // "Connect to" button themselves if they end up having duplicated columns, etc. due to the
+        // field renaming that occurred. (I don't currently have a mechanism to detect Trac versions
+        // that would be robust in the face of customised ticket fields.)
+        if (!TracInstantProperties.hasPasswordSupport()) {
+            site.reset();
+        }
+
         final TracInstantFrame frame = new TracInstantFrame(site);
         frame.installToolPanel(AnnotationPanel.createPlugin());
         frame.installToolPanel(FindInTextPanel.createPlugin());
@@ -73,7 +84,6 @@ public final class TracInstantApp {
         // data sources, and the cancellation of these tasks.)
 
         frame.getSlurpAction().setEnabled(false);
-
         frame.setVisible(true);
 
         if (site.isOkToUseCachedTickets()) {
@@ -93,8 +103,7 @@ public final class TracInstantApp {
         slurper.setEnabled(true);
 
         Authenticator.setDefault(SITE_AUTHENTICATOR);
-        Ticket[] tickets = site.getTableModel().getTickets();
-        if (tickets.length == 0) {
+        if (shouldPromptOnStartup(site)) {
             if (slurper.promptForTracSettings()) {
                 slurper.slurpAll();
             } else {
@@ -110,6 +119,16 @@ public final class TracInstantApp {
                 slurper.slurpAll();
             }
         }
+    }
+
+    public boolean shouldPromptOnStartup(SiteData site) {
+        if (!TracInstantProperties.hasPasswordSupport() ||
+                !TracInstantProperties.getUsername().isEmpty() &&
+                !TracInstantProperties.getRememberPassword()) {
+            return true;
+        }
+        Ticket[] tickets = site.getTableModel().getTickets();
+        return tickets.length == 0;
     }
 
     private static final Authenticator SITE_AUTHENTICATOR = new Authenticator() {
