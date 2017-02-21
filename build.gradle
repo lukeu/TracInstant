@@ -61,6 +61,6 @@ dependencies {
 	// TODO: Would surely help code quality. Find out how to compact with proguard or something.
 	// compile 'com.google.guava', version: '21.0'
 
-    // TODO: add first unit test! :o)
-    // testCompile 'junit:junit:4.12'
+    testCompile 'junit:junit:4.12+'
 }
+

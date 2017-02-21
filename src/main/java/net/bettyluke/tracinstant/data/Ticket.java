@@ -91,8 +91,11 @@ public class Ticket {
 
     public String getValue(String fieldName) {
         String result = m_Fields.get(fieldName);
-        if (result == null) {
-            result = tryAliases(fieldName);
+        if (result == null || result.isEmpty()) {
+            String newResult = tryAliases(fieldName);
+            if (newResult != null) {
+                return newResult;
+            }
         }
         return result;
     }
