@@ -1,14 +1,18 @@
-apply plugin: 'application' // Adds the 'run' task. (Implicitly applies plugin 'java')
-
-sourceCompatibility = 1.8
-
-// Where to obtain the project's dependencies from
-repositories {
-    // Alternatively: mavenCentral()
-    jcenter()
+plugins {
+    id 'edu.sc.seis.launch4j' version '2.3.0'
 }
 
+apply plugin: 'java'
+apply plugin: 'application'
+
+applicationName = 'TracInstant'
 mainClassName = "net.bettyluke.tracinstant.TracInstantApp"
+version = '0.1.0'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+// For 'application' plugin:
 applicationDefaultJvmArgs = [
     "-Xms8M",
     "-Xmx300M",
@@ -17,7 +21,39 @@ applicationDefaultJvmArgs = [
     "-XX:StringTableSize=60013"
 ]
 
-// Defines the dependencies for production and test code
+repositories {
+    // Alternatively: mavenCentral()
+    jcenter()
+}
+
+// For runnable .jar:
+task fatJar(type: Jar) {
+
+    // Simple "fatJar" configuration...
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+
+    manifest {
+        attributes 'Main-Class': mainClassName
+
+// Alternatively: configure class-path if not building a "fatJar".
+//    attributes 'Class-Path': configurations.compile.collect {
+//     'libs/' + it.getName()
+//    }.join(' ')
+
+    }
+}
+
+launch4j {
+    mainClassName = mainClassName
+    jar = '../libs/' + project.tasks['fatJar'].archiveName
+
+    icon = '../../icons/TracSlurp.ico'
+    jreRuntimeBits = "32/64"
+    jvmOptions = applicationDefaultJvmArgs
+}
+
 dependencies {
 
 	compile 'au.com.bytecode:opencsv:2.4'
