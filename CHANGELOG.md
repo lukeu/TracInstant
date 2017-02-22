@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 
-## 0.1.0 - 2017-02-20
+## 0.1.0 - 2017-02-22
 ### Added
  - Support for Trac v1.0 - v1.2. (v0.12 might still work but is mostly untested.)
  - Offer to save user password, for better startup + user experience
