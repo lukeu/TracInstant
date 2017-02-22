@@ -29,6 +29,8 @@ repositories {
 // For runnable .jar:
 task fatJar(type: Jar) {
 
+    dependsOn test
+
     // Simple "fatJar" configuration...
     baseName = project.name + '-all'
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
