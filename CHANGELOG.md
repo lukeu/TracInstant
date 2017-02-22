@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
  - A small memory improvement
  - Avoid a UI lag when Window gains focus (before incrementally updating)
+ - Site annotations could be lost when switching between sites
 
 ### Notes
 

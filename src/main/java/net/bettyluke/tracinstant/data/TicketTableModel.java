@@ -205,7 +205,6 @@ public class TicketTableModel extends AbstractTableModel {
     }
 
     public void clear() {
-        userFields.clear();
         knownFields.clear();
         shownColumns = new String[0];
         fireTableStructureChanged();
