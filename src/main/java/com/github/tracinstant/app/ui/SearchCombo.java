@@ -17,8 +17,6 @@
 
 package com.github.tracinstant.app.ui;
 
-import java.awt.Font;
-
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
@@ -46,12 +44,13 @@ public class SearchCombo extends JComboBox<SavedSearch> {
             }
         });
 
+        SearchDropDownRenderer listRenderer = new SearchDropDownRenderer();
         SearchComboEditor ed = getEditorComponent();
-        ed.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        ed.setFont(listRenderer.descFont);
         SwingUtils.addUndoSupport(ed);
 
         setPreferredSize(getPreferredSize());
-        changeListRenderer();
+        setRenderer(listRenderer);
         loadLastSearch();
     }
 
@@ -62,10 +61,6 @@ public class SearchCombo extends JComboBox<SavedSearch> {
         } catch (BadLocationException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void changeListRenderer() {
-        setRenderer(new SearchDropDownRenderer());
     }
 
     @Override

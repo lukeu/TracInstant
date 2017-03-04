@@ -22,15 +22,15 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.HierarchyEvent;
 
-import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 
+import com.github.swingdpi.util.ScaledTable;
 import com.github.tracinstant.util.swing.monitor.EdtMonitorModel.StatListener;
 
-public class PerformancePlot extends JTable {
+public class PerformancePlot extends ScaledTable {
 
     private static final Color BACKGROUND_COLOR = new Color(12, 12, 48);
 

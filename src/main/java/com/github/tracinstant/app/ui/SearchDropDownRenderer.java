@@ -30,6 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 
+import com.github.swingdpi.UiScaling;
 import com.github.tracinstant.app.data.SavedSearch;
 
 final class SearchDropDownRenderer extends DefaultListCellRenderer {
@@ -40,8 +41,8 @@ final class SearchDropDownRenderer extends DefaultListCellRenderer {
     JLabel desc = new JLabel(" ");
     JLabel alias = new JLabel(" ");
     JLabel searchText = new JLabel(" ");
-    Font monoFont = new Font(Font.MONOSPACED, Font.BOLD, 12);
-    Font descFont = desc.getFont().deriveFont(desc.getFont().getSize() + 2f);
+    Font monoFont = new Font(Font.MONOSPACED, Font.BOLD, UiScaling.scale(12));
+    Font descFont = monoFont.deriveFont(UiScaling.scale(14f));
 
     SearchDropDownRenderer() {
         desc.setBackground(TRANSPARENT);

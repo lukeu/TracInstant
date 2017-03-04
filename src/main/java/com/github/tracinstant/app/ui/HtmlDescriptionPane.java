@@ -25,13 +25,12 @@ import java.util.regex.Pattern;
 import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkEvent.EventType;
+import javax.swing.event.HyperlinkListener;
 
 import com.github.tracinstant.app.data.Ticket;
 import com.github.tracinstant.app.data.TicketTableModel;
 import com.github.tracinstant.app.prefs.TracInstantProperties;
 import com.github.tracinstant.util.DesktopUtils;
-
-import javax.swing.event.HyperlinkListener;
 
 public class HtmlDescriptionPane extends JEditorPane {
 
@@ -78,9 +77,14 @@ public class HtmlDescriptionPane extends JEditorPane {
 
     public HtmlDescriptionPane(TicketTableModel ticketModel) {
         super("text/html", "");
-        putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
         setEditable(false);
         addHyperlinkListener(new MyHyperlinkListener(ticketModel));
+    }
+
+    @Override
+    public void updateUI() {
+        super.updateUI();
+        putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
     }
 
     // Update description if anything (even just the highlighting) changed.

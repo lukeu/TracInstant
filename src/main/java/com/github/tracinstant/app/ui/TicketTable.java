@@ -30,7 +30,6 @@ import java.util.regex.Pattern;
 
 import javax.swing.AbstractAction;
 import javax.swing.JPopupMenu;
-import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
@@ -40,12 +39,13 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
 
+import com.github.swingdpi.util.ScaledTable;
 import com.github.tracinstant.app.data.Ticket;
 import com.github.tracinstant.app.data.TicketTableModel;
 import com.github.tracinstant.app.prefs.TracInstantProperties;
 import com.github.tracinstant.app.ui.MenuCascader.Item;
 
-public class TicketTable extends JTable {
+public class TicketTable extends ScaledTable {
 
     public static class ColumnWidthMemoriser {
 

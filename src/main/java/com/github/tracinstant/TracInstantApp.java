@@ -27,6 +27,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 
+import com.github.swingdpi.DpiUtils;
+import com.github.swingdpi.UiDefaultsScaler;
 import com.github.tracinstant.app.data.CachedTicketLoadTask;
 import com.github.tracinstant.app.data.SiteData;
 import com.github.tracinstant.app.data.Ticket;
@@ -51,6 +53,7 @@ public final class TracInstantApp {
 
     public void startOnEDT() {
         setLaF();
+        UiDefaultsScaler.updateAndApplyGlobalScaling(DpiUtils.getSystemScaling(), true);
         final SiteData site = new SiteData();
 
         // In truth this is a HACK that wipes out Trac 1.0 data for in-house users who have

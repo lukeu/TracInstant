@@ -51,6 +51,7 @@ import javax.swing.text.Highlighter;
 import javax.swing.text.Highlighter.HighlightPainter;
 import javax.swing.text.JTextComponent;
 
+import com.github.swingdpi.UiScaling;
 import com.github.tracinstant.app.data.Ticket;
 
 /**
@@ -144,10 +145,9 @@ public class FindInTextPanel extends JPanel {
     private final JCheckBox filterCheck;
     private Set<Integer> ticketsInText = Collections.emptySet();
 
-
     private static JTextArea createTextArea() {
         JTextArea ta = new JTextArea();
-        ta.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+        ta.setFont(new Font(Font.MONOSPACED, Font.PLAIN, UiScaling.scale(14)));
         return ta;
     }
 
