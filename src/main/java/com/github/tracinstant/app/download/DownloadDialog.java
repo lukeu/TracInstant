@@ -51,6 +51,7 @@ import javax.swing.event.ListDataListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.text.JTextComponent;
 
+import com.github.swingdpi.util.ScaledTable;
 import com.github.tracinstant.app.download.DownloadModel.ListModelView;
 import com.github.tracinstant.app.prefs.TracInstantProperties;
 import com.github.tracinstant.app.ui.BrowsePanel;
@@ -319,7 +320,7 @@ public class DownloadDialog extends JDialog {
 
     private JComponent createTablePanel() {
         TargetTableModel tableModel = new TargetTableModel(downloadModel.getListModel());
-        final JTable table = new JTable(tableModel);
+        JTable table = new ScaledTable(tableModel);
         int i = 0;
         for (int w : DEFAULT_COL_WIDTH) {
             table.getColumnModel().getColumn(i++).setPreferredWidth(w);

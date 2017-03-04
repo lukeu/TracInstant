@@ -23,6 +23,7 @@ applicationDefaultJvmArgs = [
 
 repositories {
     // Alternatively: mavenCentral()
+    mavenLocal()
     jcenter()
 }
 
@@ -76,6 +77,7 @@ task createJava8Exe(type: edu.sc.seis.launch4j.tasks.Launch4jLibraryTask)  {
 dependencies {
 
     compile 'au.com.bytecode:opencsv:2.4'
+    compile 'com.github.lukeu:swing-dpi:0.6'
 
     // TODO: Would surely help code quality. Find out how to compact with proguard or something.
     // compile 'com.google.guava', version: '21.0'

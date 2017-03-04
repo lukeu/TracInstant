@@ -36,6 +36,7 @@ import javax.swing.plaf.basic.BasicComboBoxEditor;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
+import com.github.swingdpi.UiScaling;
 import com.github.tracinstant.app.data.SavedSearch;
 import com.github.tracinstant.app.prefs.TracInstantProperties;
 import com.github.tracinstant.swing.SwingUtils;
@@ -46,6 +47,10 @@ import com.github.tracinstant.swing.SwingUtils;
  */
 public class SearchCombo extends JComboBox<SavedSearch> {
 
+    private static final Font MONO_FONT =
+            new Font(Font.MONOSPACED, Font.BOLD, UiScaling.scale(12));
+    private static final Font DESC_FONT = MONO_FONT.deriveFont(UiScaling.scale(14f));
+
     private final class DropDownRenderer extends DefaultListCellRenderer {
 
         JPanel panel = new JPanel(new BorderLayout());
@@ -53,19 +58,17 @@ public class SearchCombo extends JComboBox<SavedSearch> {
         JLabel desc = new JLabel(" ");
         JLabel alias = new JLabel(" ");
         JLabel searchText = new JLabel(" ");
-        Font monoFont = new Font(Font.MONOSPACED, Font.BOLD, 12);
-        Font descFont = desc.getFont().deriveFont(desc.getFont().getSize() + 2f);
 
         public DropDownRenderer() {
             desc.setBackground(TRANSPARENT);
-            desc.setFont(descFont);
+            desc.setFont(DESC_FONT);
             desc.setBorder(BorderFactory.createEmptyBorder(2, 6, 2, 6));
 
             alias.setBackground(TRANSPARENT);
-            alias.setFont(monoFont);
+            alias.setFont(MONO_FONT);
 
             searchText.setBackground(TRANSPARENT);
-            searchText.setFont(monoFont);
+            searchText.setFont(MONO_FONT);
 
             box.add(alias);
             box.add(searchText);
@@ -120,7 +123,7 @@ public class SearchCombo extends JComboBox<SavedSearch> {
         });
 
         SearchComboEditor ed = getEditorComponent();
-        ed.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        ed.setFont(DESC_FONT);
         SwingUtils.addUndoSupport(ed);
 
         setPreferredSize(getPreferredSize());
