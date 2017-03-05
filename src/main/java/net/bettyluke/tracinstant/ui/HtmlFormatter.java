@@ -35,7 +35,7 @@ public class HtmlFormatter {
 
     private final static String HTML_HEADER =
         "<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"" +
-            STYLESHEET_TRAC_RESOURCE + "\">";
+            STYLESHEET_TRAC_RESOURCE + "\"></head>";
 
 
     private final static String HTML_END = "</html>";
