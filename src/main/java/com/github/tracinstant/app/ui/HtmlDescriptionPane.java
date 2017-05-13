@@ -81,12 +81,6 @@ public class HtmlDescriptionPane extends JEditorPane {
         addHyperlinkListener(new MyHyperlinkListener(ticketModel));
     }
 
-    @Override
-    public void updateUI() {
-        super.updateUI();
-        putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
-    }
-
     // Update description if anything (even just the highlighting) changed.
     public void updateDescription(String text) {
         if (!text.equals(lastDescriptionText)) {

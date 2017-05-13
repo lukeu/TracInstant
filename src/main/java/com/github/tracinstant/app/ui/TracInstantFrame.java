@@ -69,10 +69,6 @@ import javax.swing.ToolTipManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.JTextComponent;
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
 
 import com.github.swingdpi.UiScaling;
 import com.github.tracinstant.app.data.SiteData;
@@ -685,11 +681,6 @@ public class TracInstantFrame extends JFrame {
         String text = HtmlFormatter.buildDescription(selected, m_SearchTerms);
         m_DescriptionPane.updateDescription(text);
 
-
-        MutableAttributeSet attrs = new SimpleAttributeSet();
-        StyleConstants.setFontSize(attrs, 15);
-        StyledDocument doc = (StyledDocument) m_DescriptionPane.getDocument();
-        doc.setCharacterAttributes(0, doc.getLength(), attrs, false);
 
         // Avoid updating downloads via this very simple check. (Could make more
         // sophisticated)
