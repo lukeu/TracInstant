@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.github.swingdpi.DpiUtils;
 import com.github.tracinstant.app.data.Ticket;
 import com.github.tracinstant.app.prefs.TracInstantProperties;
 
@@ -30,12 +31,15 @@ public class HtmlFormatter {
 
     private static final Pattern BUG_PATTERN = Pattern.compile("#([0-9]{1,8}+)");
 
-    private static final URL STYLESHEET_TRAC_RESOURCE =
-        HtmlFormatter.class.getResource("res/trac.css");
+    private static final URL TRAC_CSS = HtmlFormatter.class.getResource("res/trac_relative.css");
+    private static final URL MAIN_FONT_CSS = HtmlFormatter.class.getResource(
+            String.format("res/trac_%d.css", DpiUtils.getClosestStandardScaling() ));
 
     private final static String HTML_HEADER =
-        "<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"" +
-            STYLESHEET_TRAC_RESOURCE + "\"></head>";
+        "<html><head>"
+        + "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + TRAC_CSS + "\">"
+        + "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + MAIN_FONT_CSS + "\">"
+        + "</head>";
 
 
     private final static String HTML_END = "</html>";
