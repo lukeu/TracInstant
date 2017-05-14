@@ -21,12 +21,17 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.Box;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -78,6 +83,13 @@ public class FindInTextPanel extends JPanel {
 
     private static final Pattern TICKET_PATTERN = Pattern.compile("\\#(\\d+)");
 
+    private final Map<String, Function<Set<Integer>, String>> formatters =
+            new LinkedHashMap<String, Function<Set<Integer>, String>>() {{
+        put("TracInstant search term", FindInTextPanel::formatFoundTicketText);
+        put("Outlook search (short)", ints -> formatOutlookQuery(ints, 8));
+        put("Outlook search (long)", ints -> formatOutlookQuery(ints, 22));
+    }};
+
     /**
      * Class that performs a single action 'later', following one or more modifications in the
      * processing of a single EDT event.
@@ -116,11 +128,13 @@ public class FindInTextPanel extends JPanel {
         }
     }
 
-    private JTextComponent sourceTextEditor = createTextArea();
-    private Set<Integer> ticketsInText = Collections.emptySet();
-    private JTextComponent foundTicketNumbersArea = createTextArea();
-    private JTextComponent filteredTicketNumbersArea = createTextArea();
+    private final JTextComponent sourceTextEditor = createTextArea();
+    private final JTextComponent resultArea = createTextArea();
     private final Set<Integer> filter = new TreeSet<>();
+    private final JComboBox<String> resultCombo;
+    private final JCheckBox filterCheck;
+    private Set<Integer> ticketsInText = Collections.emptySet();
+
 
     private static JTextComponent createTextArea() {
         JTextComponent ta = new JTextArea();
@@ -130,36 +144,49 @@ public class FindInTextPanel extends JPanel {
 
     public FindInTextPanel() {
         super(new BorderLayout());
-        JScrollPane scroll1 = new JScrollPane(foundTicketNumbersArea);
-        JScrollPane scroll2 = new JScrollPane(filteredTicketNumbersArea);
+        JScrollPane scroll1 = new JScrollPane(sourceTextEditor);
+        JScrollPane scroll2 = new JScrollPane(resultArea);
         scroll1.setPreferredSize(new Dimension(50, 50));
         scroll2.setPreferredSize(new Dimension(50, 50));
-        Box grid = Box.createVerticalBox();
-        grid.add(new JLabel("Tickets found in the text above..."));
-        grid.add(scroll1);
-        grid.add(new JLabel("Filtered Tickets (in Outlook Query format)..."));
-        grid.add(scroll2);
 
-        add(new JLabel("Paste text to scan for ticket numbers:"), BorderLayout.NORTH);
-        add(createSplit(new JScrollPane(sourceTextEditor), grid));
+        filterCheck = new JCheckBox("Apply filter", true);
+        resultCombo = new JComboBox<>(formatters.keySet().toArray(new String[0]));
+
+        Box box = Box.createHorizontalBox();
+        box.add(filterCheck);
+        box.add(new JLabel("   Show tickets as: "));
+        box.add(resultCombo);
+
+        JPanel north = new JPanel(new BorderLayout());
+        JPanel south= new JPanel(new BorderLayout());
+        north.add(new JLabel("Paste text to scan for ticket numbers:"), BorderLayout.NORTH);
+        north.add(scroll1);
+        south.add(box, BorderLayout.NORTH);
+        south.add(scroll2);
+
+        add(createSplit(north, south));
 
         sourceTextEditor.getDocument().addDocumentListener(new DocChangeListener(() -> {
             ticketsInText = scanText(sourceTextEditor.getText());
             updateOutputFields();
         }));
+
+        filterCheck.addActionListener(l -> updateOutputFields());
+        resultCombo.addActionListener(l -> updateOutputFields());
     }
 
     private void updateOutputFields() {
-        String newFoundText = formatFoundTicketText(ticketsInText);
-        if (!newFoundText.equals(foundTicketNumbersArea.getText())) {
-            foundTicketNumbersArea.setText(newFoundText);
-        }
+        updateOutputFields(formatters.get(resultCombo.getSelectedItem()));
+    }
 
-        Set<Integer> intersection = new TreeSet<>(ticketsInText);
-        intersection.retainAll(filter);
-        String newFilteredText = formatOutlookQuery(intersection);
-        if (!newFilteredText.equals(filteredTicketNumbersArea.getText())) {
-            filteredTicketNumbersArea.setText(newFilteredText);
+    private void updateOutputFields(Function<Set<Integer>, String> formatter) {
+        Set<Integer> tickets = new TreeSet<>(ticketsInText);
+        if (filterCheck.isSelected()) {
+            tickets.retainAll(filter);
+        }
+        String newFoundText = formatter.apply(tickets);
+        if (!newFoundText.equals(resultArea.getText())) {
+            resultArea.setText(newFoundText);
         }
     }
 
@@ -173,11 +200,11 @@ public class FindInTextPanel extends JPanel {
      * Prints ticket numbers as a (multiple) search queries that Microsoft Outlook can
      * handle. It can only handle short strings!
      */
-    protected String formatOutlookQuery(Set<Integer> tickets) {
+    private static String formatOutlookQuery(Set<Integer> tickets, int maxPerLine) {
         int count = 0;
         StringBuilder sb = new StringBuilder("subject:(");
         for (int ticket : tickets) {
-            if (count == 8) {
+            if (count == maxPerLine) {
                 sb.append(")\nsubject:(");
                 count = 0;
             } else if (count > 0) {
@@ -203,7 +230,7 @@ public class FindInTextPanel extends JPanel {
         return result;
     }
 
-    protected final String formatFoundTicketText(Set<Integer> numbers) {
+    protected static final String formatFoundTicketText(Set<Integer> numbers) {
         StringBuilder sb = new StringBuilder();
         String separator = "#:^(";
         for (int i : numbers) {
