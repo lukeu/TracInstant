@@ -22,6 +22,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import com.github.swingdpi.UiScaling;
 import com.github.tracinstant.app.data.Ticket;
 import com.github.tracinstant.util.swing.ArrayListModel;
 import com.github.tracinstant.util.swing.VerticallyScrollingPanel;
@@ -146,16 +147,18 @@ public class HistogramPane {
             int xTotal = (int) (w * totalRatio);
 
             g2.setColor(Color.GREEN.darker());
-            g2.fillRect(0, 5, xClosed, 12);
-            g2.drawRect(0, 5, xTotal, 12);
+            int y = 6;
+            int height = UiScaling.scale(12);
+            g2.fillRect(0, y, xClosed, height);
+            g2.drawRect(0, y, xTotal, height);
 
             g2.setColor(new Color(96, 96, 224));
-            g2.fillRect(0, 5, (int) (w * selClosedRatio), 13);
+            g2.fillRect(0, y, (int) (w * selClosedRatio), height + 1);
             g2.setColor(new Color(200, 200, 255));
-            g2.fillRect(xClosed, 6, (int) (w * selActiveRatio), 11);
+            g2.fillRect(xClosed, y + 1, (int) (w * selActiveRatio), height - 1);
 
             g2.setColor(Color.RED.darker());
-            g2.drawString(bar.toString(), xTotal + 6, 16);
+            g2.drawString(bar.toString(), xTotal + UiScaling.scale(6), UiScaling.scale(13));
         }
     }
 
