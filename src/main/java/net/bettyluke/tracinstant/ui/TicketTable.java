@@ -272,14 +272,4 @@ public class TicketTable extends JTable {
     public TableRowSorter<? extends TicketTableModel> getRowSorter() {
         return (TableRowSorter<? extends TicketTableModel>) super.getRowSorter();
     }
-
-    public Ticket[] getSelectedTickets() {
-        TicketTableModel model = getModel();
-        Ticket[] result = new Ticket[getSelectedRowCount()];
-        int i = 0;
-        for (int row : getSelectedRows()) {
-            result[i++] = model.getTicket(convertRowIndexToModel(row));
-        }
-        return result;
-    }
 }

@@ -577,7 +577,7 @@ public class TracInstantFrame extends JFrame {
     }
 
     protected void browseToSelectedTickets() {
-        Ticket[] tickets = m_Table.getSelectedTickets();
+        Ticket[] tickets = getSelectedTickets();
         try {
             HtmlDescriptionPane.browseToTickets(tickets);
         } catch (MalformedURLException ex) {
@@ -586,7 +586,7 @@ public class TracInstantFrame extends JFrame {
     }
 
     protected void removeSelectedTicketsFromTable() {
-        Ticket[] tickets = m_Table.getSelectedTickets();
+        Ticket[] tickets = getSelectedTickets();
         String oldSearch = m_FilterCombo.getEditorText().trim();
         String newSearch = isLastTermADeletion(oldSearch) ?
             expandDeletionTerm(oldSearch, tickets) :
