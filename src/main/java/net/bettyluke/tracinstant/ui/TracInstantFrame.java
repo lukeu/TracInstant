@@ -682,12 +682,36 @@ public class TracInstantFrame extends JFrame {
             m_Downloads.count(selected);
         }
         m_DisplayedTickets = Arrays.copyOf(selected, selected.length);
+        if (selected.length > 0) {
+            scrollToTicket(selected[0].getNumber());
+        }
+    }
+
+    private void scrollToTicket(int ticketNumber) {
+        int newRow = findViewRowForTicket(ticketNumber);
+        if (newRow != -1) {
+            SwingUtilities.invokeLater(() ->
+                m_Table.scrollRectToVisible(m_Table.getCellRect(newRow, -1, true)));
+        }
     }
 
     private void updatePlugin() {
         if (m_ActivePlugin != null) {
             m_ActivePlugin.ticketViewUpdated(getViewedTickets(), getSelectedTickets());
         }
+    }
+
+    /** -1 for not found */
+    private int findViewRowForTicket(int ticketNumber) {
+        TicketTableModel model = m_Table.getModel();
+        int rowCount = m_Table.getRowCount();
+        for (int r = 0; r < rowCount; r++) {
+            int modelRow = m_Table.convertRowIndexToModel(r);
+            if (model.getTicket(modelRow).getNumber() == ticketNumber) {
+                return r;
+            }
+        }
+        return -1;
     }
 
     private Ticket[] getViewedTickets() {
