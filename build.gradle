@@ -6,8 +6,8 @@ apply plugin: 'java'
 apply plugin: 'application'
 
 applicationName = 'TracInstant'
-mainClassName = "net.bettyluke.tracinstant.TracInstantApp"
-version = '0.1.0'
+mainClassName = "com.github.tracinstant.TracInstantApp"
+version = '0.2.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
