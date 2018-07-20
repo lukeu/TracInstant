@@ -63,6 +63,8 @@ import javax.swing.text.Segment;
 import javax.swing.text.Utilities;
 import javax.swing.text.View;
 
+import com.github.swingdpi.UiScaling;
+import com.github.swingdpi.util.ScaledIcon;
 import com.github.tracinstant.app.data.SavedSearch;
 import com.github.tracinstant.swing.CustomUndoPlainDocument;
 import com.github.tracinstant.swing.SwingUtils;
@@ -201,20 +203,21 @@ public class SearchComboEditor extends JTextField {
     private static final Color DARK_BORDER = new Color(141, 142, 143);
 
     private static enum StarIcons {
-        NORMAL("res/star_grey.png"), SELECTED("res/star_yellow.png"), ROLLOVER(
-                "res/star_grey_roll.png"), SELECTED_ROLLOVER(
-                        "res/star_yellow_roll.png"), PRESSED("res/star_yellow_pressed.png");
+        NORMAL("res/star_grey.png"),
+        SELECTED("res/star_yellow.png"),
+        ROLLOVER("res/star_grey_roll.png"),
+        SELECTED_ROLLOVER("res/star_yellow_roll.png"),
+        PRESSED("res/star_yellow_pressed.png");
 
-        private ImageIcon icon;
+        private Icon icon;
 
         private StarIcons(String resourcePath) {
             icon = createImageIcon(resourcePath);
         }
 
-        /** Returns an ImageIcon, or null if the path was invalid. */
-        protected static ImageIcon createImageIcon(String path) {
+        protected static Icon createImageIcon(String path) {
             URL imgURL = SearchComboEditor.class.getResource(path);
-            return new ImageIcon(imgURL);
+            return new ScaledIcon(new ImageIcon(imgURL), UiScaling.getScalingFactor());
         }
 
         public Icon getIcon() {
