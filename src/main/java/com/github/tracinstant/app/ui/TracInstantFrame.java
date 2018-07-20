@@ -51,7 +51,6 @@ import java.util.regex.Pattern;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -90,8 +89,6 @@ import com.github.tracinstant.util.FileUtils;
 public class TracInstantFrame extends JFrame {
 
     private static final String FRAME_STATE_PROPERTY = "MainFrame";
-
-    private static final Icon BUSY_IMAGE = StatusWidget.BUSY_IMAGE;
 
     private static final InputStream TIP =
         TracInstantFrame.class.getResourceAsStream("res/SearchTip.html");
@@ -511,7 +508,7 @@ public class TracInstantFrame extends JFrame {
     private DownloadModel createDownloadModel() {
         DownloadModel result = new DownloadModel();
         result.addChangeListener(e -> {
-            m_DownloadsNumber.setIcon(m_Downloads.isBusy() ? BUSY_IMAGE : null);
+            m_DownloadsNumber.setIcon(m_Downloads.isBusy() ? StatusWidget.BUSY_IMAGE : null);
             m_DownloadsNumber.setText(m_Downloads.getDownloadSummary());
         });
         return result;
