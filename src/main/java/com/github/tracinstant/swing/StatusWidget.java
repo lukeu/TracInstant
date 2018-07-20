@@ -17,11 +17,7 @@
 
 package com.github.tracinstant.swing;
 
-import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
@@ -34,39 +30,14 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import com.github.swingdpi.UiScaling;
+import com.github.swingdpi.util.ScaledIcon;
+
 public class StatusWidget {
 
-    public class HalfSizeIcon implements Icon {
-        private Icon original;
-
-        public HalfSizeIcon(Icon icon) {
-            original = icon;
-        }
-
-        @Override
-        public void paintIcon(Component c, Graphics g, int x, int y) {
-            Graphics2D gfx = (Graphics2D) g.create();
-            gfx.scale(0.5, 0.5);
-            gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                                 RenderingHints.VALUE_ANTIALIAS_ON);
-            gfx.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                                 RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-            original.paintIcon(c, gfx, x*2, y);
-        }
-
-        @Override
-        public int getIconWidth() {
-            return original.getIconWidth() / 2;
-        }
-
-        @Override
-        public int getIconHeight() {
-            return original.getIconWidth() / 2;
-        }
-    }
-
-    public static final Icon BUSY_IMAGE = new ImageIcon(
-            StatusWidget.class.getResource("res/animated-wait.gif"));
+    public static final Icon BUSY_IMAGE = new ScaledIcon(
+            new ImageIcon(StatusWidget.class.getResource("res/animated-wait.gif")),
+            UiScaling.getScalingFactor());
 
     private JLabel label = new JLabel();
 
@@ -119,7 +90,9 @@ public class StatusWidget {
         isErrorDisplayed = true;
         label.setText(labelText);
         label.setToolTipText(toolTipText);
-        label.setIcon(new HalfSizeIcon(UIManager.getIcon("OptionPane.errorIcon")));
+        label.setIcon(new ScaledIcon(
+                UIManager.getIcon("OptionPane.errorIcon"),
+                UiScaling.getScalingFactor() * 0.5f));
         label.setVisible(true);
     }
 
@@ -131,7 +104,9 @@ public class StatusWidget {
             clearActions();
             label.setText(labelText);
             label.setToolTipText(toolTipText);
-            label.setIcon(new HalfSizeIcon(UIManager.getIcon("OptionPane.warningIcon")));
+            label.setIcon(new ScaledIcon(
+                    UIManager.getIcon("OptionPane.warningIcon"),
+                    UiScaling.getScalingFactor() * 0.5f));
             label.setVisible(true);
         }
     }
