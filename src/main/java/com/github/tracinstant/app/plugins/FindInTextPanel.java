@@ -155,8 +155,9 @@ public class FindInTextPanel extends JPanel {
         super(new BorderLayout());
         JScrollPane scroll1 = new JScrollPane(sourceTextEditor);
         JScrollPane scroll2 = new JScrollPane(resultArea);
-        scroll1.setPreferredSize(new Dimension(50, 50));
-        scroll2.setPreferredSize(new Dimension(50, 50));
+        Dimension size = UiScaling.newDimension(50, 50);
+        scroll1.setPreferredSize(size);
+        scroll2.setPreferredSize(size);
 
         filterCheck = new JCheckBox("Apply filter", true);
         resultCombo = new JComboBox<>(formatters.keySet().toArray(new String[0]));

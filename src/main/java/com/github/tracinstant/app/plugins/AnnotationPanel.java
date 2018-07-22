@@ -13,6 +13,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.text.JTextComponent;
 
+import com.github.swingdpi.UiScaling;
 import com.github.tracinstant.app.data.Ticket;
 
 public class AnnotationPanel extends JPanel {
@@ -60,7 +61,7 @@ public class AnnotationPanel extends JPanel {
         super(new BorderLayout());
         editor = createEditor();
         add(new JScrollPane(editor));
-        Dimension dim = new Dimension(200, 50);
+        Dimension dim = UiScaling.newDimension(200, 50);
         setPreferredSize(dim);
         setMinimumSize(dim);
     }

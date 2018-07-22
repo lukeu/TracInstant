@@ -51,6 +51,7 @@ import javax.swing.event.ListDataListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.text.JTextComponent;
 
+import com.github.swingdpi.UiScaling;
 import com.github.swingdpi.util.ScaledTable;
 import com.github.tracinstant.app.download.DownloadModel.ListModelView;
 import com.github.tracinstant.app.prefs.TracInstantProperties;
@@ -213,7 +214,7 @@ public class DownloadDialog extends JDialog {
         }
     }
 
-    private static final int GAP = 8;
+    private static final int GAP = UiScaling.scale(8);
     private final DownloadModel downloadModel;
     private final BrowsePanel browsePanel;
     private final JComponent tablePanel;
@@ -241,7 +242,7 @@ public class DownloadDialog extends JDialog {
         addBehaviour();
 
         mainPanel.setBorder(BorderFactory.createEmptyBorder(GAP, GAP, 0, GAP));
-        setSize(640, 500);
+        setSize(UiScaling.scale(640), UiScaling.scale(500));
         setLocationRelativeTo(parent);
     }
 
