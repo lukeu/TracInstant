@@ -24,7 +24,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.util.TreeMap;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
@@ -62,7 +61,7 @@ public class SearchCombo extends JComboBox<SavedSearch> {
         public DropDownRenderer() {
             desc.setBackground(TRANSPARENT);
             desc.setFont(DESC_FONT);
-            desc.setBorder(BorderFactory.createEmptyBorder(2, 6, 2, 6));
+            desc.setBorder(UiScaling.createEmptyBorder(2, 6, 2, 6));
 
             alias.setBackground(TRANSPARENT);
             alias.setFont(MONO_FONT);
@@ -73,11 +72,11 @@ public class SearchCombo extends JComboBox<SavedSearch> {
             box.add(alias);
             box.add(searchText);
             box.add(Box.createGlue());
-            box.setBorder(BorderFactory.createEmptyBorder(0, 6, 2, 6));
+            box.setBorder(UiScaling.createEmptyBorder(0, 6, 2, 6));
 
             panel.add(desc, BorderLayout.NORTH);
             panel.add(box, BorderLayout.SOUTH);
-            panel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
+            panel.setBorder(UiScaling.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
         }
 
         @Override
