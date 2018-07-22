@@ -32,6 +32,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
+import com.github.swingdpi.UiScaling;
+
 /** A general panel for displaying an editable path and a Browse button. */
 public class BrowsePanel extends JPanel implements ActionListener {
 
@@ -41,7 +43,7 @@ public class BrowsePanel extends JPanel implements ActionListener {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         m_LocationEditor = new JTextField(folder.getAbsolutePath());
         m_LocationEditor.setPreferredSize(
-            new Dimension(300, m_LocationEditor.getPreferredSize().height));
+            new Dimension(UiScaling.scale(300), m_LocationEditor.getPreferredSize().height));
         JButton browse = new JButton("Browse...");
         browse.addActionListener(this);
         add(m_LocationEditor);
@@ -61,7 +63,7 @@ public class BrowsePanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         JFileChooser chooser = new JFileChooser(getPath());
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.setPreferredSize(new Dimension(720,520));
+        chooser.setPreferredSize(UiScaling.newDimension(720,520));
         if (JFileChooser.APPROVE_OPTION ==
                 chooser.showDialog(this, "Select this folder")) {
             m_LocationEditor.setText(chooser.getSelectedFile().getAbsolutePath());

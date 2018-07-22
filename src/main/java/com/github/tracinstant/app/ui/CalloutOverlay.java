@@ -42,6 +42,8 @@ import javax.swing.plaf.InternalFrameUI;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 import javax.swing.text.JTextComponent;
 
+import com.github.swingdpi.UiScaling;
+
 public class CalloutOverlay {
 
     private static final Color SHADOW_COLOR = new Color(0, 0, 0, 30);
@@ -98,7 +100,8 @@ public class CalloutOverlay {
         }
 
         private void setNewBounds(Rectangle bounds) {
-            bounds.translate(3, 3);
+            int offset = UiScaling.scale(3);
+            bounds.translate(offset, offset);
             setBounds(bounds);
         }
     }
@@ -212,7 +215,7 @@ public class CalloutOverlay {
         shad = new ShadowPanel(iFrame);
         layeredPane = frame.getLayeredPane();
         glassPane = frame.getGlassPane();
-        triangle = new TrianglePanel(15);
+        triangle = new TrianglePanel(UiScaling.scale(15));
         triangle.setBackground(content.getBackground());
     }
 

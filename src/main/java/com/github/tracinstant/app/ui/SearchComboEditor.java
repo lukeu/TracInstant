@@ -119,7 +119,7 @@ public class SearchComboEditor extends JTextField {
             box.add(shorthand);
             box.add(Box.createVerticalStrut(6));
             box.add(buttonBox);
-            box.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+            box.setBorder(UiScaling.createEmptyBorder(20, 20, 20, 20));
             box.setBackground(new Color(220, 230, 250));
             box.setOpaque(true);
             for (Component comp : box.getComponents()) {
@@ -396,8 +396,8 @@ public class SearchComboEditor extends JTextField {
     }
 
     private ButtonModel starModel;
-    private final int extraLeft = 4;
-    private final int extraRight = 6 + iconWidth;
+    private final int extraLeft = UiScaling.scale(4);
+    private final int extraRight = UiScaling.scale(6) + iconWidth;
     private SavedSearchCallout callout;
     private final SearchComboBoxModel comboModel;
     List<SearchSpan> tokenInfo = new ArrayList<>();
@@ -409,9 +409,9 @@ public class SearchComboEditor extends JTextField {
         // A crack an mimicking a Nimbus combo editor's border, kind of.
         // See also paintComponent(...)
         setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createEmptyBorder(2, 2, 2, 0),
+            UiScaling.createEmptyBorder(2, 2, 2, 0),
             BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 0, 0, 0, DARK_BORDER),
+                UiScaling.createMatteBorder(1, 0, 0, 0, DARK_BORDER),
                 BorderFactory.createEmptyBorder(0, extraLeft, 0, extraRight))));
 
         starModel = new DefaultButtonModel();

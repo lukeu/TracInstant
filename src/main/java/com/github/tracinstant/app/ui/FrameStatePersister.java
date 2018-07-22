@@ -17,13 +17,13 @@
 
 package com.github.tracinstant.app.ui;
 
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
+import com.github.swingdpi.UiScaling;
 import com.github.tracinstant.app.prefs.TracInstantProperties;
 
 public class FrameStatePersister extends ComponentAdapter {
@@ -57,7 +57,7 @@ public class FrameStatePersister extends ComponentAdapter {
     public void restoreFrameState() {
         Rectangle bounds = TracInstantProperties.getRectangle(boundsKey, null);
         if (bounds == null) {
-            frame.setPreferredSize(new Dimension(900, 650));
+            frame.setPreferredSize(UiScaling.newDimension(900, 650));
             frame.pack();
         } else {
             adjustBoundsToDisplay(bounds);

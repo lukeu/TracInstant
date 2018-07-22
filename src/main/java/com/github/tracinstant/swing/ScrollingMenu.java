@@ -28,12 +28,13 @@ import java.awt.event.MouseWheelEvent;
 import java.util.Arrays;
 
 import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.plaf.basic.BasicArrowButton;
+
+import com.github.swingdpi.UiScaling;
 
 // TODO: Implement correct keyboard cursor behaviour - scrolling past end of view and
 // page-up/page-down
@@ -105,7 +106,7 @@ public final class ScrollingMenu extends JPopupMenu {
             add(menuItems[i]);
         }
         add(downButton);
-        setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        setBorder(UiScaling.createEmptyBorder(1, 1, 1, 1));
         controller.attach();
     }
 
@@ -151,7 +152,8 @@ public final class ScrollingMenu extends JPopupMenu {
 
             @Override
             public Dimension getPreferredSize() {
-                return new Dimension(24, 24);
+                int size = UiScaling.scale(24);
+                return new Dimension(size, size);
             }
         };
         return result;

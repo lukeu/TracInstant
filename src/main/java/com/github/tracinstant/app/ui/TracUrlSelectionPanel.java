@@ -36,6 +36,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import com.github.swingdpi.UiScaling;
 import com.github.tracinstant.app.prefs.SiteSettings;
 
 public class TracUrlSelectionPanel extends JPanel {
@@ -51,7 +52,9 @@ public class TracUrlSelectionPanel extends JPanel {
 
     private static JComboBox<String> createCombo() {
         JComboBox<String> combo = new JComboBox<>();
-        combo.setPreferredSize(new Dimension(400, combo.getPreferredSize().height));
+        combo.setPreferredSize(new Dimension(
+                UiScaling.scale(400),
+                combo.getPreferredSize().height));
         combo.setEditable(true);
         return combo;
     }

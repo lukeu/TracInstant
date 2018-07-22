@@ -18,7 +18,6 @@
 package com.github.tracinstant.app.ui;
 
 import java.awt.Dialog.ModalityType;
-import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -27,6 +26,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JDialog;
 
+import com.github.swingdpi.UiScaling;
 import com.github.tracinstant.util.swing.monitor.EdtMonitor;
 import com.github.tracinstant.util.swing.monitor.EdtMonitorPanel;
 
@@ -48,7 +48,7 @@ public class ShowPerformanceMonitorAction extends AbstractAction {
         JDialog dialog = new JDialog(dialogParent, "Performance monitor", ModalityType.MODELESS);
         dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         dialog.add(panel);
-        dialog.setSize(new Dimension(640, 480));
+        dialog.setSize(UiScaling.newDimension(640, 480));
         dialog.setLocationRelativeTo(dialogParent);
         dialog.setVisible(true);
     }

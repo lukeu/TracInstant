@@ -29,7 +29,7 @@ import com.github.tracinstant.util.swing.VerticallyScrollingPanel;
 
 public class HistogramPane {
 
-    private static final Dimension PANEL_PREFERRED_SIZE = new Dimension(300, 50);
+    private static final Dimension PANEL_PREFERRED_SIZE = UiScaling.newDimension(300, 50);
     private static final String[] DEFAULT_FIELDS = {
         "Milestone", "Reporter", "Owner", "Type", "Priority", "Component", "Version", "Severity"
     };

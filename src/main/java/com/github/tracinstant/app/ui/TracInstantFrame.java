@@ -93,7 +93,7 @@ public class TracInstantFrame extends JFrame {
     private static final InputStream TIP =
         TracInstantFrame.class.getResourceAsStream("res/SearchTip.html");
 
-    private static final int GAP = 6;
+    private static final int GAP = UiScaling.scale(6);
 
     private final class TicketLoadListener implements PropertyChangeListener {
         private final TicketLoadTask task;
@@ -319,8 +319,9 @@ public class TracInstantFrame extends JFrame {
         ToolTipManager.sharedInstance().setDismissDelay(60000);
 
         m_Matches = new JLabel();
-        m_Matches.setPreferredSize(
-                UiScaling.scale(new Dimension(110, m_Matches.getPreferredSize().height)));
+        m_Matches.setPreferredSize(new Dimension(
+                UiScaling.scale(110),
+                m_Matches.getPreferredSize().height));
 
         m_PluginCombo = createPluginCombo();
         JLabel pluginLabel = createLabel("Tools:", 'T', m_PluginCombo);
@@ -406,7 +407,8 @@ public class TracInstantFrame extends JFrame {
         }
 
         // Probably only suitable for some layout managers. Works with current: "Box".
-        result.setMinimumSize(new Dimension(8, 8));
+        int min = UiScaling.scale(8);
+        result.setMinimumSize(new Dimension(min, min));
 
         return result;
     }

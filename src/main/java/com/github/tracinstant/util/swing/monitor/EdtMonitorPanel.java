@@ -18,7 +18,6 @@
 package com.github.tracinstant.util.swing.monitor;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Font;
 
 import javax.swing.JComponent;
@@ -27,6 +26,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
+
+import com.github.swingdpi.UiScaling;
 
 public class EdtMonitorPanel extends JPanel {
 
@@ -119,8 +120,8 @@ public class EdtMonitorPanel extends JPanel {
     }
 
     private static <T extends JComponent> T adjustSizes(T comp) {
-        comp.setPreferredSize(new Dimension(200,200));
-        comp.setMinimumSize(new Dimension(10,10));
+        comp.setPreferredSize(UiScaling.newDimension(200, 200));
+        comp.setMinimumSize(UiScaling.newDimension(10, 10));
         return comp;
     }
 }
