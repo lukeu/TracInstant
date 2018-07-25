@@ -14,10 +14,10 @@ public class AppProperties {
 
     Properties m_Props = new Properties();
     private final String m_AppName;
-    private final String m_CompanyName;
+    private final String m_AuthorName;
 
-    public AppProperties(String companyName, String appName) {
-        m_CompanyName = companyName;
+    public AppProperties(String authorName, String appName) {
+        m_AuthorName = authorName;
         m_AppName = appName;
     }
 
@@ -171,9 +171,9 @@ public class AppProperties {
     public File getAppDataDirectory() throws IOException {
         StringBuilder path = new StringBuilder();
         path.append(getGeneralDataDirectory().getPath());
-        if (m_CompanyName != null) {
+        if (m_AuthorName != null) {
             path.append(File.separator);
-            path.append(m_CompanyName);
+            path.append(m_AuthorName);
         }
         path.append(File.separator);
         path.append(m_AppName);

@@ -55,8 +55,8 @@ public final class TracInstantProperties {
 
     private static final AtomicReference<AppProperties> s_SharedInstance = new AtomicReference<>();
 
-    public static void initialise(String companyName, String appName) {
-        s_SharedInstance.set(new AppProperties(companyName, appName));
+    public static void initialise(String authorName, String appName) {
+        s_SharedInstance.set(new AppProperties(authorName, appName));
         s_SharedInstance.get().loadProperties();
     }
 
