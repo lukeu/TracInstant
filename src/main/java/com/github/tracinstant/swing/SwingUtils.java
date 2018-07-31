@@ -21,9 +21,16 @@ import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
 
-public class SwingUtils {
+import javax.swing.AbstractAction;
+import javax.swing.KeyStroke;
+import javax.swing.text.JTextComponent;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
 
+public final class SwingUtils {
     private SwingUtils() {}
 
     public static Window getWindowForComponent(Component comp) {
@@ -35,5 +42,35 @@ public class SwingUtils {
             }
         }
         throw new IllegalStateException();
+    }
+
+    /**
+     * Note: in addition to calling this, it is recommended to also call:
+     * 
+     * <p>{@code text.setDocument(new CustomUndoPlainDocument());}
+     */
+    public static void addUndoSupport(JTextComponent text) {
+        UndoManager undo = new UndoManager();
+        text.getInputMap().put(KeyStroke.getKeyStroke("control Z"), "UndoKeystroke");
+        text.getInputMap().put(KeyStroke.getKeyStroke("control Y"), "RedoKeystroke");
+        text.getActionMap().put("UndoKeystroke", new AbstractAction("Undo") {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    undo.undo();
+                } catch (CannotUndoException e) {
+                }
+            }
+        });
+        text.getActionMap().put("RedoKeystroke", new AbstractAction("Redo") {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                try {
+                    undo.redo();
+                } catch (CannotRedoException e) {
+                }
+            }
+        });
+        text.getDocument().addUndoableEditListener(undo);
     }
 }

@@ -38,6 +38,7 @@ import javax.swing.text.Document;
 
 import com.github.tracinstant.app.data.SavedSearch;
 import com.github.tracinstant.app.prefs.TracInstantProperties;
+import com.github.tracinstant.swing.SwingUtils;
 
 /**
  * NB: Most of the customisation is in SearchComboEditor. This class mainly ties a few parts
@@ -116,16 +117,11 @@ public class SearchCombo extends JComboBox<SavedSearch> {
             protected JTextField createEditorComponent() {
                 return new SearchComboEditor(getModel(), "", 9);
             }
-
-            @Override
-            public Component getEditorComponent() {
-                Component editorComponent = super.getEditorComponent();
-                return editorComponent;
-            }
         });
 
         SearchComboEditor ed = getEditorComponent();
         ed.setFont(new Font(Font.MONOSPACED, Font.BOLD, 14));
+        SwingUtils.addUndoSupport(ed);
 
         setPreferredSize(getPreferredSize());
         changeListRenderer();

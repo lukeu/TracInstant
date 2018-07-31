@@ -51,6 +51,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import com.github.tracinstant.app.data.SavedSearch;
+import com.github.tracinstant.swing.CustomUndoPlainDocument;
 import com.github.tracinstant.swing.SwingUtils;
 import com.github.tracinstant.util.DocUtils;
 
@@ -304,6 +305,8 @@ public class SearchComboEditor extends JTextField {
 
         starModel = new DefaultButtonModel();
         starModel.addChangeListener(e -> repaint());
+
+        setDocument(new CustomUndoPlainDocument());
 
         getDocument().addDocumentListener(DocUtils.newOnAnyEventListener(this::updateStar));
 
