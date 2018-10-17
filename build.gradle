@@ -7,7 +7,7 @@ plugins {
 
 applicationName = 'TracInstant'
 mainClassName = "com.github.tracinstant.TracInstantApp"
-version = '0.2.0'
+version = '0.2.1'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
