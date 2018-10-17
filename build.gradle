@@ -1,9 +1,9 @@
-plugins {
-    id 'edu.sc.seis.launch4j' version '2.3.0'
-}
 
-apply plugin: 'java'
-apply plugin: 'application'
+plugins {
+    id 'java'
+    id 'application'
+    id 'edu.sc.seis.launch4j' version '2.4.4'
+}
 
 applicationName = 'TracInstant'
 mainClassName = "com.github.tracinstant.TracInstantApp"
@@ -51,17 +51,34 @@ launch4j {
     mainClassName = mainClassName
     jar = '../libs/' + project.tasks['fatJar'].archiveName
 
+    outfile = project.name + "-" + project.version + ".exe"
+
+    icon = '../../icons/TracSlurp.ico'
+    jreRuntimeBits = "64/32"
+    jvmOptions = applicationDefaultJvmArgs
+    jdkPreference = "preferJre"
+}
+
+// HACK: until I solve screwy fonts on Java >= 9, also create an alternate exe
+task createJava8Exe(type: edu.sc.seis.launch4j.tasks.Launch4jLibraryTask)  {
+    group = "launch4j"
+    description = "Creates an additional EXE that only runs on JRE/JDK 8 (to avoid font issues)"
+
+    jreMaxVersion = "1.8.0_999"
+    outfile = project.name + "-" + project.version + "-Java8only.exe"
+
     icon = '../../icons/TracSlurp.ico'
     jreRuntimeBits = "32/64"
     jvmOptions = applicationDefaultJvmArgs
+    jdkPreference = "preferJre"
 }
 
 dependencies {
 
-	compile 'au.com.bytecode:opencsv:2.4'
+    compile 'au.com.bytecode:opencsv:2.4'
 
-	// TODO: Would surely help code quality. Find out how to compact with proguard or something.
-	// compile 'com.google.guava', version: '21.0'
+    // TODO: Would surely help code quality. Find out how to compact with proguard or something.
+    // compile 'com.google.guava', version: '21.0'
 
     testCompile 'junit:junit:4.12+'
 }
