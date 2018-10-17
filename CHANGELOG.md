@@ -6,6 +6,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 0.2.1 - 2018-10-17
+### Added
+ - Undo in the search combo (Ctrl+Z) 
+### Fixed
+- Support newer Trac versions (tested with v1.2.3).
+   - (The default query changed, so Trac needed more "encouragement" to send all ticket data.)
+ 
+## 0.2.0 - 2018-07-25
+### Added
+ - New "Find tickets in text" result formats to paste into Microsoft Outlook's search field
+
+### Fixed
+ - Fix hyperlinks to open in a browser on KDE
+ - Try to keep at least one selected table-row in view as the results update
+
+### Changed
+ - Make copyright headers more inclusive, and make package names point to github
 
 ## 0.1.0 - 2017-02-22
 ### Added
