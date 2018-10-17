@@ -42,10 +42,10 @@ import org.xml.sax.SAXException;
 
 public class SlurpTask extends TicketLoadTask {
 
-    private static final String STATUS_EXCLUSION_PLACEHOLDER = "<<STATUS>>";
+    private static final String STATUS_PLACEHOLDER = "<<STATUS>>";
 
     private static final String FIELDS_QUERY =
-        "query?format=tab" + STATUS_EXCLUSION_PLACEHOLDER +
+        "query?format=tab&status=" + STATUS_PLACEHOLDER +
         "&col=id&col=summary&col=cc&col=status&col=type" +
         "&col=keywords&col=reporter&col=component&col=priority" +
         "&col=owner&col=milestone&col=severity" +
@@ -56,16 +56,12 @@ public class SlurpTask extends TicketLoadTask {
     // A query to slurp pages while still supporting Trac 0.10, which did not support
     // the 'max' and 'page' requests (and so slurps everything at once).
     private static final String RSS_QUERY =
-        "query?format=rss" +
-        STATUS_EXCLUSION_PLACEHOLDER +
-        "&order=id" +
-        "&max=" + RESULTS_PER_PAGE;
+        "query?format=rss&status=" + STATUS_PLACEHOLDER + "&order=id" + "&max=" + RESULTS_PER_PAGE;
 
 
     // Note: ordering by changetime is required by the heuristics in DateFormatDetector
     private static final String MODIFIED_TIME_QUERY =
-        "query?format=tab" + STATUS_EXCLUSION_PLACEHOLDER +
-        "&col=id&col=changetime&order=changetime";
+        "query?format=tab&status=" + STATUS_PLACEHOLDER + "&col=id&col=changetime&order=changetime";
 
     private final SiteSettings siteSettings;
 
@@ -230,8 +226,8 @@ public class SlurpTask extends TicketLoadTask {
 
     private String makeQueryURL(String queryFormat) {
         return siteSettings.getURL() + '/' + queryFormat.replaceAll(
-            STATUS_EXCLUSION_PLACEHOLDER,
-            siteSettings.isFetchOnlyActiveTickets() ? "&status=!closed" : "") +
+            STATUS_PLACEHOLDER,
+            siteSettings.isFetchOnlyActiveTickets() ? "!closed" : "!dummy") +
             makeModifiedFilter();
     }
 
