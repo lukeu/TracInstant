@@ -169,8 +169,8 @@ public class TableRowFilterComputer {
          * The number of tasks in progress that have not "reported back" as completed.
          */
         private AtomicInteger m_InProgress;
-
         private AtomicReference<ResultCallback> m_Callback;
+        private static final boolean LOG_PERFORMANCE = false;
 
         private final AtomicLong m_CreationTime = new AtomicLong(System.nanoTime());
 
@@ -195,8 +195,10 @@ public class TableRowFilterComputer {
             // Make sure that we won't publish our result, even if tasks don't
             // cancel promptly and still manage to call back.
             if (0 != m_InProgress.getAndSet(Integer.MAX_VALUE)) {
-                System.out.format("Canceled after: %.2f ms\n",
-                        (System.nanoTime() - m_CreationTime.get()) / 1000000f);
+                if (LOG_PERFORMANCE) {
+                    System.out.format("Canceled after: %.2f ms\n",
+                            (System.nanoTime() - m_CreationTime.get()) / 1000000f);
+                }
             }
 
             for (Future<Void> future : m_Futures) {
@@ -230,8 +232,10 @@ public class TableRowFilterComputer {
         /** NB: Running on a pooled thread. */
         private void publish(final BitSetRowFilter result) {
             SwingUtilities.invokeLater(() -> m_Callback.get().filteringComplete(result));
-            System.out.format("Filter Time: %.2f ms ...  ",
-                    (System.nanoTime() - m_CreationTime.get()) / 1000000f);
+            if (LOG_PERFORMANCE) {
+                System.out.format("Filter Time: %.2f ms ...  ",
+                        (System.nanoTime() - m_CreationTime.get()) / 1000000f);
+            }
         }
     }
 

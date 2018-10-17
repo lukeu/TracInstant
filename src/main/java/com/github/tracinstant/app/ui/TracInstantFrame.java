@@ -650,13 +650,9 @@ public class TracInstantFrame extends JFrame {
 
         Ticket[] tickets = m_Table.getModel().getTickets();
         m_FilterComputor.computeFilter(tickets, m_SearchTerms, rowFilter -> {
-            long t0 = System.nanoTime();
-
             m_RowFilterJustUpdated = true;
             m_Table.getRowSorter().setRowFilter(rowFilter);
             updateMatches();
-
-            System.out.format("Sort rows: %.2f ms\n", (System.nanoTime() - t0) / 1000000f);
         });
     }
 
