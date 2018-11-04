@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2011 the original author or authors.
  *
@@ -18,6 +19,7 @@
 package com.github.tracinstant.app.plugins;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.Collections;
@@ -28,6 +30,7 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.swing.Box;
 import javax.swing.JCheckBox;
@@ -42,6 +45,10 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter.DefaultHighlightPainter;
+import javax.swing.text.Highlighter;
+import javax.swing.text.Highlighter.HighlightPainter;
 import javax.swing.text.JTextComponent;
 
 import com.github.tracinstant.app.data.Ticket;
@@ -53,6 +60,8 @@ import com.github.tracinstant.app.data.Ticket;
  *  - format the result as an Outlook-style search query
  */
 public class FindInTextPanel extends JPanel {
+
+    private static final HighlightPainter HIGHLIGHTER = new DefaultHighlightPainter(Color.YELLOW);
 
     public static ToolPlugin createPlugin() {
         return new FindInTextPanel().new Plugin();
@@ -72,7 +81,7 @@ public class FindInTextPanel extends JPanel {
             for (Ticket ticket : inView) {
                 filter.add(ticket.getNumber());
             }
-            updateOutputFields();
+            updateFields();
         }
 
         @Override
@@ -128,7 +137,7 @@ public class FindInTextPanel extends JPanel {
         }
     }
 
-    private final JTextComponent sourceTextEditor = createTextArea();
+    private final JTextArea sourceTextEditor = createTextArea();
     private final JTextComponent resultArea = createTextArea();
     private final Set<Integer> filter = new TreeSet<>();
     private final JComboBox<String> resultCombo;
@@ -136,8 +145,8 @@ public class FindInTextPanel extends JPanel {
     private Set<Integer> ticketsInText = Collections.emptySet();
 
 
-    private static JTextComponent createTextArea() {
-        JTextComponent ta = new JTextArea();
+    private static JTextArea createTextArea() {
+        JTextArea ta = new JTextArea();
         ta.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
         return ta;
     }
@@ -168,26 +177,56 @@ public class FindInTextPanel extends JPanel {
 
         sourceTextEditor.getDocument().addDocumentListener(new DocChangeListener(() -> {
             ticketsInText = scanText(sourceTextEditor.getText());
-            updateOutputFields();
+            updateFields();
         }));
 
-        filterCheck.addActionListener(l -> updateOutputFields());
-        resultCombo.addActionListener(l -> updateOutputFields());
+        filterCheck.addActionListener(l -> updateFields());
+        resultCombo.addActionListener(l -> updateFields());
     }
 
-    private void updateOutputFields() {
+    private void highlightSourceText() {
+        Highlighter sourceHighlighter = sourceTextEditor.getHighlighter();
+        sourceHighlighter.removeAllHighlights();
+        Set<Integer> tickets = getFilteredTicketsInText();
+        if (tickets.isEmpty()) {
+            return;
+        }
+
+        Pattern pattern = Pattern.compile(asRegex(tickets));
+        String text = sourceTextEditor.getText();
+        Matcher m = pattern.matcher(text);
+        try {
+            while (m.find()) {
+                int start = m.start();
+                if (start > 0 && text.charAt(start - 1) == '#') {
+                    start --;
+                }
+                sourceHighlighter.addHighlight(start, m.end(), HIGHLIGHTER);
+            }
+        } catch (BadLocationException e) {
+            throw new AssertionError(e);
+        }
+    }
+
+    private void updateFields() {
+        highlightSourceText();
         updateOutputFields(formatters.get(resultCombo.getSelectedItem()));
     }
 
     private void updateOutputFields(Function<Set<Integer>, String> formatter) {
-        Set<Integer> tickets = new TreeSet<>(ticketsInText);
-        if (filterCheck.isSelected()) {
-            tickets.retainAll(filter);
-        }
+        Set<Integer> tickets = getFilteredTicketsInText();
         String newFoundText = formatter.apply(tickets);
         if (!newFoundText.equals(resultArea.getText())) {
             resultArea.setText(newFoundText);
         }
+    }
+
+    private Set<Integer> getFilteredTicketsInText() {
+        Set<Integer> tickets = new TreeSet<>(ticketsInText);
+        if (filterCheck.isSelected()) {
+            tickets.retainAll(filter);
+        }
+        return tickets;
     }
 
     private JSplitPane createSplit(JComponent top, JComponent bottom) {
@@ -231,16 +270,11 @@ public class FindInTextPanel extends JPanel {
     }
 
     protected static final String formatFoundTicketText(Set<Integer> numbers) {
-        StringBuilder sb = new StringBuilder();
-        String separator = "#:^(";
-        for (int i : numbers) {
-            sb.append(separator).append(i);
-            separator = "|";
-        }
-        if (sb.length() > 0) {
-            sb.append(")$");
-        }
-        return sb.toString();
+        return numbers.isEmpty() ? "" : "#:^(" + asRegex(numbers) + ")$";
+    }
+
+    private static String asRegex(Set<Integer> numbers) {
+        return numbers.stream().map(n -> n.toString()).collect(Collectors.joining("|"));
     }
 
     /** A little interactive test. */

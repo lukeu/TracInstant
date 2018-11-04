@@ -3,6 +3,12 @@
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## Not yet released...
+
+### Added
+ - "Find in text" plugin now highlights the ticket numbers in the pasted text,
+   taking into consideration the 'apply filter' checkbox.
+
 ## v0.2.1 - 2018-10-17
 
 ### Added
