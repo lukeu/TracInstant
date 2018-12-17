@@ -31,9 +31,9 @@ import javax.swing.SwingWorker;
 import com.github.tracinstant.app.data.TicketLoadTask.Update;
 
 /**
- * @param <T> The result of <code>doInBackground</code> and <code>get</code> is a list of
- *            ticket modification dates, as extracted from all tickets loaded. This will be
- *            processed in the 'done' method so it is not required for client code to access them
+ * The result of <code>doInBackground</code> and <code>get</code> is a list of
+ * ticket modification dates, as extracted from all tickets loaded. This will be
+ * processed in the 'done' method so it is not required for client code to access them
  */
 public abstract class TicketLoadTask extends SwingWorker<List<String>, Update> {
 

@@ -33,6 +33,9 @@ Download panel:
 
 Tools:
  - Find in Tickets: Merge bottom 2 panels, with various view-modes
+ - Plot of open tickets over time.
+     - Looks to require scraping the HTML timeline in batches (RSS is more verbose). Cache locally.
+     - #8728 might help if done, BUT: can't see reopening history, and cached close times might rot.
  - Add Inconsistent keyword detector
  - Add Score field/column; with a configuration dialog to build up scoring formulas
 
