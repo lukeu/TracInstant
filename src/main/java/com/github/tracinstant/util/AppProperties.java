@@ -189,7 +189,21 @@ public class AppProperties {
         if (baseDir == null || !baseDir.isDirectory()) {
             throw new IOException("User home directory not found.");
         }
-        File f = new File(baseDir, "Application Data");
-        return f.isDirectory() ? f : baseDir;
+
+        // Yes, yes, this path should be looked up in the system registry on Windows.
+        // I can see why most Java apps just default straight to the user's home directory.
+        // Well, previous versions may not have succeeded in going into the AppData directory
+        // due to bugs here & changes in Windows, so lets just use a sucky heuristic to go with
+        // whatever was done before. (And hope that we don't suddenly switch from the latest
+        // data to some older version!)
+        File f = new File(baseDir, "AppData/Roaming");
+        if (f.isDirectory() && f.canWrite() && new File(f, m_AuthorName).isDirectory()) {
+            return f;
+        }
+        f = new File(baseDir, "Application Data");
+        if (f.isDirectory() && f.canWrite() && new File(f, m_AuthorName).isDirectory()) {
+            return f;
+        }
+        return baseDir;
     }
 }
