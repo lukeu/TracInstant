@@ -51,7 +51,7 @@ import com.github.tracinstant.app.prefs.TracInstantProperties;
 public class AttachmentCounter {
 
     private static final Pattern NAME_MATCHER = Pattern.compile("^(\\d+).*");
-    private static final int MAX_SEARCH_DEPTH = 4;
+    private static final int MAX_SEARCH_DEPTH = 8;
     private static final BiPredicate<Path, BasicFileAttributes> IS_FILE_PREDICATE =
             (p, attrs) -> !attrs.isDirectory() && !attrs.isSymbolicLink();
 
