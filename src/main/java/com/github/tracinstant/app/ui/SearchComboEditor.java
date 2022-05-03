@@ -25,6 +25,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -346,7 +347,12 @@ public class SearchComboEditor extends JTextField {
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
+    protected void paintComponent(Graphics g1) {
+        Graphics2D g = (Graphics2D) g1.create();
+        g.setRenderingHint(
+                RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+
         Insets in = getInsets();
         int y = in.top;
         int left = in.left - extraLeft;
@@ -371,6 +377,7 @@ public class SearchComboEditor extends JTextField {
 
         Icon star = getCurrentStarIcon();
         star.paintIcon(this, g, getStarX(), getStarY());
+        g.dispose();
     }
 
     private Icon getCurrentStarIcon() {
