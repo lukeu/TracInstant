@@ -26,7 +26,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -40,8 +42,7 @@ public class SiteData {
 
     private final TicketTableModel m_TableModel = new TicketTableModel();
     private String dateTimeFormatString = null;
-    private DateTimeFormatter dateTimeFormat12 = null;
-    private DateTimeFormatter dateTimeFormat24 = null;
+    private List<DateTimeFormatter> dateTimeFormats = new ArrayList<>();
     private String lastModifiedTicketTime;
     private boolean hasConnected = false;
 
@@ -186,25 +187,34 @@ public class SiteData {
 
     public void setDateFormat(String dateFormat) {
         dateTimeFormatString = dateFormat;
-        dateTimeFormat12 = dateFormat == null ? null :
-            newDateTimeFormatter(dateFormat, "[','][';'][' '][['t']h:m[:s][ ]a]");
-        dateTimeFormat24 = dateFormat == null ? null :
-            newDateTimeFormatter(dateFormat, "[','][';'][' '][['t']HH:mm[:ss]]");
+        dateTimeFormats.clear();
+        if (dateFormat != null) {
+            String timeFormat12 = "[','][';'][' '][['t']h:m[:s][ ]a]";
+            String timeFormat24 = "[','][';'][' '][['t']HH:mm[:ss]]";
+            dateTimeFormats.add(dateTimeBuilder(dateFormat, timeFormat12).toFormatter());
+            dateTimeFormats.add(dateTimeBuilder(dateFormat, timeFormat24).toFormatter());
+
+            // Note that the auto-detected format should still apply. This is here to detect an
+            // annoying difference between 'Sep' and 'Sept' that arises when running JDK 17
+            // https://stackoverflow.com/questions/69267710/septembers-short-form-sep-no-longer-parses-in-java-17-in-en-gb-locale
+            dateTimeFormats.add(dateTimeBuilder(dateFormat, timeFormat12).toFormatter(Locale.US));
+            dateTimeFormats.add(dateTimeBuilder(dateFormat, timeFormat24).toFormatter(Locale.US));
+            dateTimeFormats.add(dateTimeBuilder(dateFormat, timeFormat12).toFormatter(Locale.UK));
+            dateTimeFormats.add(dateTimeBuilder(dateFormat, timeFormat24).toFormatter(Locale.UK));
+        }
     }
 
-    private static DateTimeFormatter newDateTimeFormatter(String dateFormat, String timeFormat) {
+    private static DateTimeFormatterBuilder dateTimeBuilder(String dateFormat, String timeFormat) {
         return new DateTimeFormatterBuilder()
                 .parseLenient()
                 .parseCaseInsensitive()
                 .appendPattern(dateFormat)
-                .appendPattern(timeFormat)
-                .toFormatter();
+                .appendPattern(timeFormat);
     }
 
     public boolean isDateFormatSet() {
-        return dateTimeFormat12 != null;
+        return !dateTimeFormats.isEmpty();
     }
-
 
     public boolean hasConnected() {
         return hasConnected;
@@ -218,16 +228,25 @@ public class SiteData {
     }
 
     public LocalDateTime parseDateTime(String str) throws DateTimeParseException {
-        try {
-            return dateTimeFormat12.parse(str, LocalDateTime::from);
-        } catch (DateTimeParseException ex) {
+        DateTimeParseException exception = null;
+        for (DateTimeFormatter format : dateTimeFormats) {
+            try {
+                return format.parse(str, LocalDateTime::from);
+            } catch (DateTimeParseException ex) {
+                if (exception == null) {
+                    exception = ex;
+                }
+            }
         }
-        return dateTimeFormat24.parse(str, LocalDateTime::from);
+        if (exception == null) {
+            throw new AssertionError();
+        }
+        throw exception;
     }
 
     public void setLastModifiedTicketTime(List<String> dateTimeStrings) {
         hasConnected = true;
-        if (!isDateFormatSet()) {
+        if (dateTimeFormats.isEmpty()) {
             return;
         }
 
@@ -296,7 +315,7 @@ public class SiteData {
         for (String dateString : dateStrings) {
             try {
                 System.out.print("date: " + dateString);
-                site.dateTimeFormat12.parse(dateString);
+                site.dateTimeFormats.get(0).parse(dateString);
                 System.out.println(" parsed");
                 continue;
             } catch (Exception e) {
