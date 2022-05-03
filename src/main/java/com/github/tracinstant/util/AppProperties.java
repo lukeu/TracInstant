@@ -2,9 +2,13 @@
 package com.github.tracinstant.util;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 /**
@@ -142,19 +146,19 @@ public class AppProperties {
     }
 
     public void saveProperties() throws IOException {
-        File outFile = getPropertiesFilePath();
-        File dir = outFile.getParentFile();
-        if (!dir.isDirectory() && !dir.mkdirs()) {
+        Path outFile = getPropertiesFilePath();
+        Path dir = outFile.getParent();
+        if (!Files.isDirectory(dir) && !dir.toFile().mkdirs()) {
             throw new IOException("Could not create file: " + outFile);
         }
 
-        try (FileOutputStream out = new FileOutputStream(outFile)) {
+        try (Writer out = Files.newBufferedWriter(outFile, StandardCharsets.UTF_8)) {
             m_Props.store(out, m_AppName + " Properties");
         }
     }
 
     public void loadProperties() {
-        try (FileInputStream in = new FileInputStream(getPropertiesFilePath())) {
+        try (Reader in = Files.newBufferedReader(getPropertiesFilePath(), StandardCharsets.UTF_8)) {
             m_Props.load(in);
         } catch (IOException ex) {
             System.out.println("Could not load preferences, defaults in use.\n  Reason: "
@@ -162,22 +166,17 @@ public class AppProperties {
         }
     }
 
-    private File getPropertiesFilePath() throws IOException {
-        File dir = getAppDataDirectory();
-        return new File(dir, m_AppName + ".properties");
+    private Path getPropertiesFilePath() throws IOException {
+        return getAppDataDirectory().resolve(m_AppName + ".properties");
     }
 
     /** Gets the data directory for this application. */
-    public File getAppDataDirectory() throws IOException {
-        StringBuilder path = new StringBuilder();
-        path.append(getGeneralDataDirectory().getPath());
+    public Path getAppDataDirectory() throws IOException {
+        Path path = Paths.get(getGeneralDataDirectory().getPath());
         if (m_AuthorName != null) {
-            path.append(File.separator);
-            path.append(m_AuthorName);
+            path = path.resolve(m_AuthorName);
         }
-        path.append(File.separator);
-        path.append(m_AppName);
-        return new File(path.toString());
+        return path.resolve(m_AppName);
     }
 
     protected File getGeneralDataDirectory() throws IOException {

@@ -17,10 +17,11 @@
 
 package com.github.tracinstant.app.data;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -83,8 +84,8 @@ public class SiteData {
         try {
             return TracInstantProperties.getUseCache()
                 && TracInstantProperties.getURL() != null
-                && new File(getAppDataDir(), TABULAR_CACHE_FILE).canRead()
-                && new File(getAppDataDir(), HIDDEN_FIELDS_CACHE_FILE).canRead();
+                && Files.isReadable(getAppDataDir().resolve(TABULAR_CACHE_FILE))
+                && Files.isReadable(getAppDataDir().resolve(HIDDEN_FIELDS_CACHE_FILE));
         } catch (IOException e) {
             e.printStackTrace();
             return false;
@@ -100,9 +101,9 @@ public class SiteData {
     // class to sequence/coordinate loading all the various bits (see main TODO document).
     static TicketProvider loadTicketData(String fileName) throws InterruptedException {
         try {
-            File file = getAppFileForReading(fileName);
+            Path file = getAppFileForReading(fileName);
             if (file != null) {
-                try (FileReader reader = new FileReader(file)) {
+                try (Reader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
                     return TracTabTicketParser.parse(reader);
                 }
             }
@@ -112,31 +113,32 @@ public class SiteData {
         return null;
     }
 
-    private static File getAppFileForReading(String simpleFileName) throws IOException {
-        File dataDir = getAppDataDir();
-        if (!dataDir.isDirectory()) {
+    private static Path getAppFileForReading(String simpleFileName) throws IOException {
+        Path dataDir = getAppDataDir();
+        if (!Files.isDirectory(dataDir)) {
             return null;
         }
-        File file = new File(dataDir, simpleFileName);
-        if (!file.exists()) {
+        Path file = dataDir.resolve(simpleFileName);
+        if (!Files.exists(file)) {
             return null;
         }
         return file;
     }
 
-    private static File getAppDataDir() throws IOException {
+    private static Path getAppDataDir() throws IOException {
         return TracInstantProperties.get().getAppDataDirectory();
     }
 
     private void saveTicketData(String fileName, Set<String> fields) {
         try {
-            File dataDir = getAppDataDir();
-            if (!dataDir.isDirectory() && !dataDir.mkdirs()) {
+            Path dataDir = getAppDataDir();
+            if (!Files.isDirectory(dataDir) && !dataDir.toFile().mkdirs()) {
                 throw new IOException("Directory could not be created: " + dataDir);
             }
-            File dataFile = new File(dataDir, fileName);
+            Path dataFile = dataDir.resolve(fileName);
             List<Ticket> tickets = m_TableModel.getTicketsWithAnyField(fields);
-            TabTicketWriter.write(new FileWriter(dataFile), fields, tickets);
+            TabTicketWriter.write(
+                    Files.newBufferedWriter(dataFile, StandardCharsets.UTF_8), fields, tickets);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -156,8 +158,8 @@ public class SiteData {
 
     private void deleteAppFile(String name) {
         try {
-            File file = new File(getAppDataDir(), name);
-            file.delete();
+            Path file = getAppDataDir().resolve(name);
+            Files.deleteIfExists(file);
         } catch (IOException e) {
             e.printStackTrace();
         }
