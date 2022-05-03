@@ -2,7 +2,7 @@
 plugins {
     id 'java'
     id 'application'
-    id 'edu.sc.seis.launch4j' version '2.4.4'
+    id 'edu.sc.seis.launch4j' version '2.5.3'
 }
 
 applicationName = 'TracInstant'
@@ -32,7 +32,7 @@ task fatJar(type: Jar) {
     dependsOn test
 
     // Simple "fatJar" configuration...
-    baseName = project.name + '-all'
+    archiveBaseName = project.name + '-all'
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 
@@ -75,11 +75,11 @@ task createJava8Exe(type: edu.sc.seis.launch4j.tasks.Launch4jLibraryTask)  {
 
 dependencies {
 
-    compile 'au.com.bytecode:opencsv:2.4'
+    implementation 'au.com.bytecode:opencsv:2.4'
 
     // TODO: Would surely help code quality. Find out how to compact with proguard or something.
     // compile 'com.google.guava', version: '21.0'
 
-    testCompile 'junit:junit:4.12+'
+    testImplementation 'junit:junit:4.12+'
 }
 
