@@ -22,8 +22,7 @@ applicationDefaultJvmArgs = [
 ]
 
 repositories {
-    // Alternatively: mavenCentral()
-    jcenter()
+    mavenCentral()
 }
 
 // For runnable .jar:
@@ -33,7 +32,7 @@ task fatJar(type: Jar) {
 
     // Simple "fatJar" configuration...
     archiveBaseName = project.name + '-all'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 
     manifest {
@@ -46,6 +45,8 @@ task fatJar(type: Jar) {
 
     }
 }
+
+createExe.dependsOn fatJar
 
 launch4j {
     mainClassName = mainClassName
@@ -61,6 +62,8 @@ launch4j {
 
 // HACK: until I solve screwy fonts on Java >= 9, also create an alternate exe
 task createJava8Exe(type: edu.sc.seis.launch4j.tasks.Launch4jLibraryTask)  {
+    dependsOn fatJar
+
     group = "launch4j"
     description = "Creates an additional EXE that only runs on JRE/JDK 8 (to avoid font issues)"
 
