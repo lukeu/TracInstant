@@ -15,10 +15,9 @@ targetCompatibility = 1.8
 // For 'application' plugin:
 applicationDefaultJvmArgs = [
     "-Xms8M",
-    "-Xmx300M",
+    "-Xmx400M",
     "-Dsun.java2d.d3d=false",
-    "-Xverify:none",
-    "-XX:StringTableSize=60013"
+    "-XX:StringTableSize=240007"
 ]
 
 repositories {
