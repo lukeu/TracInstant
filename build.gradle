@@ -83,7 +83,7 @@ task createJava8Exe(type: edu.sc.seis.launch4j.tasks.Launch4jLibraryTask)  {
 dependencies {
 
     implementation 'au.com.bytecode:opencsv:2.4'
-    implementation 'com.github.lukeu:swing-dpi:0.6'
+    implementation 'com.github.lukeu:swing-dpi:0.10'
 
     // TODO: Would surely help code quality. Find out how to compact with proguard or something.
     // compile 'com.google.guava', version: '21.0'
