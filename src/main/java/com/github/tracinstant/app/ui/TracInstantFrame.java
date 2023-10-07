@@ -144,6 +144,11 @@ public class TracInstantFrame extends JFrame {
                     } else if (why instanceof ProtocolException) {
                         m_SlurpStatus.showError(
                                 "Not connected: Incorrect Password?", e.getMessage());
+                    } else if (why instanceof Error) {
+                        m_SlurpStatus.showError(
+                                "Unexpected ERROR - Maybe Gradle deleted the dependencies? "
+                                + "(Do a full Gradle build)",
+                                e.getMessage());
                     } else {
                         m_SlurpStatus.showRetryError(
                                 "Not connected - hover for details", e.getMessage(), doSlurp);
