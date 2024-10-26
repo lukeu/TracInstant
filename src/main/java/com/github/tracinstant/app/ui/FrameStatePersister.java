@@ -19,6 +19,7 @@ package com.github.tracinstant.app.ui;
 
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -59,10 +60,29 @@ public class FrameStatePersister extends ComponentAdapter {
             frame.setPreferredSize(new Dimension(900, 650));
             frame.pack();
         } else {
+            adjustBoundsToDisplay(bounds);
             frame.setBounds(bounds);
         }
         if (TracInstantProperties.get().getBoolean(maximisedKey, false)) {
             frame.setExtendedState(Frame.MAXIMIZED_BOTH);
+        }
+    }
+
+    /**
+     * Cater for a previous run being on a monitor which is now detached. Windows 11 in particular
+     * offers no means to 'rescue' a window placed completely out of bounds - the windowing keyboard
+     * shortcuts don't work, and actions like restore/maximise have been removed from the UI!
+     */
+    private static void adjustBoundsToDisplay(Rectangle bounds) {
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        Rectangle maxBounds = ge.getMaximumWindowBounds();
+        if (bounds.x + bounds.width < maxBounds.x + 10
+                || bounds.x > maxBounds.x + maxBounds.width - 10) {
+            bounds.x = maxBounds.x;
+        }
+        if (bounds.y + bounds.width < maxBounds.y + 10
+                || bounds.y > maxBounds.y + maxBounds.width - 10) {
+            bounds.y = maxBounds.y;
         }
     }
 
