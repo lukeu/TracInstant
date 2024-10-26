@@ -26,7 +26,6 @@ import java.util.List;
 import javax.swing.SwingWorker;
 
 import com.github.tracinstant.app.download.AttachmentDownloader.Result;
-import com.github.tracinstant.app.download.Target.State;
 import com.github.tracinstant.util.FileUtils;
 
 public class AttachmentDownloader extends SwingWorker<Void, Result> {
@@ -36,13 +35,13 @@ public class AttachmentDownloader extends SwingWorker<Void, Result> {
     private Runnable allDoneCallback;
 
     protected static class Result {
-        public Result(Target target, State newState) {
+        public Result(Target target, Target.State newState) {
             this.target = target;
             this.newState = newState;
         }
 
         Target target;
-        State newState;
+        Target.State newState;
     }
 
     AttachmentDownloader(DownloadModel model) {
@@ -64,17 +63,17 @@ public class AttachmentDownloader extends SwingWorker<Void, Result> {
             if (isCancelled()) {
                 return null;
             }
-            publish(new Result(target, State.STARTED));
+            publish(new Result(target, Target.State.STARTED));
             File outFile = model.getAbsolutePath(target).toFile();
             outFile.getParentFile().mkdirs();
             try {
                 FileUtils.copyAndClose(
                     target.getSource().createInputStream(),
                     new FileOutputStream(outFile));
-                publish(new Result(target, State.ENDED));
+                publish(new Result(target, Target.State.ENDED));
             } catch (IOException ex) {
                 target.setErrorMessage(ex.toString());
-                publish(new Result(target, State.ERROR));
+                publish(new Result(target, Target.State.ERROR));
             }
         }
         return null;
