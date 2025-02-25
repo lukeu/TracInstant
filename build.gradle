@@ -5,20 +5,24 @@ plugins {
     id 'edu.sc.seis.launch4j' version '2.5.3'
 }
 
-applicationName = 'TracInstant'
-mainClassName = "com.github.tracinstant.TracInstantApp"
-version = '0.2.1'
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
 // For 'application' plugin:
-applicationDefaultJvmArgs = [
-    "-Xms8M",
-    "-Xmx400M",
-    "-Dsun.java2d.d3d=false",
-    "-XX:StringTableSize=240007"
-]
+application {
+    applicationName = 'TracInstant'
+    mainClass = "com.github.tracinstant.TracInstantApp"
+    version = '0.2.1'
+
+    applicationDefaultJvmArgs = [
+        "-Xms8M",
+        "-Xmx400M",
+        "-Dsun.java2d.d3d=false",
+        "-XX:StringTableSize=240007"
+    ]
+}
 
 repositories {
     mavenCentral()
@@ -35,7 +39,7 @@ task fatJar(type: Jar) {
     with jar
 
     manifest {
-        attributes 'Main-Class': mainClassName
+        attributes 'Main-Class': application.mainClass
 
 // Alternatively: configure class-path if not building a "fatJar".
 //    attributes 'Class-Path': configurations.compile.collect {
@@ -49,13 +53,13 @@ createExe.dependsOn fatJar
 
 launch4j {
     mainClassName = mainClassName
-    jar = '../libs/' + project.tasks['fatJar'].archiveName
+    jar = '../libs/' + file(fatJar.archiveFileName).name
 
     outfile = project.name + "-" + project.version + ".exe"
 
     icon = '../../icons/TracSlurp.ico'
     jreRuntimeBits = "64/32"
-    jvmOptions = applicationDefaultJvmArgs
+    jvmOptions = application.applicationDefaultJvmArgs
     jdkPreference = "preferJre"
 }
 
@@ -71,7 +75,7 @@ task createJava8Exe(type: edu.sc.seis.launch4j.tasks.Launch4jLibraryTask)  {
 
     icon = '../../icons/TracSlurp.ico'
     jreRuntimeBits = "32/64"
-    jvmOptions = applicationDefaultJvmArgs
+    jvmOptions = application.applicationDefaultJvmArgs
     jdkPreference = "preferJre"
 }
 
