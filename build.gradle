@@ -49,7 +49,7 @@ createExe.dependsOn fatJar
 
 launch4j {
     mainClassName = mainClassName
-    jar = '../libs/' + project.tasks['fatJar'].archiveName
+    jar = '../libs/' + project.tasks['fatJar'].archiveFileName
 
     outfile = project.name + "-" + project.version + ".exe"
 
