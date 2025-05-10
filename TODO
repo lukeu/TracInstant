@@ -12,15 +12,7 @@ Table:
  - Tooltips for truncated fields
 
 Search combo:
- - Render typed alias/shorthand words in blue
-    - (Override paint to call drawString with a generated AttributedString?)
- - Allow '-' before an alias to negate the alias terms(?)
- - ESC to revert previous text
-    - Make extra sure the combo doesn't lose the search text. E.g. after pressing DOWN
-      it should select the first item. But then after pressing UP or ESC the focus
-      should return to the editor with the original text retained.
  - Allow '|' in field label?
- - Consider GlazedLists? (Can it integrates with all the customisations?)
 
 Authentication
  - Disable the 'save password' checkbox (or display a warning) if other users can access the file

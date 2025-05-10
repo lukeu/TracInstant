@@ -32,6 +32,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedSet;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -49,6 +52,15 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.plaf.TextUI;
+import javax.swing.plaf.synth.SynthTextFieldUI;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.Element;
+import javax.swing.text.FieldView;
+import javax.swing.text.Segment;
+import javax.swing.text.Utilities;
+import javax.swing.text.View;
 
 import com.github.tracinstant.app.data.SavedSearch;
 import com.github.tracinstant.swing.CustomUndoPlainDocument;
@@ -218,6 +230,100 @@ public class SearchComboEditor extends JTextField {
         iconWidth = normal.getIconWidth();
     }
 
+
+    private final class ColouredFieldView extends FieldView {
+        Segment seg = new Segment();
+        private ColouredFieldView(Element elem) {
+            super(elem);
+        }
+
+        @Override
+        protected int drawSelectedText(Graphics g, int x, int y, int p0, int p1)
+                throws BadLocationException {
+
+            // Although this loop SEEMS pointless (since the colour is constant), it is necessary to
+            // produce precisely the same character spacing calculation as the unselected-text
+            // code-path. This has implications when running on displays with non-integer scaling
+            // factors, notably when running on JDK >= 9. This code forces the use of JDK-8 APIs
+            // whereas a not-overridden version would use floating-point offset methods.
+            int t = 0;
+            int prev = p0;
+            while (t < tokenInfo.size() && prev < p1) {
+                SearchSpan span = tokenInfo.get(t++);
+                int len = Math.min(span.end, p1) - prev;
+                if (len > 0) {
+                    x = super.drawSelectedText(g, x, y, prev, prev + len);
+                    prev = span.end;
+                }
+            }
+            return x;
+        }
+
+        // NB: coded to JDK-8 style APIs, which operate upon int.
+        // TODO: switch to the 'float' APIs for better HiDPI support when moving to modern Java
+        @Override
+        protected int drawUnselectedText(Graphics g, int x, int y, int p0, int p1)
+                throws BadLocationException {
+
+            Document doc = getDocument();
+            int t = 0;
+            int prev = p0;
+            while (t < tokenInfo.size() && prev < p1) {
+                SearchSpan span = tokenInfo.get(t++);
+                int len = Math.min(span.end, p1) - prev;
+                if (len > 0) {
+                    g.setColor(colorFor(span));
+                    doc.getText(prev, len, seg);
+                    x = Utilities.drawTabbedText(seg, x, y, g, this, prev);
+                    prev = span.end;
+                }
+            }
+
+            // This goes on to determine the caret colour! ("temporal coupling" smell)
+            g.setColor(SearchComboEditor.this.getForeground());
+            return x;
+        }
+
+        private Color colorFor(SearchSpan span) {
+            switch (span.kind) {
+                case ALIAS: return Color.ORANGE.darker();
+                case FIELD: return Color.CYAN.darker().darker();
+                case NEGATE: return Color.RED.darker();
+                case TEXT: return Color.BLACK;
+            }
+            throw new AssertionError();
+        }
+    }
+
+    /**
+     * Despite TextFields not supporting EditorKits, StyleDocument etc, we still want to be able to
+     * colour-code the search field, keep TextFields's behaviour (e.g. text scrolls, not wraps)
+     * but without an entire UI implementation.
+     *
+     *<p>We presently assume Synth/Nimbus L&F, which will unfortunately add work to switch L&Fs later.
+     * A good looking solution to this looks to be to use the ByteBuddy library to dynamically subclass
+     * the UI object, and 'intercept' its create method. However let's not add another dependency yet.
+     */
+    final class ColouredFieldUI extends SynthTextFieldUI {
+
+        @Override
+        public View create(Element elem) {
+            View v = super.create(elem);
+            if (v instanceof FieldView) {
+                return new ColouredFieldView(elem);
+            }
+            return v;
+        }
+    }
+
+    @Override
+    public void setUI(TextUI newUI) {
+        if (newUI instanceof SynthTextFieldUI) {
+            newUI = new ColouredFieldUI();
+        }
+        super.setUI(newUI);
+    }
+
     private class Listener implements MouseListener, MouseMotionListener {
         private Boolean lastOverStar = null;
 
@@ -290,6 +396,7 @@ public class SearchComboEditor extends JTextField {
     private final int extraRight = 6 + iconWidth;
     private SavedSearchCallout callout;
     private final SearchComboBoxModel comboModel;
+    List<SearchSpan> tokenInfo = new ArrayList<>();
 
     public SearchComboEditor(SearchComboBoxModel comboModel, String value, int n) {
         super(new CustomUndoPlainDocument(), value, n);
@@ -306,16 +413,20 @@ public class SearchComboEditor extends JTextField {
         starModel = new DefaultButtonModel();
         starModel.addChangeListener(e -> repaint());
 
-        getDocument().addDocumentListener(DocUtils.newOnAnyEventListener(this::updateStar));
+        getDocument().addDocumentListener(DocUtils.newOnAnyEventListener(this::updateFromDocument));
 
         Listener ml = new Listener();
         addMouseListener(ml);
         addMouseMotionListener(ml);
     }
 
-    protected void updateStar() {
-        boolean found = comboModel.findSearch(getText()) != null;
+    protected void updateFromDocument() {
+        String text = getText();
+        boolean found = comboModel.findSearch(text) != null;
         starModel.setSelected(found);
+        tokenInfo = SearchSpan.parse(
+                (SortedSet<String>) comboModel.getShorthandAliases().keySet(),
+                text);
     }
 
     public void quickSaveSearch() {
