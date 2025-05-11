@@ -20,8 +20,14 @@ package com.github.tracinstant.app.ui;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.SortedMap;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import com.github.tracinstant.app.data.SavedSearch;
 
 /** One of a user's search term, in the format: <code>[-][field:][-]pattern</code> */
 final class SearchTerm {
@@ -52,34 +58,31 @@ final class SearchTerm {
             + exclude + "]";
     }
 
-    public static SearchTerm[] parseSearchString(String searchText) {
+    public static List<SearchTerm> parseSearchString(
+            SortedMap<String, SavedSearch> shorthands, String searchText) {
+
         if (searchText.trim().isEmpty()) {
             return TableRowFilterComputer.EMPTY_SEARCH_TERMS;
         }
-        List<SearchTerm> terms = new ArrayList<>();
-        final String[] words = searchText.split("\\s");
 
-        try {
-            for (String word : words) {
-                SearchTerm term = parseTerm(word);
-                if (term != null) {
-                    terms.add(term);
-                }
-            }
-        } catch (PatternSyntaxException ex) {
-            return TableRowFilterComputer.EMPTY_SEARCH_TERMS;
-        }
+        return Arrays.stream(searchText.split("\\s"))
+                .flatMap(w -> {
+                    SavedSearch expanded = shorthands.get(w);
+                    return expanded == null
+                            ? Stream.of(w)
+                            : Arrays.stream(expanded.searchText.split("\\s"));
+                })
+                .map(w -> parseTerm(w))
+                .filter(Objects::nonNull)
 
-        // Do what we can for filtering speed - apply a partial sorting
-        // to make terms with specific fields come first.
-        SearchTerm[] result = terms.toArray(new SearchTerm[0]);
-        Arrays.sort(result, (t1, t2) -> {
-            int len1 = t1.field == null ? 0 : t1.field.length();
-            int len2 = t2.field == null ? 0 : t2.field.length();
-            return len2 - len1;
-        });
-
-        return result;
+                // Do what we can for filtering speed - apply a partial sorting
+                // to make terms with specific fields come first.
+                .sorted((t1, t2) -> {
+                    int len1 = t1.field == null ? 0 : t1.field.length();
+                    int len2 = t2.field == null ? 0 : t2.field.length();
+                    return len2 - len1;
+                })
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /** @return a SearchTerm, or null if the search pattern would be empty. */
@@ -105,7 +108,11 @@ final class SearchTerm {
                 return new SearchTerm(field, EMPTY_STRING_PATTERN, exclude);
             }
         }
-        Pattern regex = Pattern.compile(word, Pattern.CASE_INSENSITIVE);
-        return new SearchTerm(field, regex, exclude);
+        try {
+            Pattern regex = Pattern.compile(word, Pattern.CASE_INSENSITIVE);
+            return new SearchTerm(field, regex, exclude);
+        } catch (PatternSyntaxException ex) {
+            return null;
+        }
     }
 }

@@ -18,6 +18,7 @@
 package com.github.tracinstant.app.ui;
 
 import java.net.URL;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,7 +48,7 @@ public class HtmlFormatter {
         return text.replaceAll("class=\\\"closed ticket", "class=\"closed");
     }
 
-    protected static String buildDescription(Ticket[] tickets, SearchTerm[] searchTerms) {
+    protected static String buildDescription(Ticket[] tickets, List<SearchTerm> searchTerms) {
         if (tickets.length == 0) {
             return "";
         }
@@ -83,7 +84,7 @@ public class HtmlFormatter {
         return body.toString();
     }
 
-    private static String highlightMatches(String body, SearchTerm[] searchTerms) {
+    private static String highlightMatches(String body, List<SearchTerm> searchTerms) {
         Pattern superPattern = createSuperPattern(searchTerms);
         if (superPattern == null) {
             return body;
@@ -141,7 +142,7 @@ public class HtmlFormatter {
         return replacements;
     }
 
-    private static Pattern createSuperPattern(SearchTerm[] searchTerms) {
+    private static Pattern createSuperPattern(List<SearchTerm> searchTerms) {
         StringBuilder sb = new StringBuilder();
         String pipe = "";
         sb.append('(');

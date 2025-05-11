@@ -18,6 +18,7 @@
 package com.github.tracinstant.app.ui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.List;
@@ -75,10 +76,10 @@ public class TableRowFilterComputer {
 
         private final int m_FirstRowNumber;
         private final List<Ticket> m_Tickets;
-        private final SearchTerm[] m_SearchTerms;
+        private final List<SearchTerm> m_SearchTerms;
         private final BatchCallback m_BatchCallback;
 
-        public FilterBatchWorker(int firstRowNumber, List<Ticket> tickets, SearchTerm[] searchTerms,
+        public FilterBatchWorker(int firstRowNumber, List<Ticket> tickets, List<SearchTerm> searchTerms,
                 BatchCallback callback) {
             m_FirstRowNumber = firstRowNumber;
             m_Tickets = new ArrayList<>(tickets);
@@ -263,7 +264,7 @@ public class TableRowFilterComputer {
         }
         if (m_Executor == null) {
             m_Executor = new ThreadPoolExecutor(threads, threads, 60L, TimeUnit.SECONDS,
-                    new LinkedBlockingQueue<Runnable>(), THREAD_FACTORY,
+                    new LinkedBlockingQueue<>(), THREAD_FACTORY,
                     new ThreadPoolExecutor.DiscardPolicy());
         }
     }
@@ -272,9 +273,9 @@ public class TableRowFilterComputer {
         m_Executor.shutdownNow();
     }
 
-    static final SearchTerm[] EMPTY_SEARCH_TERMS = new SearchTerm[0];
+    static final List<SearchTerm> EMPTY_SEARCH_TERMS = Arrays.asList();
 
-    public void computeFilter(Ticket[] tickets, SearchTerm[] searchTerms, ResultCallback callback) {
+    public void computeFilter(Ticket[] tickets, List<SearchTerm> searchTerms, ResultCallback callback) {
 
         assert SwingUtilities.isEventDispatchThread();
 
@@ -282,7 +283,7 @@ public class TableRowFilterComputer {
         // startExecutor(6);
 
         // Corner case.
-        if (searchTerms == null || searchTerms.length == 0) {
+        if (searchTerms.isEmpty()) {
             callback.filteringComplete(null);
             return;
         }
@@ -298,8 +299,8 @@ public class TableRowFilterComputer {
      * @param tickets
      *            NB: Must be sorted by ID, and all IDs must be unique!
      */
-    private void queueWorkBatches(Ticket[] tickets, SearchTerm[] searchTerms,
-            List<Integer> batchSizes) {
+    private void queueWorkBatches(
+            Ticket[] tickets, List<SearchTerm> searchTerms, List<Integer> batchSizes) {
 
         List<Ticket> batch = new ArrayList<>(MAX_BATCH_SIZE);
         int firstRowInBatch = 0;

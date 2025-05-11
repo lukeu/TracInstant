@@ -2,6 +2,7 @@
 package com.github.tracinstant.app.ui;
 
 import java.util.Map.Entry;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import javax.swing.DefaultComboBoxModel;
@@ -68,6 +69,18 @@ public class SearchComboBoxModel extends DefaultComboBoxModel<SavedSearch> {
     @Override
     public SavedSearch getElementAt(int index) {
         return super.getElementAt(index);
+    }
+
+    public SortedMap<String, SavedSearch> getShorthandAliases() {
+        TreeMap<String, SavedSearch> map = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        int count = getSize();
+        for (int i = 0; i < count; ++i) {
+            SavedSearch ss = getElementAt(i);
+            if (!ss.alias.isEmpty()) {
+                map.put(ss.alias, ss);
+            }
+        }
+        return map;
     }
 
     public void updateSearch(SavedSearch ss) {

@@ -22,7 +22,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.util.TreeMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -161,39 +160,6 @@ public class SearchCombo extends JComboBox<SavedSearch> {
 
     public SearchComboEditor getEditorComponent() {
         return (SearchComboEditor) getEditor().getEditorComponent();
-    }
-
-    /** Get the text, with all saved shorthands expanded. */
-    public String getExpandedText() {
-
-        TreeMap<String, SavedSearch> map = new TreeMap<>(
-                String.CASE_INSENSITIVE_ORDER);
-        int num = getModel().getSize();
-        for (int i = 0; i < num; i++) {
-            SavedSearch ss = getModel().getElementAt(i);
-            if (!ss.alias.isEmpty()) {
-                map.put(ss.alias, ss);
-            }
-        }
-
-        StringBuilder result = new StringBuilder();
-        String space = "";
-
-        // Perhaps this class should just be returning data, rather than processing it,
-        // but it seems a little easier to do this here.
-        final String[] words = getEditorText().split("\\s");
-        for (String word : words) {
-            result.append(space);
-            space = " ";
-            SavedSearch ss = map.get(word);
-            if (ss == null) {
-                result.append(word);
-            } else {
-                result.append(ss.searchText);
-            }
-        }
-
-        return result.toString();
     }
 
     private void loadLastSearch() {

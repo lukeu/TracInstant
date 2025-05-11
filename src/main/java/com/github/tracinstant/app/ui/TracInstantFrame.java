@@ -258,7 +258,7 @@ public class TracInstantFrame extends JFrame {
 
     private final Box m_StatusPanel;
 
-    private SearchTerm[] m_SearchTerms = new SearchTerm[0];
+    private List<SearchTerm> m_SearchTerms = TableRowFilterComputer.EMPTY_SEARCH_TERMS;
 
     /** One of those horrible flags you wish didn't need to exist. Just see the code. */
     private boolean m_RowFilterJustUpdated = false;
@@ -651,7 +651,9 @@ public class TracInstantFrame extends JFrame {
         // could also happen earlier from a list-navigation event, but I think that's
         // fine; why not highlight matches in the description before the filtering is
         // complete anyway?
-        m_SearchTerms = SearchTerm.parseSearchString(m_FilterCombo.getExpandedText());
+        m_SearchTerms = SearchTerm.parseSearchString(
+                m_FilterCombo.getModel().getShorthandAliases(),
+                m_FilterCombo.getEditorText());
 
         Ticket[] tickets = m_Table.getModel().getTickets();
         m_FilterComputor.computeFilter(tickets, m_SearchTerms, rowFilter -> {
