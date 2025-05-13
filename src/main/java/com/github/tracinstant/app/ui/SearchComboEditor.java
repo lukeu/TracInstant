@@ -292,7 +292,7 @@ public class SearchComboEditor extends JTextField {
     private final SearchComboBoxModel comboModel;
 
     public SearchComboEditor(SearchComboBoxModel comboModel, String value, int n) {
-        super(value, n);
+        super(new CustomUndoPlainDocument(), value, n);
         this.comboModel = comboModel;
 
         // A crack an mimicking a Nimbus combo editor's border, kind of.
@@ -305,8 +305,6 @@ public class SearchComboEditor extends JTextField {
 
         starModel = new DefaultButtonModel();
         starModel.addChangeListener(e -> repaint());
-
-        setDocument(new CustomUndoPlainDocument());
 
         getDocument().addDocumentListener(DocUtils.newOnAnyEventListener(this::updateStar));
 
