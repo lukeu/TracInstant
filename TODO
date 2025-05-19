@@ -6,6 +6,7 @@ Fields/Column customisation:
    (Will have to recreate all tickets whenever new fields are discovered - infrequent.)
 
 Table:
+ - Undo from the table (easily undo row deletions)
  - Support copying text (e.g. to paste into Excel)
  - Sort Priority & Severity naturally (not alphabetically)
  - Configurable colour coding (e.g. priority, severity, milestone etc...)
@@ -17,10 +18,8 @@ Search combo:
 Authentication
  - Disable the 'save password' checkbox (or display a warning) if other users can access the file
    (Looks like would need to implement POSIX and ACL separately. See `Files.getFileAttributeView`.)
- - Stop 'Connect' dialog showing when network connection interrupted. (Very annoying.)
 
 Download panel:
- - Search "additional attachments" folders recursively
  - Show size of file & percentage downloaded
 
 Tools:
@@ -43,9 +42,9 @@ BUGS:
  - When saving a search containing an alias, should expand the alias in the saved result.
 
 Code Tidying:
- - Switch to Gradle?
-     - Introduce Guava (Immutable collections!)?
-     - Proguard (to strip out unused library code?)
+ - Introduce Guava (Immutable collections!)?
+    - Probably would want Proguard (to strip out unused library code?)
+    - consider also jlink/jpackage nowadays?
  - Create new 'TicketLoader' to more-cleanly manage the 4 loading-tasks, and their cancelling.
  - PropertyChangeListener -> TicketLoaderListener? so the loader listens
    on its multiple tasks, and the frame only listens on one object.
@@ -54,5 +53,3 @@ UI Polish:
  - Store column ordering & sizing properly. Column sizes currently 'drift' as the
    window is resized or reopened.
  - Store position of all splitters
- - RENAME CONTROLS (and update accelerators): &Search -> &Filter then can use &Star/&Save? (or &Bookmark?)
- - Auto-save preferences while working
